@@ -14,45 +14,90 @@
 #endif
 
 namespace apl {
-    class AFeatureManager
+    namespace detail
     {
-    public:
-        AFeatureManager() = default;
-        AFeatureManager(const AFeatureManager &other) = delete;
-        AFeatureManager(AFeatureManager &&other) noexcept = delete;
-        ~AFeatureManager();
+        /**
+         * interface to interact with the plugin
+         */
+        extern "C" // C linkage because the functions get loaded dynamically from a shared library
+        {
+            A_PLUGIN_API int getPluginFeatureCount();
+            A_PLUGIN_API const apl::APluginFeatureInfo* getPluginFeatureInfo(int i);
+            A_PLUGIN_API const apl::APluginFeatureInfo * const* getPluginFeatureInfos();
+    
+            A_PLUGIN_API int getPluginClassCount();
+            A_PLUGIN_API const apl::APluginClassInfo* getPluginClassInfo(int i);
+            A_PLUGIN_API const apl::APluginClassInfo* const* getPluginClassInfos();
+        }
+        
+        class AFeatureManager
+        {
+        public:
+            AFeatureManager() = default;
+            AFeatureManager(const AFeatureManager &other) = delete;
+            AFeatureManager(AFeatureManager &&other) noexcept = delete;
+            ~AFeatureManager();
 
-        AFeatureManager& operator=(const AFeatureManager &other) = delete;
-        AFeatureManager& operator=(AFeatureManager &&other) noexcept = delete;
+            AFeatureManager &operator=(const AFeatureManager &other) = delete;
+            AFeatureManager &operator=(AFeatureManager &&other) noexcept = delete;
 
-        static APluginFeatureInfo* registerFeature(const char *featureGroup, const char *featureName,
-                                                   const char *returnType, const char *argumentList,
-                                                   void *functionPointer);
-        int getFeatureCount() const;
-        const APluginFeatureInfo* getFeatureInfo(int i) const;
-        const APluginFeatureInfo* const* getFeatureInfos() const;
+            static APluginFeatureInfo *registerFeature(const char *featureGroup, const char *featureName,
+                                                       const char *returnType, const char *argumentList,
+                                                       void *functionPointer);
+            int getFeatureCount() const;
+            const APluginFeatureInfo *getFeatureInfo(int i) const;
+            const APluginFeatureInfo *const *getFeatureInfos() const;
 
-        static APluginClassInfo* registerClass(const char *interfaceClassName, const char *featureClassName,
-                                               void *createInstance, void *deleteInstance);
-        int getClassCount() const;
-        const APluginClassInfo* getClassInfo(int i) const;
-        const APluginClassInfo* const* getClassInfos() const;
+            static APluginClassInfo *registerClass(const char *interfaceClassName, const char *featureClassName,
+                                                   void *createInstance, void *deleteInstance);
+            int getClassCount() const;
+            const APluginClassInfo *getClassInfo(int i) const;
+            const APluginClassInfo *const *getClassInfos() const;
 
-    private:
-        std::vector<APluginFeatureInfo*> feature_infos;
-        std::vector<APluginClassInfo*> class_infos;
+        private:
+            std::vector<APluginFeatureInfo *> feature_infos;
+            std::vector<APluginClassInfo *> class_infos;
+        };
 
-        static std::mutex feature_infos_mutex;
-        static std::mutex class_infos_mutex;
-    };
-
-    std::mutex apl::AFeatureManager::feature_infos_mutex;
-    std::mutex apl::AFeatureManager::class_infos_mutex;
-
-    AFeatureManager featureManagerInstance;
+        AFeatureManager featureManagerInstance; // no singleton because there should be one instance per shared library (plugin)
+    } // namespace detail
 } // namespace apl
 
-apl::AFeatureManager::~AFeatureManager()
+
+/**
+ * Interface implementation
+ */
+int apl::detail::getPluginFeatureCount()
+{
+    return apl::detail::featureManagerInstance.getFeatureCount();
+}
+const apl::APluginFeatureInfo* apl::detail::getPluginFeatureInfo(int i)
+{
+    return apl::detail::featureManagerInstance.getFeatureInfo(i);
+}
+const apl::APluginFeatureInfo * const* apl::detail::getPluginFeatureInfos()
+{
+    return apl::detail::featureManagerInstance.getFeatureInfos();
+}
+
+int apl::detail::getPluginClassCount()
+{
+    return apl::detail::featureManagerInstance.getClassCount();
+}
+const apl::APluginClassInfo* apl::detail::getPluginClassInfo(int i)
+{
+    return apl::detail::featureManagerInstance.getClassInfo(i);
+}
+const apl::APluginClassInfo* const* apl::detail::getPluginClassInfos()
+{
+    return apl::detail::featureManagerInstance.getClassInfos();
+}
+
+
+/**
+ * AFeatureManager implementation
+ */
+apl::detail::AFeatureManager::~AFeatureManager()
 {
     for(APluginFeatureInfo* info : feature_infos) {
         delete info;
@@ -62,7 +107,7 @@ apl::AFeatureManager::~AFeatureManager()
     }
 }
 
-apl::APluginFeatureInfo* apl::AFeatureManager::registerFeature(const char *featureGroup, const char *featureName,
+apl::APluginFeatureInfo* apl::detail::AFeatureManager::registerFeature(const char *featureGroup, const char *featureName,
                                                                const char *returnType, const char *argumentList,
                                                                void *functionPointer)
 {
@@ -72,28 +117,23 @@ apl::APluginFeatureInfo* apl::AFeatureManager::registerFeature(const char *featu
     info->returnType = returnType;
     info->argumentList = argumentList;
     info->functionPointer = functionPointer;
-    feature_infos_mutex.lock();
     featureManagerInstance.feature_infos.push_back(info);
-    feature_infos_mutex.unlock();
     return info;
 }
-int apl::AFeatureManager::getFeatureCount() const
+int apl::detail::AFeatureManager::getFeatureCount() const
 {
-    std::lock_guard<std::mutex> lockGuard(feature_infos_mutex);
     return feature_infos.size();
 }
-const apl::APluginFeatureInfo* apl::AFeatureManager::getFeatureInfo(int i) const
+const apl::APluginFeatureInfo* apl::detail::AFeatureManager::getFeatureInfo(int i) const
 {
-    std::lock_guard<std::mutex> lockGuard(feature_infos_mutex);
     return feature_infos.at(i);
 }
-const apl::APluginFeatureInfo* const* apl::AFeatureManager::getFeatureInfos() const
+const apl::APluginFeatureInfo* const* apl::detail::AFeatureManager::getFeatureInfos() const
 {
-    std::lock_guard<std::mutex> lockGuard(feature_infos_mutex);
     return feature_infos.data();
 }
 
-apl::APluginClassInfo* apl::AFeatureManager::registerClass(const char *interfaceClassName,
+apl::APluginClassInfo* apl::detail::AFeatureManager::registerClass(const char *interfaceClassName,
                                                            const char *featureClassName,
                                                            void* createInstance, void* deleteInstance)
 {
@@ -102,61 +142,21 @@ apl::APluginClassInfo* apl::AFeatureManager::registerClass(const char *interface
     info->className = featureClassName;
     info->createInstance = createInstance;
     info->deleteInstance = deleteInstance;
-    class_infos_mutex.lock();
     featureManagerInstance.class_infos.push_back(info);
-    class_infos_mutex.unlock();
     return info;
 }
-int apl::AFeatureManager::getClassCount() const
+int apl::detail::AFeatureManager::getClassCount() const
 {
-    std::lock_guard<std::mutex> lockGuard(class_infos_mutex);
     return class_infos.size();
 }
-const apl::APluginClassInfo* apl::AFeatureManager::getClassInfo(int i) const
+const apl::APluginClassInfo* apl::detail::AFeatureManager::getClassInfo(int i) const
 {
-    std::lock_guard<std::mutex> lockGuard(class_infos_mutex);
     return class_infos.at(i);
 }
-const apl::APluginClassInfo* const* apl::AFeatureManager::getClassInfos() const
+const apl::APluginClassInfo* const* apl::detail::AFeatureManager::getClassInfos() const
 {
-    std::lock_guard<std::mutex> lockGuard(class_infos_mutex);
     return class_infos.data();
 }
-
-namespace apl
-{
-    extern "C"
-    {
-        A_PLUGIN_API int getPluginFeatureCount();
-        A_PLUGIN_API const APluginFeatureInfo* getPluginFeatureInfo(int i);
-        A_PLUGIN_API const APluginFeatureInfo* const* getPluginFeatureInfos();
-
-        A_PLUGIN_API int getPluginClassCount();
-        A_PLUGIN_API const APluginClassInfo* getPluginClassInfo(int i);
-        A_PLUGIN_API const APluginClassInfo* const* getPluginClassInfos();
-    }
-} // namespace apl
-
-int apl::getPluginFeatureCount() {
-    return apl::featureManagerInstance.getFeatureCount();
-}
-const apl::APluginFeatureInfo* apl::getPluginFeatureInfo(int i) {
-    return apl::featureManagerInstance.getFeatureInfo(i);
-}
-const apl::APluginFeatureInfo * const* apl::getPluginFeatureInfos() {
-    return apl::featureManagerInstance.getFeatureInfos();
-}
-
-int apl::getPluginClassCount() {
-    return apl::featureManagerInstance.getClassCount();
-}
-const apl::APluginClassInfo* apl::getPluginClassInfo(int i) {
-    return apl::featureManagerInstance.getClassInfo(i);
-}
-const apl::APluginClassInfo* const* apl::getPluginClassInfos() {
-    return apl::featureManagerInstance.getClassInfos();
-}
-
 
 
 #define A_PLUGIN_FEATURE_NAMESPACE(featureGroup, featureName) \
@@ -179,7 +179,7 @@ const apl::APluginClassInfo* const* apl::getPluginClassInfos() {
         };                                                                                                             \
                                                                                                                        \
         apl::APluginFeatureInfo* A_PLUGIN_FEATURE_NAME(featureGroup, featureName)::feature_info =                      \
-            apl::AFeatureManager::registerFeature(#featureGroup, #featureName, #returnType, #__VA_ARGS__,              \
+            apl::detail::AFeatureManager::registerFeature(#featureGroup, #featureName, #returnType, #__VA_ARGS__,      \
                 reinterpret_cast<void*>(A_PLUGIN_FEATURE_NAME(featureGroup, featureName)::featureBody));               \
     A_PLUGIN_FEATURE_CLOSE_NAMESPACE                                                                                   \
                                                                                                                        \
@@ -207,7 +207,7 @@ const apl::APluginClassInfo* const* apl::getPluginClassInfos() {
         };                                                                                                             \
                                                                                                                        \
         apl::APluginClassInfo* A_PLUGIN_CLASS_NAME(interfaceName, className)::info =                                   \
-            apl::AFeatureManager::registerClass(#interfaceName, #className,                                            \
+            apl::detail::AFeatureManager::registerClass(#interfaceName, #className,                                    \
                 reinterpret_cast<void*>(A_PLUGIN_CLASS_NAME(interfaceName, className)::createInstance),                \
                 reinterpret_cast<void*>(A_PLUGIN_CLASS_NAME(interfaceName, className)::deleteInstance));               \
                                                                                                                        \
