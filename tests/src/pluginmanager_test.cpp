@@ -309,7 +309,12 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
         ASSERT_STREQ(info->featureName, featureNames[i]);
         ASSERT_STREQ(info->returnType, returnTypes[i]);
         ASSERT_STREQ(info->argumentList, "int x");
-        ASSERT_EQ(reinterpret_cast<int(*)(int)>(info->functionPointer)(5), results[i]);
+        int x;
+        if(std::string(info->returnType) == "int")
+            x = reinterpret_cast<int(*)(int)>(info->functionPointer)(5);
+        else
+            x = static_cast<int>(reinterpret_cast<char(*)(int)>(info->functionPointer)(5));
+        ASSERT_EQ(x, results[i]);
     }
 
     manager.unloadAll();
