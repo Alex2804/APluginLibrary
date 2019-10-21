@@ -4,15 +4,15 @@ project(APluginLibrary VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 set(HEADERS
-        include/APluginLibrary/libraryloader.h include/APluginLibrary/libraryloader.tpp
+        include/APluginLibrary/libraryloader.h
         include/APluginLibrary/pluginapi.h
         include/APluginLibrary/plugininfos.h
         include/APluginLibrary/plugin.h src/private/pluginprivate.h
-    )
+        include/APluginLibrary/pluginmanager.h src/private/pluginmanagerprivate.h)
 set(SOURCES
-        src/libraryloader.cpp
+        src/libraryloader.cpp include/APluginLibrary/libraryloader.tpp
         src/plugin.cpp
-    )
+        src/pluginmanager.cpp include/APluginLibrary/pluginmanager.tpp src/private/pluginmanagerprivate.cpp)
 
 if(WIN32)
     add_subdirectory(libs/dlfcn)

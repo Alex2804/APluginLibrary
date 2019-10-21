@@ -10,7 +10,7 @@ A_PLUGIN_FEATURE_REGISTRATION(int, second_group_math, feature_sub, int x1, int x
 }
 A_PLUGIN_FEATURE_REGISTRATION(int, second_group_math, feature_mul, int x1, int x2)
 {
-    return x1 * x2;
+return x1 * x2;
 }
 A_PLUGIN_FEATURE_REGISTRATION(int, second_group_math, feature_div, int x1, int x2)
 {

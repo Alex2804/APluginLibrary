@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "plugininfos.h"
+#include "APluginLibrary/plugininfos.h"
 
 namespace apl {
     namespace detail

@@ -1,7 +1,7 @@
-#include "plugin.h"
+#include "APluginLibrary/plugin.h"
 #include "private/pluginprivate.h"
 
-#include <libraryloader.h>
+#include <APluginLibrary/libraryloader.h>
 
 #include <utility>
 

@@ -73,8 +73,8 @@ GTEST_TEST(Plugin_Test, feature_loading_multiple)
     int results[] = {12, 6, 27, 3, 49, 343};
     for(size_t i = 0; i < 6; i++) {
         info = plugin->getFeatureInfo(i);
+        ASSERT_NE(info, nullptr);
         ASSERT_EQ(infos[i], info);
-        ASSERT_TRUE(info);
         ASSERT_STREQ(info->returnType, "int");
         ASSERT_STREQ(info->featureGroup, i >= 4 ? "second_group_pow" : "second_group_math");
         ASSERT_STREQ(info->featureName, featureNames[i]);
