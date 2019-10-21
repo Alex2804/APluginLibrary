@@ -4,7 +4,7 @@
 namespace apl
 {
     template<typename T>
-    inline T ALibraryLoader::getSymbol(void* handle, const std::string &name)
+    inline T LibraryLoader::getSymbol(void* handle, const std::string &name)
     {
         return reinterpret_cast<T>(getSymbol(handle, name));
     }

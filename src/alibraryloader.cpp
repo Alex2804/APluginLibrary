@@ -12,7 +12,7 @@
 namespace apl
 {
 
-    void *ALibraryLoader::load(std::string path)
+    void *LibraryLoader::load(std::string path)
     {
 #ifdef __linux__
         return load(std::move(path), ".so");
@@ -24,7 +24,7 @@ namespace apl
 # error "Unsupported platform for library opening!"
 #endif
     }
-    void *ALibraryLoader::load(std::string path, const std::string &suffix)
+    void *LibraryLoader::load(std::string path, const std::string &suffix)
     {
         void* handle = dlopen((path += suffix).c_str(), RTLD_LAZY);
         if (!handle) {
@@ -35,7 +35,7 @@ namespace apl
         return handle;
     }
 
-    void *ALibraryLoader::getSymbol(void *handle, const std::string &name)
+    void *LibraryLoader::getSymbol(void *handle, const std::string &name)
     {
         if(!handle)
             return nullptr;
@@ -48,7 +48,7 @@ namespace apl
         return function;
     }
 
-    bool ALibraryLoader::unload(void *handle)
+    bool LibraryLoader::unload(void *handle)
     {
         if(!handle)
             return true;

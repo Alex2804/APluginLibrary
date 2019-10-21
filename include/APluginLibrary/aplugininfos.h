@@ -3,7 +3,7 @@
 
 namespace apl {
     extern "C" {
-        struct APluginFeatureInfo
+        struct PluginFeatureInfo
         {
             const char *featureGroup;
             const char *featureName;
@@ -12,7 +12,7 @@ namespace apl {
             void *functionPointer;
         };
 
-        struct APluginClassInfo
+        struct PluginClassInfo
         {
             const char *interfaceClassName;
             const char *className;

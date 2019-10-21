@@ -12,15 +12,15 @@ typedef void(*releaseFunc)(void*);
 
 GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_single)
 {
-	void* handle = apl::ALibraryLoader::load("libraries/first/first_lib");
+	void* handle = apl::LibraryLoader::load("libraries/first/first_lib");
 	ASSERT_NE(handle, nullptr);
 
-	addFunc add = reinterpret_cast<addFunc>(apl::ALibraryLoader::getSymbol(handle, "add"));
-	subFunc sub = reinterpret_cast<subFunc>(apl::ALibraryLoader::getSymbol(handle, "sub"));
-	auto setToChar = apl::ALibraryLoader::getSymbol<setToCharFunc>(handle, "setToChar");
-	addFunc addImg = reinterpret_cast<addFunc>(apl::ALibraryLoader::getSymbol(handle, "addImg"));
-	subFunc subImg = reinterpret_cast<subFunc>(apl::ALibraryLoader::getSymbol(handle, "subImg"));
-	auto setToCharImg = apl::ALibraryLoader::getSymbol<setToCharFunc>(handle, "setToCharImg");
+	addFunc add = reinterpret_cast<addFunc>(apl::LibraryLoader::getSymbol(handle, "add"));
+	subFunc sub = reinterpret_cast<subFunc>(apl::LibraryLoader::getSymbol(handle, "sub"));
+	auto setToChar = apl::LibraryLoader::getSymbol<setToCharFunc>(handle, "setToChar");
+	addFunc addImg = reinterpret_cast<addFunc>(apl::LibraryLoader::getSymbol(handle, "addImg"));
+	subFunc subImg = reinterpret_cast<subFunc>(apl::LibraryLoader::getSymbol(handle, "subImg"));
+	auto setToCharImg = apl::LibraryLoader::getSymbol<setToCharFunc>(handle, "setToCharImg");
 
 	ASSERT_NE(add, nullptr);
 	ASSERT_NE(sub, nullptr);
@@ -36,27 +36,27 @@ GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_single)
 	ASSERT_EQ(std::string(setToChar(c, '6', 3)), std::string("666x"));
 	std::free(c);
 
-	ASSERT_TRUE(apl::ALibraryLoader::unload(handle));
+	ASSERT_TRUE(apl::LibraryLoader::unload(handle));
 }
 
 GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_mutiple)
 {
-    void* imaginary1 = apl::ALibraryLoader::load("libraries/invalid/imaginary1/imaginary1_lib");
-    void* first = apl::ALibraryLoader::load("libraries/first/first_lib");
-    void* imaginary2 = apl::ALibraryLoader::load("libraries/invalid/imaginary2/imaginary2_lib");
-    void* second = apl::ALibraryLoader::load("libraries/second/second_lib");
+    void* imaginary1 = apl::LibraryLoader::load("libraries/invalid/imaginary1/imaginary1_lib");
+    void* first = apl::LibraryLoader::load("libraries/first/first_lib");
+    void* imaginary2 = apl::LibraryLoader::load("libraries/invalid/imaginary2/imaginary2_lib");
+    void* second = apl::LibraryLoader::load("libraries/second/second_lib");
 
     ASSERT_EQ(imaginary1, nullptr);
     ASSERT_NE(first, nullptr);
     ASSERT_EQ(imaginary2, nullptr);
     ASSERT_NE(second, nullptr);
 
-    addFunc add = reinterpret_cast<addFunc>(apl::ALibraryLoader::getSymbol(first, "add"));
-    subFunc sub = reinterpret_cast<subFunc>(apl::ALibraryLoader::getSymbol(first, "sub"));
-    auto setToChar = apl::ALibraryLoader::getSymbol<setToCharFunc>(first, "setToChar");
-    addFunc addImg = reinterpret_cast<addFunc>(apl::ALibraryLoader::getSymbol(first, "addImg"));
-    subFunc subImg = reinterpret_cast<subFunc>(apl::ALibraryLoader::getSymbol(first, "subImg"));
-    auto setToCharImg = apl::ALibraryLoader::getSymbol<setToCharFunc>(first, "setToCharImg");
+    addFunc add = reinterpret_cast<addFunc>(apl::LibraryLoader::getSymbol(first, "add"));
+    subFunc sub = reinterpret_cast<subFunc>(apl::LibraryLoader::getSymbol(first, "sub"));
+    auto setToChar = apl::LibraryLoader::getSymbol<setToCharFunc>(first, "setToChar");
+    addFunc addImg = reinterpret_cast<addFunc>(apl::LibraryLoader::getSymbol(first, "addImg"));
+    subFunc subImg = reinterpret_cast<subFunc>(apl::LibraryLoader::getSymbol(first, "subImg"));
+    auto setToCharImg = apl::LibraryLoader::getSymbol<setToCharFunc>(first, "setToCharImg");
 
     ASSERT_NE(add, nullptr);
     ASSERT_NE(sub, nullptr);
@@ -72,10 +72,10 @@ GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_mutiple)
     ASSERT_EQ(std::string(setToChar(c, '6', 3)), std::string("666x"));
     std::free(c);
 
-    allocateFunc allocate = reinterpret_cast<allocateFunc>(apl::ALibraryLoader::getSymbol(second, "allocate"));
-    auto release = apl::ALibraryLoader::getSymbol<releaseFunc>(second, "release");
-    allocateFunc allocateImg = reinterpret_cast<allocateFunc>(apl::ALibraryLoader::getSymbol(second, "allocateImg"));
-    auto releaseImg = apl::ALibraryLoader::getSymbol<releaseFunc>(second, "releaseImg");
+    allocateFunc allocate = reinterpret_cast<allocateFunc>(apl::LibraryLoader::getSymbol(second, "allocate"));
+    auto release = apl::LibraryLoader::getSymbol<releaseFunc>(second, "release");
+    allocateFunc allocateImg = reinterpret_cast<allocateFunc>(apl::LibraryLoader::getSymbol(second, "allocateImg"));
+    auto releaseImg = apl::LibraryLoader::getSymbol<releaseFunc>(second, "releaseImg");
 
     ASSERT_NE(allocate, nullptr);
     ASSERT_NE(release, nullptr);
@@ -86,18 +86,18 @@ GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_mutiple)
     ASSERT_NE(ptr, nullptr);
     release(ptr);
 
-    void* img1 = apl::ALibraryLoader::getSymbol(imaginary1, "add");
-    void* img2 = apl::ALibraryLoader::getSymbol(imaginary1, "sub");
-    void* img3 = apl::ALibraryLoader::getSymbol(imaginary2, "allocate");
-    void* img4 = apl::ALibraryLoader::getSymbol(imaginary2, "release");
+    void* img1 = apl::LibraryLoader::getSymbol(imaginary1, "add");
+    void* img2 = apl::LibraryLoader::getSymbol(imaginary1, "sub");
+    void* img3 = apl::LibraryLoader::getSymbol(imaginary2, "allocate");
+    void* img4 = apl::LibraryLoader::getSymbol(imaginary2, "release");
 
     ASSERT_EQ(img1, nullptr);
     ASSERT_EQ(img2, nullptr);
     ASSERT_EQ(img3, nullptr);
     ASSERT_EQ(img4, nullptr);
 
-    ASSERT_TRUE(apl::ALibraryLoader::unload(imaginary1));
-    ASSERT_TRUE(apl::ALibraryLoader::unload(first));
-    ASSERT_TRUE(apl::ALibraryLoader::unload(imaginary2));
-    ASSERT_TRUE(apl::ALibraryLoader::unload(second));
+    ASSERT_TRUE(apl::LibraryLoader::unload(imaginary1));
+    ASSERT_TRUE(apl::LibraryLoader::unload(first));
+    ASSERT_TRUE(apl::LibraryLoader::unload(imaginary2));
+    ASSERT_TRUE(apl::LibraryLoader::unload(second));
 }

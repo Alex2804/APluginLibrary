@@ -5,7 +5,7 @@
 
 namespace apl
 {
-    class ALibraryLoader
+    class LibraryLoader
     {
     public:
         static void* load(std::string path);

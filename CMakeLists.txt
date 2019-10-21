@@ -6,10 +6,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(HEADERS
         include/APluginLibrary/alibraryloader.h include/APluginLibrary/alibraryloader.tpp
         include/APluginLibrary/apluginapi.h
-        )
+        include/APluginLibrary/aplugininfos.h
+    )
 set(SOURCES
         src/alibraryloader.cpp
-        include/APluginLibrary/aplugininfos.h)
+    )
 
 if(WIN32)
     add_subdirectory(libs/dlfcn)
