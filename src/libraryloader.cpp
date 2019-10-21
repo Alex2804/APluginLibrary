@@ -2,9 +2,9 @@
 
 #include <utility>
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 # include <dlfcn.h>
-#elif _WIN32
+#elif defined(_WIN32)
 # include "dlfcn-win32/dlfcn.h"
 #endif
 
