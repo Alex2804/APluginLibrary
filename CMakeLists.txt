@@ -4,12 +4,14 @@ project(APluginLibrary VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 set(HEADERS
-        include/APluginLibrary/alibraryloader.h include/APluginLibrary/alibraryloader.tpp
-        include/APluginLibrary/apluginapi.h
-        include/APluginLibrary/aplugininfos.h
+        include/APluginLibrary/libraryloader.h include/APluginLibrary/libraryloader.tpp
+        include/APluginLibrary/pluginapi.h
+        include/APluginLibrary/plugininfos.h
+        include/APluginLibrary/plugin.h src/private/pluginprivate.h
     )
 set(SOURCES
-        src/alibraryloader.cpp
+        src/libraryloader.cpp
+        src/plugin.cpp
     )
 
 if(WIN32)

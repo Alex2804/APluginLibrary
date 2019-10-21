@@ -1,11 +1,11 @@
-#ifndef APLUGINLIBRARY_APLUGINAPI_H
-#define APLUGINLIBRARY_APLUGINAPI_H
+#ifndef APLUGINLIBRARY_PLUGINAPI_H
+#define APLUGINLIBRARY_PLUGINAPI_H
 
 #include <vector>
 #include <mutex>
 #include <iostream>
 
-#include "aplugininfos.h"
+#include "plugininfos.h"
 
 #ifdef _WIN32
 # define A_PLUGIN_API  __declspec( dllexport )
@@ -21,12 +21,12 @@ namespace apl {
          */
         extern "C" // C linkage because the functions get loaded dynamically from a shared library
         {
-            A_PLUGIN_API int getPluginFeatureCount();
-            A_PLUGIN_API const apl::PluginFeatureInfo* getPluginFeatureInfo(int i);
+            A_PLUGIN_API size_t getPluginFeatureCount();
+            A_PLUGIN_API const apl::PluginFeatureInfo* getPluginFeatureInfo(size_t i);
             A_PLUGIN_API const apl::PluginFeatureInfo * const* getPluginFeatureInfos();
     
-            A_PLUGIN_API int getPluginClassCount();
-            A_PLUGIN_API const apl::PluginClassInfo* getPluginClassInfo(int i);
+            A_PLUGIN_API size_t getPluginClassCount();
+            A_PLUGIN_API const apl::PluginClassInfo* getPluginClassInfo(size_t i);
             A_PLUGIN_API const apl::PluginClassInfo* const* getPluginClassInfos();
         }
         
@@ -44,14 +44,14 @@ namespace apl {
             static PluginFeatureInfo *registerFeature(const char *featureGroup, const char *featureName,
                                                       const char *returnType, const char *argumentList,
                                                       void *functionPointer);
-            int getFeatureCount() const;
-            const PluginFeatureInfo *getFeatureInfo(int i) const;
+            size_t getFeatureCount() const;
+            const PluginFeatureInfo *getFeatureInfo(size_t i) const;
             const PluginFeatureInfo *const *getFeatureInfos() const;
 
             static PluginClassInfo *registerClass(const char *interfaceClassName, const char *featureClassName,
                                                   void *createInstance, void *deleteInstance);
-            int getClassCount() const;
-            const PluginClassInfo *getClassInfo(int i) const;
+            size_t getClassCount() const;
+            const PluginClassInfo *getClassInfo(size_t i) const;
             const PluginClassInfo *const *getClassInfos() const;
 
         private:
@@ -67,11 +67,11 @@ namespace apl {
 /**
  * Interface implementation
  */
-int apl::detail::getPluginFeatureCount()
+size_t apl::detail::getPluginFeatureCount()
 {
     return apl::detail::featureManagerInstance.getFeatureCount();
 }
-const apl::PluginFeatureInfo* apl::detail::getPluginFeatureInfo(int i)
+const apl::PluginFeatureInfo* apl::detail::getPluginFeatureInfo(size_t i)
 {
     return apl::detail::featureManagerInstance.getFeatureInfo(i);
 }
@@ -80,11 +80,11 @@ const apl::PluginFeatureInfo * const* apl::detail::getPluginFeatureInfos()
     return apl::detail::featureManagerInstance.getFeatureInfos();
 }
 
-int apl::detail::getPluginClassCount()
+size_t apl::detail::getPluginClassCount()
 {
     return apl::detail::featureManagerInstance.getClassCount();
 }
-const apl::PluginClassInfo* apl::detail::getPluginClassInfo(int i)
+const apl::PluginClassInfo* apl::detail::getPluginClassInfo(size_t i)
 {
     return apl::detail::featureManagerInstance.getClassInfo(i);
 }
@@ -120,11 +120,11 @@ apl::PluginFeatureInfo* apl::detail::FeatureManager::registerFeature(const char 
     featureManagerInstance.feature_infos.push_back(info);
     return info;
 }
-int apl::detail::FeatureManager::getFeatureCount() const
+size_t apl::detail::FeatureManager::getFeatureCount() const
 {
     return feature_infos.size();
 }
-const apl::PluginFeatureInfo* apl::detail::FeatureManager::getFeatureInfo(int i) const
+const apl::PluginFeatureInfo* apl::detail::FeatureManager::getFeatureInfo(size_t i) const
 {
     return feature_infos.at(i);
 }
@@ -145,11 +145,11 @@ apl::PluginClassInfo* apl::detail::FeatureManager::registerClass(const char *int
     featureManagerInstance.class_infos.push_back(info);
     return info;
 }
-int apl::detail::FeatureManager::getClassCount() const
+size_t apl::detail::FeatureManager::getClassCount() const
 {
     return class_infos.size();
 }
-const apl::PluginClassInfo* apl::detail::FeatureManager::getClassInfo(int i) const
+const apl::PluginClassInfo* apl::detail::FeatureManager::getClassInfo(size_t i) const
 {
     return class_infos.at(i);
 }
@@ -221,4 +221,4 @@ const apl::PluginClassInfo* const* apl::detail::FeatureManager::getClassInfos() 
         }                                                                                                              \
     A_PLUGIN_CLASS_CLOSE_NAMESPACE
 
-#endif //APLUGINLIBRARY_APLUGINAPI_H
+#endif //APLUGINLIBRARY_PLUGINAPI_H

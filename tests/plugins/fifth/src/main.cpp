@@ -1,4 +1,4 @@
-#include "../../../../include/APluginLibrary/apluginapi.h"
+#include "../../../../include/APluginLibrary/pluginapi.h"
 #include "../../interfaces.h"
 
 A_PLUGIN_FEATURE_REGISTRATION(int, fifth_group1, feature1, int x1, int x2)

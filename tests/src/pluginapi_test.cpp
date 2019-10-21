@@ -1,18 +1,18 @@
 #include "gtest/gtest.h"
 
-#include "APluginLibrary/alibraryloader.h"
-#include "APluginLibrary/aplugininfos.h"
+#include "APluginLibrary/libraryloader.h"
+#include "APluginLibrary/plugininfos.h"
 
 #include "../plugins/interfaces.h"
 
-GTEST_TEST(APluginAPI_Test, feature_loading_single)
+GTEST_TEST(PluginAPI_Test, feature_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
     ASSERT_NE(handle, nullptr);
 
-    auto getFeatureCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginFeatureCount");
+    auto getFeatureCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginFeatureCount");
     ASSERT_NE(getFeatureCount, nullptr);
-    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(int)>(handle, "getPluginFeatureInfo");
+    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(size_t)>(handle, "getPluginFeatureInfo");
     ASSERT_NE(getFeatureInfo, nullptr);
     auto getFeatureInfos = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*const*(*)()>(handle, "getPluginFeatureInfos");
     ASSERT_NE(getFeatureInfos, nullptr);
@@ -34,14 +34,14 @@ GTEST_TEST(APluginAPI_Test, feature_loading_single)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(APluginAPI_Test, feature_loading_multiple)
+GTEST_TEST(PluginAPI_Test, feature_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/second/second_plugin");
     ASSERT_NE(handle, nullptr);
 
-    auto getFeatureCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginFeatureCount");
+    auto getFeatureCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginFeatureCount");
     ASSERT_NE(getFeatureCount, nullptr);
-    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(int)>(handle, "getPluginFeatureInfo");
+    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(size_t)>(handle, "getPluginFeatureInfo");
     ASSERT_NE(getFeatureInfo, nullptr);
     auto getFeatureInfos = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*const*(*)()>(handle, "getPluginFeatureInfos");
     ASSERT_NE(getFeatureInfos, nullptr);
@@ -74,14 +74,14 @@ GTEST_TEST(APluginAPI_Test, feature_loading_multiple)
 
 
 
-GTEST_TEST(APluginAPI_Test, class_loading_single)
+GTEST_TEST(PluginAPI_Test, class_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/third/third_plugin");
     ASSERT_NE(handle, nullptr);
 
-    auto getClassCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginClassCount");
+    auto getClassCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginClassCount");
     ASSERT_NE(getClassCount, nullptr);
-    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(int)>(handle, "getPluginClassInfo");
+    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(size_t)>(handle, "getPluginClassInfo");
     ASSERT_NE(getClassInfo, nullptr);
     auto getClassInfos= apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*const*(*)()>(handle, "getPluginClassInfos");
     ASSERT_NE(getClassInfos, nullptr);
@@ -115,14 +115,14 @@ GTEST_TEST(APluginAPI_Test, class_loading_single)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(APluginAPI_Test, class_loading_multiple)
+GTEST_TEST(PluginAPI_Test, class_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/fourth/fourth_plugin");
     ASSERT_NE(handle, nullptr);
 
-    auto getClassCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginClassCount");
+    auto getClassCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginClassCount");
     ASSERT_NE(getClassCount, nullptr);
-    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(int)>(handle, "getPluginClassInfo");
+    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(size_t)>(handle, "getPluginClassInfo");
     ASSERT_NE(getClassInfo, nullptr);
     auto getClassInfos= apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*const*(*)()>(handle, "getPluginClassInfos");
     ASSERT_NE(getClassInfos, nullptr);
@@ -136,7 +136,7 @@ GTEST_TEST(APluginAPI_Test, class_loading_multiple)
     Interface* interface;
     int result1[] = {35, 12, -2};
     int result2[] = {25, 125, 625};
-    for(int i = 0; i < getClassCount(); i++) {
+    for(size_t i = 0; i < 3; i++) {
         info = getClassInfo(i);
         ASSERT_NE(info, nullptr);
         ASSERT_EQ(infos[i], info);
@@ -164,23 +164,23 @@ GTEST_TEST(APluginAPI_Test, class_loading_multiple)
 
 
 
-GTEST_TEST(APluginAPI_Test, feature_and_class_loading_single)
+GTEST_TEST(PluginAPI_Test, feature_and_class_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/fifth/fifth_plugin");
     ASSERT_NE(handle, nullptr);
 
     // load feature methods
-    auto getFeatureCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginFeatureCount");
+    auto getFeatureCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginFeatureCount");
     ASSERT_NE(getFeatureCount, nullptr);
-    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(int)>(handle, "getPluginFeatureInfo");
+    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(size_t)>(handle, "getPluginFeatureInfo");
     ASSERT_NE(getFeatureInfo, nullptr);
     auto getFeatureInfos = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*const*(*)()>(handle, "getPluginFeatureInfos");
     ASSERT_NE(getFeatureInfos, nullptr);
 
     // load class methods
-    auto getClassCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginClassCount");
+    auto getClassCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginClassCount");
     ASSERT_NE(getClassCount, nullptr);
-    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(int)>(handle, "getPluginClassInfo");
+    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(size_t)>(handle, "getPluginClassInfo");
     ASSERT_NE(getClassInfo, nullptr);
     auto getClassInfos= apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*const*(*)()>(handle, "getPluginClassInfos");
     ASSERT_NE(getClassInfos, nullptr);
@@ -229,23 +229,23 @@ GTEST_TEST(APluginAPI_Test, feature_and_class_loading_single)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(APluginAPI_Test, feature_and_class_loading_multiple)
+GTEST_TEST(PluginAPI_Test, feature_and_class_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/sixth/sixth_plugin");
     ASSERT_NE(handle, nullptr);
 
     // load feature methods
-    auto getFeatureCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginFeatureCount");
+    auto getFeatureCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginFeatureCount");
     ASSERT_NE(getFeatureCount, nullptr);
-    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(int)>(handle, "getPluginFeatureInfo");
+    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(size_t)>(handle, "getPluginFeatureInfo");
     ASSERT_NE(getFeatureInfo, nullptr);
     auto getFeatureInfos = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*const*(*)()>(handle, "getPluginFeatureInfos");
     ASSERT_NE(getFeatureInfos, nullptr);
 
     // load class methods
-    auto getClassCount = apl::LibraryLoader::getSymbol<int(*)()>(handle, "getPluginClassCount");
+    auto getClassCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginClassCount");
     ASSERT_NE(getClassCount, nullptr);
-    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(int)>(handle, "getPluginClassInfo");
+    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(size_t)>(handle, "getPluginClassInfo");
     ASSERT_NE(getClassInfo, nullptr);
     auto getClassInfos= apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*const*(*)()>(handle, "getPluginClassInfos");
     ASSERT_NE(getClassInfos, nullptr);
@@ -283,7 +283,7 @@ GTEST_TEST(APluginAPI_Test, feature_and_class_loading_multiple)
     Interface* interface;
     int result1[] = {35, 12, -2};
     int result2[] = {25, 125, 625};
-    for(int i = 0; i < getClassCount(); i++) {
+    for(size_t i = 0; i < 3; i++) {
         classInfo = getClassInfo(i);
         ASSERT_NE(classInfo, nullptr);
         ASSERT_EQ(classInfos[i], classInfo);

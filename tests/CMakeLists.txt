@@ -35,7 +35,7 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-add_executable("${PROJECT_NAME}Test" src/alibraryloader_test.cpp src/apluginapi_test.cpp)
+add_executable("${PROJECT_NAME}Test" src/libraryloader_test.cpp src/pluginapi_test.cpp src/plugin_test.cpp)
 target_link_libraries("${PROJECT_NAME}Test" "${PROJECT_NAME}" gtest_main)
 add_test(NAME "${PROJECT_NAME}Test" COMMAND "${PROJECT_NAME}Test")
 

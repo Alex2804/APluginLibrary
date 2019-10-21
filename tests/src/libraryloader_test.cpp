@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "APluginLibrary/alibraryloader.h"
+#include "APluginLibrary/libraryloader.h"
 
 typedef double(*addFunc)(double,double);
 typedef double(*subFunc)(double,double);
@@ -10,7 +10,7 @@ typedef char*(*setToCharFunc)(char*,char,int);
 typedef void*(*allocateFunc)(size_t);
 typedef void(*releaseFunc)(void*);
 
-GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_single)
+GTEST_TEST(LibraryLoader_Test, load_getSymbol_unload_single)
 {
 	void* handle = apl::LibraryLoader::load("libraries/first/first_lib");
 	ASSERT_NE(handle, nullptr);
@@ -39,7 +39,7 @@ GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_single)
 	ASSERT_TRUE(apl::LibraryLoader::unload(handle));
 }
 
-GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_mutiple)
+GTEST_TEST(LibraryLoader_Test, load_getSymbol_unload_mutiple)
 {
     void* imaginary1 = apl::LibraryLoader::load("libraries/invalid/imaginary1/imaginary1_lib");
     void* first = apl::LibraryLoader::load("libraries/first/first_lib");
@@ -100,4 +100,24 @@ GTEST_TEST(ALibraryLoader_Test, load_getSymbol_unload_mutiple)
     ASSERT_TRUE(apl::LibraryLoader::unload(first));
     ASSERT_TRUE(apl::LibraryLoader::unload(imaginary2));
     ASSERT_TRUE(apl::LibraryLoader::unload(second));
+}
+
+GTEST_TEST(LibraryLoader_Test, error_handling)
+{
+    apl::LibraryLoader::clearError();
+    ASSERT_EQ(apl::LibraryLoader::getError(), nullptr);
+    apl::LibraryLoader::load("libraries/invalid/imaginary1/imaginary1_lib");
+    ASSERT_NE(apl::LibraryLoader::getError(), nullptr);
+    apl::LibraryLoader::clearError();
+    ASSERT_EQ(apl::LibraryLoader::getError(), nullptr);
+    void* first = apl::LibraryLoader::load("libraries/first/first_lib");
+    ASSERT_EQ(apl::LibraryLoader::getError(), nullptr);
+
+    apl::LibraryLoader::getSymbol<setToCharFunc>(first, "setToChar");
+    ASSERT_EQ(apl::LibraryLoader::getError(), nullptr);
+    apl::LibraryLoader::getSymbol<setToCharFunc>(first, "setToCharImg");
+    ASSERT_NE(apl::LibraryLoader::getError(), nullptr);
+    apl::LibraryLoader::clearError();
+    ASSERT_EQ(apl::LibraryLoader::getError(), nullptr);
+
 }

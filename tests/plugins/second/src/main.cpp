@@ -1,4 +1,4 @@
-#include "../../../../include/APluginLibrary/apluginapi.h"
+#include "../../../../include/APluginLibrary/pluginapi.h"
 
 A_PLUGIN_FEATURE_REGISTRATION(int, second_group_math, feature_add, int x1, int x2)
 {

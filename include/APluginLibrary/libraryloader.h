@@ -1,5 +1,5 @@
-#ifndef APLUGINLIBRARY_ALIBRARYLOADER_H
-#define APLUGINLIBRARY_ALIBRARYLOADER_H
+#ifndef APLUGINLIBRARY_LIBRARYLOADER_H
+#define APLUGINLIBRARY_LIBRARYLOADER_H
 
 #include <string>
 
@@ -16,10 +16,14 @@ namespace apl
         template<typename T>
         static inline T getSymbol(void* handle, const std::string& name);
 
+        static const char* getError();
+        static void clearError();
 
+    private:
+        static std::string errorString;
     };
 }
 
-#include "alibraryloader.tpp"
+#include "libraryloader.tpp"
 
-#endif //APLUGINLIBRARY_ALIBRARYLOADER_H
+#endif //APLUGINLIBRARY_LIBRARYLOADER_H
