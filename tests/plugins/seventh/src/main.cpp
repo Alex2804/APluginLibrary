@@ -3,7 +3,7 @@
 
 A_PLUGIN_FEATURE_REGISTRATION(char, seventh_group1, convert_to_char, int x)
 {
-    return (char)x;
+    return static_cast<char>(x);
 }
 
 
