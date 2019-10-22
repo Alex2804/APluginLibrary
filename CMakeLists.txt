@@ -19,8 +19,7 @@ if(WIN32)
     list(APPEND CMAKE_DL_LIBS dlfcn-win32)
 endif()
 
-add_library(APluginLibrary STATIC "${SOURCES}" "${HEADERS}")
-target_include_directories(APluginLibrary PRIVATE include/APluginLibrary)
+add_library(APluginLibrary STATIC ${HEADERS} ${SOURCES})
 target_include_directories(APluginLibrary PUBLIC include)
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
