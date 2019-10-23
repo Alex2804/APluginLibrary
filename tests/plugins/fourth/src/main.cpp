@@ -1,5 +1,5 @@
 #include "../../../../include/APluginLibrary/pluginapi.h"
-#include "../../interfaces.h"
+#include "../../interface.h"
 
 class Implementation0 : public Interface
 {
@@ -8,7 +8,7 @@ public:
     int function2(int x) override;
 };
 
-A_PLUGIN_CLASS_REGISTRATION(Interface, Implementation0);
+A_PLUGIN_REGISTER_CLASS(Interface, Implementation0);
 
 int Implementation0::function1(int x1, int x2) {
     return x1 * x2;
@@ -25,7 +25,7 @@ public:
     int function2(int x) override;
 };
 
-A_PLUGIN_CLASS_REGISTRATION(Interface, Implementation1);
+A_PLUGIN_REGISTER_CLASS(Interface, Implementation1);
 
 int Implementation1::function1(int x1, int x2) {
     return x1 + x2;
@@ -42,7 +42,7 @@ public:
     int function2(int x) override;
 };
 
-A_PLUGIN_CLASS_REGISTRATION(Interface, Implementation2);
+A_PLUGIN_REGISTER_CLASS(Interface, Implementation2);
 
 int Implementation2::function1(int x1, int x2) {
     return x1 - x2;

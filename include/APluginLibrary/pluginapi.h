@@ -169,7 +169,7 @@ const apl::PluginClassInfo* const* apl::detail::FeatureManager::getClassInfos() 
 #define A_PLUGIN_FEATURE_NAME(featureGroup, featureName) \
     APluginFeature_##featureGroup##_##featureName
 
-#define A_PLUGIN_FEATURE_REGISTRATION(returnType, featureGroup, featureName, ...)                                      \
+#define A_PLUGIN_REGISTER_FEATURE(returnType, featureGroup, featureName, ...)                                          \
     A_PLUGIN_FEATURE_OPEN_NAMESPACE(featureGroup, featureName)                                                         \
         class A_PLUGIN_FEATURE_NAME(featureGroup, featureName)                                                         \
         {                                                                                                              \
@@ -196,7 +196,7 @@ const apl::PluginClassInfo* const* apl::detail::FeatureManager::getClassInfos() 
 #define A_PLUGIN_CLASS_NAME(interfaceName, className) \
     APluginClass_##interfaceName##_##className
 
-#define A_PLUGIN_CLASS_REGISTRATION(interfaceName, className)                                                          \
+#define A_PLUGIN_REGISTER_CLASS(interfaceName, className)                                                              \
     A_PLUGIN_CLASS_OPEN_NAMESPACE(interfaceName, className)                                                            \
         class A_PLUGIN_CLASS_NAME(interfaceName, className)                                                            \
         {                                                                                                              \

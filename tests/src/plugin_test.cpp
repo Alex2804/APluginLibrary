@@ -3,7 +3,7 @@
 #include "APluginLibrary/plugin.h"
 #include "APluginLibrary/plugininfos.h"
 
-#include "../plugins/interfaces.h"
+#include "../plugins/interface.h"
 
 GTEST_TEST(Plugin_Test, load_unload)
 {

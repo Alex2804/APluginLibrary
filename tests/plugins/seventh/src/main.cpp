@@ -1,7 +1,7 @@
 #include "../../../../include/APluginLibrary/pluginapi.h"
-#include "../../interfaces.h"
+#include "../../otherinterface.h"
 
-A_PLUGIN_FEATURE_REGISTRATION(char, seventh_group1, convert_to_char, int x)
+A_PLUGIN_REGISTER_FEATURE(char, seventh_group1, convert_to_char, int x)
 {
     return static_cast<char>(x);
 }
@@ -12,9 +12,10 @@ class Implementation1 : public OtherInterface
 public:
     int otherFunction1(int x1, int x2, int x3) override;
     const char* otherFunction2() override;
+    int otherFunction3(double x) override;
 };
 
-A_PLUGIN_CLASS_REGISTRATION(OtherInterface, Implementation1);
+A_PLUGIN_REGISTER_CLASS(OtherInterface, Implementation1);
 
 int Implementation1::otherFunction1(int x1, int x2, int x3)
 {
@@ -23,4 +24,8 @@ int Implementation1::otherFunction1(int x1, int x2, int x3)
 const char *Implementation1::otherFunction2()
 {
     return "This is for testing!";
+}
+
+int Implementation1::otherFunction3(double x) {
+    return static_cast<int>(x);
 }

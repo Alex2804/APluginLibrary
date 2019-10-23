@@ -3,7 +3,7 @@
 #include "APluginLibrary/libraryloader.h"
 #include "APluginLibrary/plugininfos.h"
 
-#include "../plugins/interfaces.h"
+#include "../plugins/interface.h"
 
 GTEST_TEST(PluginAPI_Test, feature_loading_single)
 {

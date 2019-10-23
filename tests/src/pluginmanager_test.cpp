@@ -7,7 +7,8 @@
 
 #include "../../src/private/pluginmanagerprivate.h"
 
-#include "../plugins/interfaces.h"
+#include "../plugins/interface.h"
+#include "../plugins/otherinterface.h"
 
 GTEST_TEST(PluginManager_Test, load_unload_single)
 {
@@ -360,6 +361,8 @@ GTEST_TEST(PluginManager_Test, getClasses_unfiltered)
 
         ASSERT_EQ(interface->function1(5, 7), result1[i]);
         ASSERT_EQ(interface->function2(5), result2[i]);
+
+        deleteInstance(interface);
     }
 
     manager.unloadAll();
@@ -403,6 +406,8 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
 
         ASSERT_EQ(interface->function1(3, 12), result1[i]);
         ASSERT_EQ(interface->function2(3), result2[i]);
+
+        deleteInstance(interface);
     }
 
     // filter class names
@@ -426,7 +431,9 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
 
             ASSERT_EQ(interface->function1(3, 12), 15);
             ASSERT_EQ(interface->function2(3), 27);
-        } else {
+
+            deleteInstance(interface);
+        } else if(std::string(info->interfaceClassName) == "OtherInterface") {
             auto createInstance = reinterpret_cast<OtherInterface *(*)()>(info->createInstance);
             auto deleteInstance = reinterpret_cast<void (*)(OtherInterface *)>(info->deleteInstance);
             ASSERT_NE(createInstance, nullptr);
@@ -437,6 +444,11 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
 
             ASSERT_EQ(otherInterface->otherFunction1(3, 12, 7), 8);
             ASSERT_STREQ(otherInterface->otherFunction2(), "This is for testing!");
+            ASSERT_EQ(otherInterface->otherFunction3(4.2), 4);
+
+            deleteInstance(otherInterface);
+        } else {
+            ASSERT_TRUE(false) << R"(Interface must be from type "Interface" or "OtherInterface" but has type )" << info->interfaceClassName;
         }
     }
 
