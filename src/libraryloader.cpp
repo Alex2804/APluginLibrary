@@ -12,7 +12,7 @@ std::string apl::LibraryLoader::errorString = std::string();
 
 void* apl::LibraryLoader::load(std::string path)
 {
-#ifdef __linux__
+#ifdef __unix__
     return load(std::move(path), ".so");
 #elif __APPLE__
     return load(std::move(path), ".dylib");
@@ -24,6 +24,10 @@ void* apl::LibraryLoader::load(std::string path)
 }
 void* apl::LibraryLoader::load(std::string path, const std::string &suffix)
 {
+#if defined(__unix__) || defined(__APPLE__)
+    if(!path.empty() && path.at(0) != '/')
+        path.insert(0, "./");
+#endif
     void* handle = dlopen((std::move(path) += suffix).c_str(), RTLD_LAZY);
     char* error = dlerror();
     if(error != nullptr)

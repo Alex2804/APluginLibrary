@@ -1,4 +1,4 @@
-#include "../../../../include/APluginLibrary/pluginapi.h"
+#include "APluginLibrary/pluginapi.h"
 #include "../../interface.h"
 
 class Implementation0 : public Interface

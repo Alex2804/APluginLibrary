@@ -1,4 +1,4 @@
-#include "../../../../include/APluginLibrary/pluginapi.h"
+#include "APluginLibrary/pluginapi.h"
 #include "../../otherinterface.h"
 
 A_PLUGIN_REGISTER_FEATURE(char, seventh_group1, convert_to_char, int x)

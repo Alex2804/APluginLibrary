@@ -1,11 +1,13 @@
 #ifndef APLUGINLIBRARY_LIBRARYLOADER_H
 #define APLUGINLIBRARY_LIBRARYLOADER_H
 
+#include "APluginLibrary/apluginlibrary_export.h"
+
 #include <string>
 
 namespace apl
 {
-    class LibraryLoader
+    class APLUGINLIBRARY_EXPORT LibraryLoader
     {
     public:
         static void* load(std::string path);

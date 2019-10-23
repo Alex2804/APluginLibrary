@@ -1,9 +1,11 @@
 #ifndef APLUGINLIBRARY_PLUGIN_H
 #define APLUGINLIBRARY_PLUGIN_H
 
+#include "APluginLibrary/apluginlibrary_export.h"
+
 #include <string>
 
-#include "plugininfos.h"
+#include "APluginLibrary/plugininfos.h"
 
 namespace apl
 {
@@ -12,7 +14,7 @@ namespace apl
         struct PluginPrivate;
     }
 
-    class Plugin
+    class APLUGINLIBRARY_EXPORT Plugin
     {
     public:
         Plugin(const Plugin& other) = delete;

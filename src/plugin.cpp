@@ -1,25 +1,25 @@
 #include "APluginLibrary/plugin.h"
 #include "private/pluginprivate.h"
 
-#include <APluginLibrary/libraryloader.h>
-
 #include <utility>
+
+#include "APluginLibrary/libraryloader.h"
 
 
 apl::Plugin::Plugin(std::string path)
     : d_ptr(new detail::PluginPrivate())
 {
-    d_ptr->path = std::move(path);
-    d_ptr->handle = LibraryLoader::load(d_ptr->path);
-    if(d_ptr->handle == nullptr)
+    d_ptr->libraryPath = std::move(path);
+    d_ptr->libraryHandle = LibraryLoader::load(d_ptr->libraryPath);
+    if(d_ptr->libraryHandle == nullptr)
         return;
-    d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->handle, "getPluginFeatureCount");
-    d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->handle, "getPluginFeatureInfo");
-    d_ptr->getFeatureInfos = LibraryLoader::getSymbol<detail::getFeatureInfosFunction>(d_ptr->handle, "getPluginFeatureInfos");
+    d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
+    d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->libraryHandle, "getPluginFeatureInfo");
+    d_ptr->getFeatureInfos = LibraryLoader::getSymbol<detail::getFeatureInfosFunction>(d_ptr->libraryHandle, "getPluginFeatureInfos");
 
-    d_ptr->getClassCount = LibraryLoader::getSymbol<detail::getClassCountFunction>(d_ptr->handle, "getPluginClassCount");
-    d_ptr->getClassInfo = LibraryLoader::getSymbol<detail::getClassInfoFunction>(d_ptr->handle, "getPluginClassInfo");
-    d_ptr->getClassInfos = LibraryLoader::getSymbol<detail::getClassInfosFunction>(d_ptr->handle, "getPluginClassInfos");
+    d_ptr->getClassCount = LibraryLoader::getSymbol<detail::getClassCountFunction>(d_ptr->libraryHandle, "getPluginClassCount");
+    d_ptr->getClassInfo = LibraryLoader::getSymbol<detail::getClassInfoFunction>(d_ptr->libraryHandle, "getPluginClassInfo");
+    d_ptr->getClassInfos = LibraryLoader::getSymbol<detail::getClassInfosFunction>(d_ptr->libraryHandle, "getPluginClassInfos");
 }
 apl::Plugin::~Plugin()
 {
@@ -30,7 +30,7 @@ apl::Plugin::~Plugin()
 apl::Plugin *apl::Plugin::load(std::string path)
 {
     auto* plugin = new Plugin(std::move(path));
-    if(!plugin->d_ptr->handle ||
+    if(!plugin->d_ptr->libraryHandle ||
        !plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
        !plugin->d_ptr->getClassCount || !plugin->d_ptr->getClassInfo || !plugin->d_ptr->getClassInfos)
     {
@@ -42,18 +42,18 @@ apl::Plugin *apl::Plugin::load(std::string path)
 void apl::Plugin::unload()
 {
     if(isLoaded()) {
-        LibraryLoader::unload(d_ptr->handle);
-        d_ptr->handle = nullptr;
+        LibraryLoader::unload(d_ptr->libraryHandle);
+        d_ptr->libraryHandle = nullptr;
     }
 }
 bool apl::Plugin::isLoaded() const
 {
-    return d_ptr != nullptr && d_ptr->handle != nullptr;
+    return d_ptr != nullptr && d_ptr->libraryHandle != nullptr;
 }
 
 std::string apl::Plugin::getPath() const
 {
-    return d_ptr != nullptr ? d_ptr->path : "";
+    return d_ptr != nullptr ? d_ptr->libraryPath : "";
 }
 
 size_t apl::Plugin::getFeatureCount() const

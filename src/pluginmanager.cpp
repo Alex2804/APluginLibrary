@@ -1,4 +1,3 @@
-#include "APluginLibrary/pluginmanager.h"
 #include "private/pluginmanagerprivate.h"
 
 #include <algorithm>

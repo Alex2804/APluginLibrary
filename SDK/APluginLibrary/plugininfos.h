@@ -1,9 +1,13 @@
 #ifndef APLUGINLIBRARY_PLUGININFOS_H
 #define APLUGINLIBRARY_PLUGININFOS_H
 
+#ifndef APLUGINLIBRARY_EXPORT
+# define APLUGINLIBRARY_EXPORT
+#endif
+
 namespace apl {
     extern "C" {
-        struct PluginFeatureInfo
+        struct APLUGINLIBRARY_EXPORT PluginFeatureInfo
         {
             const char *featureGroup;
             const char *featureName;
@@ -12,7 +16,7 @@ namespace apl {
             void *functionPointer;
         };
 
-        struct PluginClassInfo
+        struct APLUGINLIBRARY_EXPORT PluginClassInfo
         {
             const char *interfaceClassName;
             const char *className;

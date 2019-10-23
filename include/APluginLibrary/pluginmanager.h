@@ -1,10 +1,12 @@
 #ifndef APLUGINLIBRARY_PLUGINMANAGER_H
 #define APLUGINLIBRARY_PLUGINMANAGER_H
 
+#include "APluginLibrary/apluginlibrary_export.h"
+
 #include <vector>
 
-#include "plugin.h"
-#include "plugininfos.h"
+#include "APluginLibrary/plugin.h"
+#include "APluginLibrary/plugininfos.h"
 
 namespace apl
 {
@@ -13,20 +15,20 @@ namespace apl
         struct PluginManagerPrivate;
     }
 
-    enum class PluginFeatureFilter
+    enum class APLUGINLIBRARY_EXPORT PluginFeatureFilter
     {
         FeatureGroup,
         FeatureName,
         ReturnType,
         ArgumentList,
     };
-    enum class PluginClassFilter
+    enum class APLUGINLIBRARY_EXPORT PluginClassFilter
     {
         InterfaceName,
         ClassName
     };
 
-    class PluginManager
+    class APLUGINLIBRARY_EXPORT PluginManager
     {
     public:
         PluginManager();

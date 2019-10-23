@@ -1,20 +1,26 @@
 #ifndef APLUGINLIBRARY_PLUGINMANAGERPRIVATE_H
 #define APLUGINLIBRARY_PLUGINMANAGERPRIVATE_H
 
+#include "APluginLibrary/apluginlibrary_export.h"
+
 #include <vector>
 #include <unordered_map>
 #include <memory>
 
+#include "APluginLibrary/pluginmanager.h"
 #include "APluginLibrary/plugin.h"
 #include "APluginLibrary/plugininfos.h"
 
+#ifdef APLUGINLIBRARY_TEST
+# undef APLUGINLIBRARY_NO_EXPORT
+# define APLUGINLIBRARY_NO_EXPORT APLUGINLIBRARY_EXPORT
+#endif
+
 namespace apl
 {
-    class PluginManager;
-
     namespace detail
     {
-        struct PluginInstance
+        struct APLUGINLIBRARY_NO_EXPORT PluginInstance
         {
             explicit PluginInstance(std::unique_ptr<Plugin> plugin);
             ~PluginInstance();
@@ -26,7 +32,7 @@ namespace apl
             const PluginClassInfo* const* classInfos;
         };
 
-        struct PluginManagerPrivate
+        struct APLUGINLIBRARY_NO_EXPORT PluginManagerPrivate
         {
             std::vector<std::shared_ptr<PluginInstance>> pluginInstances;
             static std::unordered_map<Plugin*, PluginInstance*> loadedPlugins;

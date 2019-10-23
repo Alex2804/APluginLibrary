@@ -5,10 +5,9 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(HEADERS
         include/APluginLibrary/libraryloader.h
-        include/APluginLibrary/pluginapi.h
-        include/APluginLibrary/plugininfos.h
         include/APluginLibrary/plugin.h src/private/pluginprivate.h
-        include/APluginLibrary/pluginmanager.h src/private/pluginmanagerprivate.h)
+        include/APluginLibrary/pluginmanager.h src/private/pluginmanagerprivate.h
+        SDK/APluginLibrary/plugininfos.h)
 set(SOURCES
         src/libraryloader.cpp include/APluginLibrary/libraryloader.tpp
         src/plugin.cpp
@@ -20,9 +19,13 @@ if(WIN32)
 endif()
 
 add_library(APluginLibrary STATIC ${HEADERS} ${SOURCES})
-target_include_directories(APluginLibrary PUBLIC include)
+include(GenerateExportHeader)
+generate_export_header(APluginLibrary
+        EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/exports/APluginLibrary/apluginlibrary_export.h)
+target_include_directories(APluginLibrary PUBLIC include SDK "${CMAKE_CURRENT_BINARY_DIR}/exports")
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
 if(${APluginLibraryTest})
     add_subdirectory(tests)
+    target_compile_definitions(APluginLibrary PUBLIC APLUGINLIBRARY_TEST)
 endif()

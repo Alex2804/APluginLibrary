@@ -1,9 +1,16 @@
 #ifndef APLUGINLIBRARY_PLUGINPRIVATE_H
 #define APLUGINLIBRARY_PLUGINPRIVATE_H
 
+#include "APluginLibrary/apluginlibrary_export.h"
+
 #include <string>
 
 #include "APluginLibrary/plugininfos.h"
+
+#ifdef APLUGINLIBRARY_TEST
+# undef APLUGINLIBRARY_NO_EXPORT
+# define APLUGINLIBRARY_NO_EXPORT APLUGINLIBRARY_EXPORT
+#endif
 
 namespace apl {
     namespace detail
@@ -16,11 +23,10 @@ namespace apl {
         typedef const PluginClassInfo*(*getClassInfoFunction)(size_t);
         typedef const PluginClassInfo*const*(*getClassInfosFunction)();
 
-        struct PluginPrivate
+        struct APLUGINLIBRARY_NO_EXPORT PluginPrivate
         {
-            std::string path;
-
-            void *handle;
+            std::string libraryPath;
+            void *libraryHandle;
 
             getFeatureCountFunction getFeatureCount;
             getFeatureInfoFunction getFeatureInfo;
