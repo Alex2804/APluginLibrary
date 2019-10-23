@@ -10,6 +10,7 @@ A plugin can consist of [features](#Feature) (functions) and [classes](#Class).
 
 Even though C++ types can be passed between plugin and main application, you should limit yourself to C types to avoid
 ABI incompatibility.
+
 ---
 ### <a name="Feature">Feature</a>
 A feature is a function that has a feature name and belongs to a feature group. A feature also has a return type
