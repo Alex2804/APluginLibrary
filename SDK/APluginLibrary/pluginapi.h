@@ -138,7 +138,7 @@ apl::PluginClassInfo* apl::detail::FeatureManager::registerClass(const char *int
                                                                  void* createInstance, void* deleteInstance)
 {
     auto info = new PluginClassInfo();
-    info->interfaceClassName = interfaceClassName;
+    info->interfaceName = interfaceClassName;
     info->className = featureClassName;
     info->createInstance = createInstance;
     info->deleteInstance = deleteInstance;

@@ -104,7 +104,7 @@ GTEST_TEST(Plugin_Test, class_loading_single)
     ASSERT_NE(infos, nullptr);
     ASSERT_EQ(info, infos[0]);
 
-    ASSERT_STREQ(info->interfaceClassName, "Interface");
+    ASSERT_STREQ(info->interfaceName, "Interface");
     ASSERT_STREQ(info->className, "Implementation");
     ASSERT_NE(info->createInstance, nullptr);
     ASSERT_NE(info->deleteInstance, nullptr);
@@ -144,7 +144,7 @@ GTEST_TEST(Plugin_Test, class_loading_multiple)
         info = plugin->getClassInfo(i);
         ASSERT_NE(info, nullptr);
         ASSERT_EQ(infos[i], info);
-        ASSERT_STREQ(info->interfaceClassName, "Interface");
+        ASSERT_STREQ(info->interfaceName, "Interface");
         ASSERT_STREQ(info->className, std::string("Implementation").append(std::to_string(i)).c_str());
         ASSERT_NE(info->createInstance, nullptr);
         ASSERT_NE(info->deleteInstance, nullptr);
@@ -197,7 +197,7 @@ GTEST_TEST(Plugin_Test, feature_and_class_loading_single)
     ASSERT_NE(classInfos, nullptr);
     ASSERT_EQ(classInfo, classInfos[0]);
 
-    ASSERT_STREQ(classInfo->interfaceClassName, "Interface");
+    ASSERT_STREQ(classInfo->interfaceName, "Interface");
     ASSERT_STREQ(classInfo->className, "Implementation");
     ASSERT_NE(classInfo->createInstance, nullptr);
     ASSERT_NE(classInfo->deleteInstance, nullptr);
@@ -261,7 +261,7 @@ GTEST_TEST(Plugin_Test, feature_and_class_loading_multiple)
         classInfo = plugin->getClassInfo(i);
         ASSERT_NE(classInfo, nullptr);
         ASSERT_EQ(classInfos[i], classInfo);
-        ASSERT_STREQ(classInfo->interfaceClassName, "Interface");
+        ASSERT_STREQ(classInfo->interfaceName, "Interface");
         ASSERT_STREQ(classInfo->className, std::string("Implementation").append(std::to_string(i)).c_str());
         ASSERT_NE(classInfo->createInstance, nullptr);
         ASSERT_NE(classInfo->deleteInstance, nullptr);

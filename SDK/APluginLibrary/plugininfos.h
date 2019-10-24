@@ -18,7 +18,7 @@ namespace apl {
 
         struct APLUGINLIBRARY_EXPORT PluginClassInfo
         {
-            const char *interfaceClassName;
+            const char *interfaceName;
             const char *className;
             void *createInstance;
             void *deleteInstance;

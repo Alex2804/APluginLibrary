@@ -1,6 +1,8 @@
 #include "private/pluginmanagerprivate.h"
 
 #include <algorithm>
+#include <unordered_set>
+#include <exception>
 
 apl::PluginManager::PluginManager()
     : d_ptr(new detail::PluginManagerPrivate())
@@ -73,6 +75,19 @@ void apl::PluginManager::unloadAll()
     d_ptr->pluginInstances.clear();
 }
 
+inline const char* filterFeatureInfo(const apl::PluginFeatureInfo* info, const apl::PluginFeatureFilter& filter)
+{
+    if(filter == apl::PluginFeatureFilter::FeatureGroup)
+        return info->featureGroup;
+    else if(filter == apl::PluginFeatureFilter::FeatureName)
+        return info->featureName;
+    else if(filter == apl::PluginFeatureFilter::ArgumentList)
+        return info->argumentList;
+    else if(filter == apl::PluginFeatureFilter::ReturnType)
+        return info->returnType;
+    else
+        throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
+}
 std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures()
 {
     std::vector<const PluginFeatureInfo*> features;
@@ -86,18 +101,35 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const
     std::vector<const PluginFeatureInfo*> features;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->featureCount; i++) {
-            if((f == PluginFeatureFilter::FeatureGroup && s == pluginInstance->featureInfos[i]->featureGroup)
-               || (f == PluginFeatureFilter::FeatureName && s == pluginInstance->featureInfos[i]->featureName)
-               || (f == PluginFeatureFilter::ReturnType && s == pluginInstance->featureInfos[i]->returnType)
-               || (f == PluginFeatureFilter::ArgumentList && s == pluginInstance->featureInfos[i]->argumentList))
-            {
+            if(s == filterFeatureInfo(pluginInstance->featureInfos[i], f))
                 features.push_back(pluginInstance->featureInfos[i]);
-            }
         }
     }
     return features;
 }
+std::vector<std::string> apl::PluginManager::getFeatureProperties(apl::PluginFeatureFilter f)
+{
+    std::unordered_set<std::string> propertiesSet;
+    const char* property;
+    for(const auto& pluginInstance : d_ptr->pluginInstances) {
+        for(size_t i = 0; i < pluginInstance->featureCount; i++) {
+            property = filterFeatureInfo(pluginInstance->featureInfos[i], f);
+            if(propertiesSet.find(property) == propertiesSet.end())
+                propertiesSet.emplace(property);
+        }
+    }
+    return std::vector<std::string>(propertiesSet.begin(), propertiesSet.end());
+}
 
+inline const char* filterClassInfo(const apl::PluginClassInfo* info, const apl::PluginClassFilter & filter)
+{
+    if(filter == apl::PluginClassFilter::InterfaceName)
+        return info->interfaceName;
+    else if(filter == apl::PluginClassFilter::ClassName)
+        return info->className;
+    else
+        throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
+}
 std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses()
 {
     std::vector<const PluginClassInfo*> classes;
@@ -111,12 +143,22 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const st
     std::vector<const PluginClassInfo*> classes;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->classCount; i++) {
-            if((f == PluginClassFilter::InterfaceName && s == pluginInstance->classInfos[i]->interfaceClassName)
-               || (f == PluginClassFilter::ClassName && s == pluginInstance->classInfos[i]->className))
-            {
+            if(s == filterClassInfo(pluginInstance->classInfos[i], f))
                 classes.push_back(pluginInstance->classInfos[i]);
-            }
         }
     }
     return classes;
+}
+std::vector<std::string> apl::PluginManager::getClassProperties(apl::PluginClassFilter f)
+{
+    std::unordered_set<std::string> propertiesSet;
+    const char* property;
+    for(const auto& pluginInstance : d_ptr->pluginInstances) {
+        for(size_t i = 0; i < pluginInstance->classCount; i++) {
+            property = filterClassInfo(pluginInstance->classInfos[i], f);
+            if(propertiesSet.find(property) == propertiesSet.end())
+                propertiesSet.emplace(property);
+        }
+    }
+    return std::vector<std::string>(propertiesSet.begin(), propertiesSet.end());
 }

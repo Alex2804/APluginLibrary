@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include <string>
+#include <algorithm>
 
 #include "APluginLibrary/plugininfos.h"
 #include "APluginLibrary/pluginmanager.h"
@@ -323,6 +324,54 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
+GTEST_TEST(PluginManager_Test, getFeatureProperties)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/fifth/fifth_plugin",
+                           "plugins/seventh/seventh_plugin"};
+
+    for(size_t i = 0; i < 4; i++) {
+        manager.load(paths[i]);
+        ASSERT_EQ(manager.getLoadedPluginCount(), i + 1);
+    }
+    ASSERT_EQ(manager.getLoadedPluginCount(), 4);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 4);
+
+    std::vector<std::string> properties = manager.getFeatureProperties(apl::PluginFeatureFilter::FeatureGroup);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    std::vector<std::string> result = {"first_group1", "second_group_math", "second_group_pow",
+                                       "fifth_group1", "seventh_group1"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::FeatureName);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    result = {"feature1", "feature_add", "feature_sub", "feature_mul", "feature_div", "feature_pow2", "feature_pow3",
+              "convert_to_char"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ReturnType);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    result = {"int", "char"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ArgumentList);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    result = {"int x1, int x2", "int x"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    manager.unloadAll();
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
+}
+
 GTEST_TEST(PluginManager_Test, getClasses_unfiltered)
 {
     apl::PluginManager manager = apl::PluginManager();
@@ -348,7 +397,7 @@ GTEST_TEST(PluginManager_Test, getClasses_unfiltered)
     for(size_t i = 0; i < classes.size(); i++) {
         info = classes.at(i);
         ASSERT_NE(info, nullptr);
-        ASSERT_STREQ(info->interfaceClassName, interfaceClassNames[i]);
+        ASSERT_STREQ(info->interfaceName, interfaceClassNames[i]);
         ASSERT_STREQ(info->className, classNames[i]);
 
         auto createInstance = reinterpret_cast<Interface*(*)()>(info->createInstance);
@@ -393,7 +442,7 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
     for(size_t i = 0; i < classes.size(); i++) {
         info = classes.at(i);
         ASSERT_NE(info, nullptr);
-        ASSERT_STREQ(info->interfaceClassName, "Interface");
+        ASSERT_STREQ(info->interfaceName, "Interface");
         ASSERT_STREQ(info->className, classNames[i]);
 
         auto createInstance = reinterpret_cast<Interface*(*)()>(info->createInstance);
@@ -417,10 +466,10 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
     for(size_t i = 0; i < classes.size(); i++) {
         info = classes.at(i);
         ASSERT_NE(info, nullptr);
-        ASSERT_STREQ(info->interfaceClassName, interfaceNames[i]);
+        ASSERT_STREQ(info->interfaceName, interfaceNames[i]);
         ASSERT_STREQ(info->className, "Implementation1");
 
-        if(std::string(info->interfaceClassName) == "Interface") {
+        if(std::string(info->interfaceName) == "Interface") {
             auto createInstance = reinterpret_cast<Interface *(*)()>(info->createInstance);
             auto deleteInstance = reinterpret_cast<void (*)(Interface *)>(info->deleteInstance);
             ASSERT_NE(createInstance, nullptr);
@@ -433,7 +482,7 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
             ASSERT_EQ(interface->function2(3), 27);
 
             deleteInstance(interface);
-        } else if(std::string(info->interfaceClassName) == "OtherInterface") {
+        } else if(std::string(info->interfaceName) == "OtherInterface") {
             auto createInstance = reinterpret_cast<OtherInterface *(*)()>(info->createInstance);
             auto deleteInstance = reinterpret_cast<void (*)(OtherInterface *)>(info->deleteInstance);
             ASSERT_NE(createInstance, nullptr);
@@ -448,9 +497,41 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
 
             deleteInstance(otherInterface);
         } else {
-            ASSERT_TRUE(false) << R"(Interface must be from type "Interface" or "OtherInterface" but has type )" << info->interfaceClassName;
+            ASSERT_TRUE(false) << R"(Interface must be from type "Interface" or "OtherInterface" but has type )" << info->interfaceName;
         }
     }
+
+    manager.unloadAll();
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
+}
+
+GTEST_TEST(PluginManager_Test, getClassProperties)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    std::string paths[] = {"plugins/fourth/fourth_plugin", "plugins/fifth/fifth_plugin", "plugins/seventh/seventh_plugin"};
+
+    for(size_t i = 0; i < 3; i++) {
+        manager.load(paths[i]);
+        ASSERT_EQ(manager.getLoadedPluginCount(), i + 1);
+    }
+    ASSERT_EQ(manager.getLoadedPluginCount(), 3);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
+
+    std::vector<std::string> properties = manager.getClassProperties(apl::PluginClassFilter::InterfaceName);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    std::vector<std::string> result = {"Interface", "OtherInterface"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    properties = manager.getClassProperties(apl::PluginClassFilter::ClassName);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    result = {"Implementation0", "Implementation1", "Implementation2", "Implementation"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
 
     manager.unloadAll();
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);

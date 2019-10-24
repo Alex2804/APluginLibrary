@@ -25,6 +25,7 @@ generate_export_header(APluginLibrary
 target_include_directories(APluginLibrary PUBLIC include SDK "${CMAKE_CURRENT_BINARY_DIR}/exports")
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
+set(APluginLibraryTest TRUE)
 if(${APluginLibraryTest})
     add_subdirectory(tests)
     target_compile_definitions(APluginLibrary PUBLIC APLUGINLIBRARY_TEST)
