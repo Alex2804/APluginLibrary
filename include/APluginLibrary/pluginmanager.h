@@ -52,12 +52,12 @@ namespace apl
         void unloadAll();
 
         std::vector<const PluginFeatureInfo*> getFeatures();
-        std::vector<const PluginFeatureInfo*> getFeatures(const std::string& s, PluginFeatureFilter f = PluginFeatureFilter::FeatureGroup);
-        std::vector<std::string> getFeatureProperties(PluginFeatureFilter f);
+        std::vector<const PluginFeatureInfo*> getFeatures(const std::string& s, const PluginFeatureFilter& f = PluginFeatureFilter::FeatureGroup);
+        std::vector<std::string> getFeatureProperties(const PluginFeatureFilter& f);
 
         std::vector<const PluginClassInfo*> getClasses();
-        std::vector<const PluginClassInfo*> getClasses(const std::string& s, PluginClassFilter f = PluginClassFilter::InterfaceName);
-        std::vector<std::string> getClassProperties(PluginClassFilter f);
+        std::vector<const PluginClassInfo*> getClasses(const std::string& s, const PluginClassFilter& f = PluginClassFilter::InterfaceName);
+        std::vector<std::string> getClassProperties(const PluginClassFilter& f);
 
     private:
         detail::PluginManagerPrivate* d_ptr;

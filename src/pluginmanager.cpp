@@ -96,7 +96,7 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures()
     }
     return features;
 }
-std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const std::string& s, apl::PluginFeatureFilter f)
+std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const std::string& s, const apl::PluginFeatureFilter& f)
 {
     std::vector<const PluginFeatureInfo*> features;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
@@ -107,7 +107,7 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const
     }
     return features;
 }
-std::vector<std::string> apl::PluginManager::getFeatureProperties(apl::PluginFeatureFilter f)
+std::vector<std::string> apl::PluginManager::getFeatureProperties(const apl::PluginFeatureFilter& f)
 {
     std::unordered_set<std::string> propertiesSet;
     const char* property;
@@ -138,7 +138,7 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses()
     }
     return classes;
 }
-std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const std::string& s, apl::PluginClassFilter f)
+std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const std::string& s, const apl::PluginClassFilter& f)
 {
     std::vector<const PluginClassInfo*> classes;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
@@ -149,7 +149,7 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const st
     }
     return classes;
 }
-std::vector<std::string> apl::PluginManager::getClassProperties(apl::PluginClassFilter f)
+std::vector<std::string> apl::PluginManager::getClassProperties(const apl::PluginClassFilter& f)
 {
     std::unordered_set<std::string> propertiesSet;
     const char* property;
