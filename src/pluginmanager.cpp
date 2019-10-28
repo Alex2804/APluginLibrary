@@ -13,10 +13,9 @@ apl::PluginManager::PluginManager(const apl::PluginManager &other)
     d_ptr->pluginInstances = other.d_ptr->pluginInstances;
 }
 apl::PluginManager::PluginManager(apl::PluginManager &&other) noexcept
-    : PluginManager()
+    : d_ptr(other.d_ptr)
 {
-    using std::swap;
-    swap(d_ptr, other.d_ptr);
+    other.d_ptr = nullptr;
 }
 apl::PluginManager::~PluginManager()
 {
