@@ -26,6 +26,6 @@ namespace apl
     };
 }
 
-#include "libraryloader.tpp"
+#include "implementation/libraryloader.tpp"
 
 #endif //APLUGINLIBRARY_LIBRARYLOADER_H

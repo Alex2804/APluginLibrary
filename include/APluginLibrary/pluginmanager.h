@@ -64,6 +64,6 @@ namespace apl
     };
 }
 
-#include "pluginmanager.tpp"
+#include "implementation/pluginmanager.tpp"
 
 #endif //APLUGINLIBRARY_PLUGINMANAGER_H

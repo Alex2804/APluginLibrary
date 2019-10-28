@@ -9,9 +9,9 @@ set(HEADERS
         include/APluginLibrary/pluginmanager.h src/private/pluginmanagerprivate.h
         SDK/APluginLibrary/plugininfos.h)
 set(SOURCES
-        src/libraryloader.cpp include/APluginLibrary/libraryloader.tpp
+        src/libraryloader.cpp include/APluginLibrary/implementation/libraryloader.tpp
         src/plugin.cpp
-        src/pluginmanager.cpp include/APluginLibrary/pluginmanager.tpp src/private/pluginmanagerprivate.cpp)
+        src/pluginmanager.cpp include/APluginLibrary/implementation/pluginmanager.tpp src/private/pluginmanagerprivate.cpp)
 
 if(WIN32)
     add_subdirectory(libs/dlfcn)
