@@ -6,6 +6,7 @@
 #include <string>
 
 #include "APluginLibrary/plugininfos.h"
+#include "APluginLibrary/libraryloader.h"
 
 #ifdef APLUGINLIBRARY_TEST
 # undef APLUGINLIBRARY_NO_EXPORT
@@ -26,7 +27,7 @@ namespace apl {
         struct APLUGINLIBRARY_NO_EXPORT PluginPrivate
         {
             std::string libraryPath;
-            void *libraryHandle;
+            library_handle libraryHandle;
 
             getFeatureCountFunction getFeatureCount;
             getFeatureInfoFunction getFeatureInfo;

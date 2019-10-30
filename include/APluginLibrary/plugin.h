@@ -6,6 +6,7 @@
 #include <string>
 
 #include "APluginLibrary/plugininfos.h"
+#include "APluginLibrary/libraryloader.h"
 
 namespace apl
 {
@@ -29,6 +30,7 @@ namespace apl
         bool isLoaded() const;
 
         std::string getPath() const;
+        const_library_handle getHandle() const;
 
         size_t getFeatureCount() const;
         const PluginFeatureInfo* getFeatureInfo(size_t i) const;

@@ -6,10 +6,11 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <mutex>
 
-#include "APluginLibrary/pluginmanager.h"
 #include "APluginLibrary/plugin.h"
 #include "APluginLibrary/plugininfos.h"
+#include "APluginLibrary/libraryloader.h"
 
 #ifdef APLUGINLIBRARY_TEST
 # undef APLUGINLIBRARY_NO_EXPORT
@@ -20,8 +21,9 @@ namespace apl
 {
     namespace detail
     {
-        struct APLUGINLIBRARY_NO_EXPORT PluginInstance
+        class APLUGINLIBRARY_NO_EXPORT PluginInstance
         {
+        public:
             explicit PluginInstance(std::unique_ptr<Plugin> plugin);
             ~PluginInstance();
 
@@ -32,10 +34,15 @@ namespace apl
             const PluginClassInfo* const* classInfos;
         };
 
-        struct APLUGINLIBRARY_NO_EXPORT PluginManagerPrivate
+        class APLUGINLIBRARY_NO_EXPORT PluginManagerPrivate
         {
-            std::vector<std::shared_ptr<PluginInstance>> pluginInstances;
-            static std::unordered_map<Plugin*, PluginInstance*> loadedPlugins;
+        public:
+            std::vector<std::shared_ptr<PluginInstance>> pluginInstances; // loaded plugins of this PluginManager instance
+            static std::unordered_map<const_library_handle, std::weak_ptr<PluginInstance>> loadedPlugins; // loaded plugins of ALL PluginManager instances
+            static std::mutex mutex;
+
+            bool loadPlugin(std::string path); // loads a plugin into this PluginManager (tries to prevent duplicates)
+            void unloadPlugin(Plugin* plugin); // unload a plugin from this PluginManager instance
         };
     }
 }

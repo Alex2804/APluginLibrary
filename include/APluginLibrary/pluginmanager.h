@@ -12,7 +12,7 @@ namespace apl
 {
     namespace detail
     {
-        struct PluginManagerPrivate;
+        class PluginManagerPrivate;
     }
 
     enum class APLUGINLIBRARY_EXPORT PluginFeatureFilter

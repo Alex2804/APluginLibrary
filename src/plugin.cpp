@@ -3,9 +3,6 @@
 
 #include <utility>
 
-#include "APluginLibrary/libraryloader.h"
-
-
 apl::Plugin::Plugin(std::string path)
     : d_ptr(new detail::PluginPrivate())
 {
@@ -27,9 +24,9 @@ apl::Plugin::~Plugin()
     delete d_ptr;
 }
 
-apl::Plugin *apl::Plugin::load(std::string path)
+apl::Plugin* apl::Plugin::load(std::string path)
 {
-    auto* plugin = new Plugin(std::move(path));
+    auto plugin = new Plugin(std::move(path));
     if(!plugin->d_ptr->libraryHandle ||
        !plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
        !plugin->d_ptr->getClassCount || !plugin->d_ptr->getClassInfo || !plugin->d_ptr->getClassInfos)
@@ -54,6 +51,10 @@ bool apl::Plugin::isLoaded() const
 std::string apl::Plugin::getPath() const
 {
     return d_ptr != nullptr ? d_ptr->libraryPath : "";
+}
+apl::const_library_handle apl::Plugin::getHandle() const
+{
+    return d_ptr->libraryHandle;
 }
 
 size_t apl::Plugin::getFeatureCount() const

@@ -1,6 +1,6 @@
+#include "APluginLibrary/pluginmanager.h"
 #include "private/pluginmanagerprivate.h"
 
-#include <algorithm>
 #include <unordered_set>
 #include <exception>
 
@@ -36,12 +36,7 @@ apl::PluginManager &apl::PluginManager::operator=(apl::PluginManager &&other) no
 
 bool apl::PluginManager::load(std::string path)
 {
-    auto plugin = Plugin::load(std::move(path));
-    if(plugin == nullptr)
-        return false;
-    d_ptr->pluginInstances.push_back(
-            std::make_shared<detail::PluginInstance>(std::unique_ptr<Plugin>(plugin)));
-    return true;
+    return d_ptr->loadPlugin(std::move(path));
 }
 
 size_t apl::PluginManager::getLoadedPluginCount()
@@ -57,17 +52,9 @@ std::vector<apl::Plugin*> apl::PluginManager::getLoadedPlugins()
     return plugins;
 }
 
-void apl::PluginManager::unload(apl::Plugin *plugin)
+void apl::PluginManager::unload(apl::Plugin* plugin)
 {
-    if (detail::PluginManagerPrivate::loadedPlugins.find(plugin) != detail::PluginManagerPrivate::loadedPlugins.end()) {
-        detail::PluginInstance* pluginInstance = detail::PluginManagerPrivate::loadedPlugins.at(plugin);
-        auto func = [pluginInstance] (const std::shared_ptr<detail::PluginInstance>& sharedPtr) -> bool {
-            return sharedPtr.get() == pluginInstance;
-        };
-        d_ptr->pluginInstances.erase(
-                std::remove_if(d_ptr->pluginInstances.begin(), d_ptr->pluginInstances.end(), func),
-                d_ptr->pluginInstances.end());
-    }
+    d_ptr->unloadPlugin(plugin);
 }
 void apl::PluginManager::unloadAll()
 {

@@ -7,16 +7,19 @@
 
 namespace apl
 {
+    typedef void* library_handle;
+    typedef const void* const_library_handle;
+
     class APLUGINLIBRARY_EXPORT LibraryLoader
     {
     public:
-        static void* load(std::string path);
-        static void* load(std::string path, const std::string &suffix);
-        static bool unload(void* handle);
+        static library_handle load(std::string path);
+        static library_handle load(std::string path, const std::string &suffix);
+        static bool unload(library_handle handle);
 
-        static void* getSymbol(void* handle, const std::string& name);
+        static void* getSymbol(library_handle handle, const std::string& name);
         template<typename T>
-        static inline T getSymbol(void* handle, const std::string& name);
+        static inline T getSymbol(library_handle handle, const std::string& name);
 
         static const char* getError();
         static void clearError();

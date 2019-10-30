@@ -10,7 +10,7 @@
 
 std::string apl::LibraryLoader::errorString = std::string();
 
-void* apl::LibraryLoader::load(std::string path)
+apl::library_handle apl::LibraryLoader::load(std::string path)
 {
 #ifdef __unix__
     return load(std::move(path), ".so");
@@ -22,13 +22,13 @@ void* apl::LibraryLoader::load(std::string path)
 # error "Unsupported platform for library opening!"
 #endif
 }
-void* apl::LibraryLoader::load(std::string path, const std::string &suffix)
+apl::library_handle apl::LibraryLoader::load(std::string path, const std::string &suffix)
 {
 #if defined(__unix__) || defined(__APPLE__)
     if(!path.empty() && path.at(0) != '/')
         path.insert(0, "./");
 #endif
-    void* handle = dlopen((std::move(path) += suffix).c_str(), RTLD_LAZY);
+    library_handle handle = dlopen((std::move(path) += suffix).c_str(), RTLD_LAZY);
     char* error = dlerror();
     if(error != nullptr)
         errorString.append(error).append("\n");
@@ -36,7 +36,7 @@ void* apl::LibraryLoader::load(std::string path, const std::string &suffix)
         return nullptr;
     return handle;
 }
-void* apl::LibraryLoader::getSymbol(void *handle, const std::string &name)
+void* apl::LibraryLoader::getSymbol(library_handle handle, const std::string &name)
 {
     if(!handle)
         return nullptr;
@@ -48,7 +48,7 @@ void* apl::LibraryLoader::getSymbol(void *handle, const std::string &name)
     }
     return function;
 }
-bool apl::LibraryLoader::unload(void *handle)
+bool apl::LibraryLoader::unload(library_handle handle)
 {
     if(!handle)
         return true;
