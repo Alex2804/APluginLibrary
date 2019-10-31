@@ -25,7 +25,8 @@ namespace apl
         Plugin& operator=(const Plugin& other) = delete;
         Plugin& operator=(Plugin&& other) noexcept = delete;
 
-        static Plugin* load(std::string path);
+        static Plugin* load(const std::string& path);
+        static Plugin* load(std::string path, library_handle handle);
         void unload();
         bool isLoaded() const;
 
@@ -41,7 +42,7 @@ namespace apl
         const PluginClassInfo* const* getClassInfos() const;
 
     private:
-        explicit Plugin(std::string path);
+        explicit Plugin(std::string path, library_handle handle);
 
         detail::PluginPrivate* d_ptr;
     };

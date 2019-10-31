@@ -24,10 +24,10 @@ namespace apl
         class APLUGINLIBRARY_NO_EXPORT PluginInstance
         {
         public:
-            explicit PluginInstance(std::unique_ptr<Plugin> plugin);
+            explicit PluginInstance(Plugin* plugin);
             ~PluginInstance();
 
-            std::unique_ptr<Plugin> plugin;
+            Plugin* plugin;
             size_t featureCount;
             size_t classCount;
             const PluginFeatureInfo* const* featureInfos;

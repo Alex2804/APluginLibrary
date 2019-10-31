@@ -47,7 +47,7 @@ std::vector<apl::Plugin*> apl::PluginManager::getLoadedPlugins()
 {
     std::vector<Plugin*> plugins;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
-        plugins.push_back(pluginInstance->plugin.get());
+        plugins.push_back(pluginInstance->plugin);
     }
     return plugins;
 }

@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-apl::detail::PluginInstance::PluginInstance(std::unique_ptr<Plugin> plugin)
-    : plugin(std::move(plugin))
+apl::detail::PluginInstance::PluginInstance(Plugin* plugin)
+    : plugin(plugin)
     , featureCount(this->plugin->getFeatureCount())
     , classCount(this->plugin->getClassCount())
     , featureInfos(featureCount > 0 ? this->plugin->getFeatureInfos() : nullptr)
@@ -14,6 +14,7 @@ apl::detail::PluginInstance::~PluginInstance()
     PluginManagerPrivate::mutex.lock();
     PluginManagerPrivate::loadedPlugins.erase(plugin->getHandle());
     PluginManagerPrivate::mutex.unlock();
+    delete plugin;
 }
 
 
@@ -26,19 +27,19 @@ bool apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
     library_handle tmpHandle = LibraryLoader::load(path);
     mutex.lock();
     if(loadedPlugins.find(tmpHandle) != loadedPlugins.end()) {
+        LibraryLoader::unload(tmpHandle); // unload library handle to reduce ref count
         pluginInstances.push_back(loadedPlugins.at(tmpHandle).lock());
     } else {
-        std::unique_ptr<Plugin> plugin = std::unique_ptr<Plugin>(Plugin::load(std::move(path)));
+        Plugin* plugin = Plugin::load(std::move(path), tmpHandle);
         if(plugin == nullptr) {
             mutex.unlock();
             return false;
         }
-        std::shared_ptr<PluginInstance> instance = std::make_shared<PluginInstance>(std::move(plugin));
+        std::shared_ptr<PluginInstance> instance = std::make_shared<PluginInstance>(plugin);
         pluginInstances.push_back(instance);
         loadedPlugins.insert({instance->plugin->getHandle(), instance});
     }
     mutex.unlock();
-    LibraryLoader::unload(tmpHandle);
     return true;
 }
 void apl::detail::PluginManagerPrivate::unloadPlugin(apl::Plugin* plugin)

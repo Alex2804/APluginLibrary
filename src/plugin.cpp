@@ -3,11 +3,11 @@
 
 #include <utility>
 
-apl::Plugin::Plugin(std::string path)
+apl::Plugin::Plugin(std::string path, library_handle handle)
     : d_ptr(new detail::PluginPrivate())
 {
     d_ptr->libraryPath = std::move(path);
-    d_ptr->libraryHandle = LibraryLoader::load(d_ptr->libraryPath);
+    d_ptr->libraryHandle = handle;
     if(d_ptr->libraryHandle == nullptr)
         return;
     d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
@@ -24,9 +24,13 @@ apl::Plugin::~Plugin()
     delete d_ptr;
 }
 
-apl::Plugin* apl::Plugin::load(std::string path)
+apl::Plugin* apl::Plugin::load(const std::string& path)
 {
-    auto plugin = new Plugin(std::move(path));
+    return load(path, LibraryLoader::load(path));
+}
+apl::Plugin* apl::Plugin::load(std::string path, library_handle handle)
+{
+    auto plugin = new Plugin(std::move(path), handle);
     if(!plugin->d_ptr->libraryHandle ||
        !plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
        !plugin->d_ptr->getClassCount || !plugin->d_ptr->getClassInfo || !plugin->d_ptr->getClassInfos)
