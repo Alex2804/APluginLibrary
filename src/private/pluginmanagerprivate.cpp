@@ -28,7 +28,9 @@ bool apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
     mutex.lock();
     if(loadedPlugins.find(tmpHandle) != loadedPlugins.end()) {
         LibraryLoader::unload(tmpHandle); // unload library handle to reduce ref count
-        pluginInstances.push_back(loadedPlugins.at(tmpHandle).lock());
+        std::shared_ptr<PluginInstance> instance = loadedPlugins.at(tmpHandle).lock();
+        if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end())
+            pluginInstances.push_back(instance);
     } else {
         Plugin* plugin = Plugin::load(std::move(path), tmpHandle);
         if(plugin == nullptr) {

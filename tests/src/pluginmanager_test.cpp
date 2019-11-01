@@ -134,6 +134,53 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
+GTEST_TEST(PluginManager_Test, test_no_double_loading)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    std::string paths[] = {"plugins/first/first_plugin", "plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/third/third_plugin"};
+
+    for(const auto& path : paths) {
+        manager.load(path);
+    }
+    ASSERT_EQ(manager.getLoadedPluginCount(), 3);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+
+    manager.unloadAll();
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
+}
+
+GTEST_TEST(PluginManager_Test, test_shared_plugin_instances)
+{
+    apl::PluginManager manager1 = apl::PluginManager();
+    apl::PluginManager manager2 = apl::PluginManager();
+    std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/third/third_plugin"};
+
+    for(const auto& path : paths) {
+        manager1.load(path);
+        manager2.load(path);
+    }
+    ASSERT_EQ(manager1.getLoadedPluginCount(), 3);
+    ASSERT_EQ(manager1.getLoadedPlugins().size(), 3);
+    ASSERT_EQ(manager2.getLoadedPluginCount(), 3);
+    ASSERT_EQ(manager2.getLoadedPlugins().size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+
+    manager1.unloadAll();
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(manager1.getLoadedPluginCount(), 0);
+    ASSERT_EQ(manager1.getLoadedPlugins().size(), 0);
+    ASSERT_EQ(manager2.getLoadedPluginCount(), 3);
+    ASSERT_EQ(manager2.getLoadedPlugins().size(), 3);
+
+    manager2.unloadAll();
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(manager2.getLoadedPluginCount(), 0);
+    ASSERT_EQ(manager2.getLoadedPlugins().size(), 0);
+}
+
 GTEST_TEST(PluginManager_Test, copy_assign_construct)
 {
     apl::PluginManager manager1 = apl::PluginManager();
