@@ -26,11 +26,13 @@ bool apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
 {
     library_handle tmpHandle = LibraryLoader::load(path);
     mutex.lock();
-    if(loadedPlugins.find(tmpHandle) != loadedPlugins.end()) {
+    auto iterator = loadedPlugins.find(tmpHandle);
+    if(iterator != loadedPlugins.end()) {
         LibraryLoader::unload(tmpHandle); // unload library handle to reduce ref count
-        std::shared_ptr<PluginInstance> instance = loadedPlugins.at(tmpHandle).lock();
-        if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end())
+        std::shared_ptr<PluginInstance> instance = iterator->second.lock();
+        if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end()) {
             pluginInstances.push_back(instance);
+        }
     } else {
         Plugin* plugin = Plugin::load(std::move(path), tmpHandle);
         if(plugin == nullptr) {
@@ -50,8 +52,9 @@ void apl::detail::PluginManagerPrivate::unloadPlugin(apl::Plugin* plugin)
         return;
     std::shared_ptr<PluginInstance> instance;
     mutex.lock();
-    if(loadedPlugins.find(plugin->getHandle()) != loadedPlugins.end()) {
-        instance = std::shared_ptr<PluginInstance>(loadedPlugins[plugin->getHandle()]);
+    auto iterator = loadedPlugins.find(plugin->getHandle());
+    if(iterator != loadedPlugins.end()) {
+        instance = iterator->second.lock();
         auto func = [instance] (const std::shared_ptr<detail::PluginInstance>& sharedPtr) -> bool {
             return sharedPtr == instance;
         };
