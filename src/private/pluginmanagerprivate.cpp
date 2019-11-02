@@ -27,14 +27,14 @@ bool apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
     library_handle tmpHandle = LibraryLoader::load(path);
     mutex.lock();
     auto iterator = loadedPlugins.find(tmpHandle);
+    LibraryLoader::unload(tmpHandle); // unload library handle to reduce ref count
     if(iterator != loadedPlugins.end()) {
-        LibraryLoader::unload(tmpHandle); // unload library handle to reduce ref count
         std::shared_ptr<PluginInstance> instance = iterator->second.lock();
         if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end()) {
             pluginInstances.push_back(instance);
         }
     } else {
-        Plugin* plugin = Plugin::load(std::move(path), tmpHandle);
+        Plugin* plugin = Plugin::load(std::move(path));
         if(plugin == nullptr) {
             mutex.unlock();
             return false;

@@ -4,45 +4,99 @@
 #include <unordered_set>
 #include <exception>
 
+/**
+ * @class apl::PluginManager
+ *
+ * @brief A PluginManager manages multiple Plugin objects.
+ *
+ * With a PluginManager you can load and unload several plugins and query and filter their features and classes.
+ */
+
+
+/**
+ * Creates a new PluginManager without any loaded Plugins
+ */
 apl::PluginManager::PluginManager()
     : d_ptr(new detail::PluginManagerPrivate())
 {}
-apl::PluginManager::PluginManager(const apl::PluginManager &other)
+/**
+ * Constructs a copy of @p other.
+ *
+ * @see operator=(const PluginManager& other)
+ */
+apl::PluginManager::PluginManager(const PluginManager& other)
     : PluginManager()
 {
     d_ptr->pluginInstances = other.d_ptr->pluginInstances;
 }
-apl::PluginManager::PluginManager(apl::PluginManager &&other) noexcept
+/**
+ * Move constructs @p other.
+ *
+ * @see operator=(PluginManager&& other)
+ */
+apl::PluginManager::PluginManager(PluginManager&& other) noexcept
     : d_ptr(other.d_ptr)
 {
     other.d_ptr = nullptr;
 }
+/**
+ * Destroys this PluginManager after unloading all loaded Plugins.
+ *
+ * @see unloadAll()
+ */
 apl::PluginManager::~PluginManager()
 {
+    unloadAll();
     delete d_ptr;
 }
 
-apl::PluginManager &apl::PluginManager::operator=(const apl::PluginManager &other)
+/**
+ * Assigns a copy of @p other.
+ *
+ * @return A reference to this
+ *
+ * @see PluginManager(const PluginManager& other)
+ */
+apl::PluginManager &apl::PluginManager::operator=(const PluginManager& other)
 {
     d_ptr->pluginInstances = other.d_ptr->pluginInstances;
     return *this;
 }
-apl::PluginManager &apl::PluginManager::operator=(apl::PluginManager &&other) noexcept
+/**
+ * Move assigns @p other to this PluginManager.
+ *
+ * @return A reference to this
+ *
+ * @see PluginManager(PluginManager&& other)
+ */
+apl::PluginManager &apl::PluginManager::operator=(PluginManager&& other) noexcept
 {
     using std::swap;
     swap(d_ptr, other.d_ptr);
     return *this;
 }
 
+/**
+ * Loads a plugin into this PluginManager.
+ *
+ * @param path The path to the shared library containing the plugin.
+ *
+ * @return True if the plugin was loaded successfully and false if not.
+ */
 bool apl::PluginManager::load(std::string path)
 {
     return d_ptr->loadPlugin(std::move(path));
 }
-
+/**
+ * @return The count of loaded Plugins int this PluginManager.
+ */
 size_t apl::PluginManager::getLoadedPluginCount()
 {
     return d_ptr->pluginInstances.size();
 }
+/**
+ * @return The loaded Plugins in this PluginManager.
+ */
 std::vector<apl::Plugin*> apl::PluginManager::getLoadedPlugins()
 {
     std::vector<Plugin*> plugins;
@@ -52,10 +106,18 @@ std::vector<apl::Plugin*> apl::PluginManager::getLoadedPlugins()
     return plugins;
 }
 
+/**
+ * Unloads a specific plugin from this PluginManager.
+ *
+ * @param plugin The plugin to unload.
+ */
 void apl::PluginManager::unload(apl::Plugin* plugin)
 {
     d_ptr->unloadPlugin(plugin);
 }
+/**
+ * Unloads all plugins in this PluginManager.
+ */
 void apl::PluginManager::unloadAll()
 {
     d_ptr->pluginInstances.clear();
@@ -74,6 +136,9 @@ inline const char* filterFeatureInfo(const apl::PluginFeatureInfo* info, const a
     else
         throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
 }
+/**
+ * @return The PluginFeatureInfo's of all loaded plugins in this PluginManager.
+ */
 std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures()
 {
     std::vector<const PluginFeatureInfo*> features;
@@ -82,6 +147,12 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures()
     }
     return features;
 }
+/**
+ * @param s The string to filter for.
+ * @param f The filter to use.
+ *
+ * @return The filtered PluginFeatureInfo's of all loaded plugins in this PluginManager.
+ */
 std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const std::string& s, const apl::PluginFeatureFilter& f)
 {
     std::vector<const PluginFeatureInfo*> features;
@@ -93,6 +164,10 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const
     }
     return features;
 }
+/**
+ * @param f The filter to use.
+ * @return A vector with all filtered feature properties contained in the plugins loaded by this PluginManager.
+ */
 std::vector<std::string> apl::PluginManager::getFeatureProperties(const apl::PluginFeatureFilter& f)
 {
     std::unordered_set<std::string> propertiesSet;
@@ -116,6 +191,9 @@ inline const char* filterClassInfo(const apl::PluginClassInfo* info, const apl::
     else
         throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
 }
+/**
+ * @return The PluginClassInfo's of all loaded plugins in this PluginManager.
+ */
 std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses()
 {
     std::vector<const PluginClassInfo*> classes;
@@ -124,6 +202,12 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses()
     }
     return classes;
 }
+/**
+ * @param s The string to filter for.
+ * @param f The filter to use.
+ *
+ * @return The filtered PluginClassInfo's of all loaded plugins in this PluginManager.
+ */
 std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const std::string& s, const apl::PluginClassFilter& f)
 {
     std::vector<const PluginClassInfo*> classes;
@@ -135,6 +219,10 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const st
     }
     return classes;
 }
+/**
+ * @param f The filter to use.
+ * @return A vector with all filtered class properties contained in the plugins loaded by this PluginManager.
+ */
 std::vector<std::string> apl::PluginManager::getClassProperties(const apl::PluginClassFilter& f)
 {
     std::unordered_set<std::string> propertiesSet;

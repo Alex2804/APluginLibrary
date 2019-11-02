@@ -55,8 +55,8 @@ namespace apl {
             const PluginClassInfo *const *getClassInfos() const;
 
         private:
-            std::vector<PluginFeatureInfo *> feature_infos;
-            std::vector<PluginClassInfo *> class_infos;
+            std::vector<PluginFeatureInfo*> feature_infos;
+            std::vector<PluginClassInfo*> class_infos;
         };
 
         FeatureManager featureManagerInstance; // no singleton because there should be one instance per shared library (plugin)
@@ -126,7 +126,9 @@ size_t apl::detail::FeatureManager::getFeatureCount() const
 }
 const apl::PluginFeatureInfo* apl::detail::FeatureManager::getFeatureInfo(size_t i) const
 {
-    return feature_infos.at(i);
+    if(i < feature_infos.size())
+        return feature_infos[i];
+    return nullptr;
 }
 const apl::PluginFeatureInfo* const* apl::detail::FeatureManager::getFeatureInfos() const
 {
@@ -151,7 +153,9 @@ size_t apl::detail::FeatureManager::getClassCount() const
 }
 const apl::PluginClassInfo* apl::detail::FeatureManager::getClassInfo(size_t i) const
 {
-    return class_infos.at(i);
+    if(i < class_infos.size())
+        return class_infos.at(i);
+    return nullptr;
 }
 const apl::PluginClassInfo* const* apl::detail::FeatureManager::getClassInfos() const
 {

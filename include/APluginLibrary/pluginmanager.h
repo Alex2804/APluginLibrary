@@ -34,21 +34,17 @@ namespace apl
         PluginManager();
         PluginManager(const PluginManager& other);
         PluginManager(PluginManager&& other) noexcept;
-        virtual ~PluginManager();
+        ~PluginManager();
 
         PluginManager& operator=(const PluginManager& other);
         PluginManager& operator=(PluginManager&& other) noexcept;
 
         bool load(std::string path);
-        template<typename... Args>
-        bool load(std::string path, Args... paths);
 
         size_t getLoadedPluginCount();
         std::vector<Plugin*> getLoadedPlugins();
 
         void unload(Plugin* plugin);
-        template<typename... Args>
-        void unload(Plugin* plugin, Args... plugins);
         void unloadAll();
 
         std::vector<const PluginFeatureInfo*> getFeatures();
@@ -63,7 +59,5 @@ namespace apl
         detail::PluginManagerPrivate* d_ptr;
     };
 }
-
-#include "implementation/pluginmanager.tpp"
 
 #endif //APLUGINLIBRARY_PLUGINMANAGER_H

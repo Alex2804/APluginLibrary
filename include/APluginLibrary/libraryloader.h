@@ -14,7 +14,7 @@ namespace apl
     {
     public:
         static library_handle load(std::string path);
-        static library_handle load(std::string path, const std::string &suffix);
+        static library_handle load(std::string path, const std::string& suffix);
         static bool unload(library_handle handle);
 
         static void* getSymbol(library_handle handle, const std::string& name);

@@ -18,15 +18,14 @@ namespace apl
     class APLUGINLIBRARY_EXPORT Plugin
     {
     public:
-        Plugin(const Plugin& other) = delete;
-        Plugin(Plugin&& other) noexcept = delete;
-        virtual ~Plugin();
+        Plugin(const Plugin& other) = delete; ///< @private
+        Plugin(Plugin&& other) noexcept = delete; ///< @private
+        ~Plugin();
 
-        Plugin& operator=(const Plugin& other) = delete;
-        Plugin& operator=(Plugin&& other) noexcept = delete;
+        Plugin& operator=(const Plugin& other) = delete; ///< @private
+        Plugin& operator=(Plugin&& other) noexcept = delete; ///< @private
 
-        static Plugin* load(const std::string& path);
-        static Plugin* load(std::string path, library_handle handle);
+        static Plugin* load(std::string path);
         void unload();
         bool isLoaded() const;
 

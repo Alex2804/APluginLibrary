@@ -109,29 +109,6 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
-
-    // test with variadic template unloading
-    for(size_t i = 0; i < 3; i++) {
-        manager.load(paths[i]);
-        ASSERT_EQ(manager.getLoadedPluginCount(), i + 1);
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), i + 1);
-    }
-    ASSERT_EQ(manager.getLoadedPluginCount(), 3);
-    ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
-
-    plugins = manager.getLoadedPlugins();
-    ASSERT_EQ(plugins.size(), 3);
-    for(size_t i = 0; i < plugins.size(); i++) {
-        ASSERT_NE(plugins.at(i), nullptr);
-        ASSERT_TRUE(plugins.at(i)->isLoaded());
-        ASSERT_EQ(plugins.at(i)->getPath(), paths[i]);
-    }
-
-    manager.unload(plugins.at(0), plugins.at(1), plugins.at(2));
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
-    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
-    ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
 GTEST_TEST(PluginManager_Test, test_no_double_loading)
