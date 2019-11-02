@@ -33,11 +33,11 @@ namespace apl
         const_library_handle getHandle() const;
 
         size_t getFeatureCount() const;
-        const PluginFeatureInfo* getFeatureInfo(size_t i) const;
+        const PluginFeatureInfo* getFeatureInfo(size_t index) const;
         const PluginFeatureInfo* const* getFeatureInfos() const;
 
         size_t getClassCount() const;
-        const PluginClassInfo* getClassInfo(size_t i) const;
+        const PluginClassInfo* getClassInfo(size_t index) const;
         const PluginClassInfo* const* getClassInfos() const;
 
     private:
