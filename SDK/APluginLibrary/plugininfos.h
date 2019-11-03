@@ -1,7 +1,7 @@
 #ifndef APLUGINLIBRARY_PLUGININFOS_H
 #define APLUGINLIBRARY_PLUGININFOS_H
 
-#include "macros.h"
+#include "implementation/macros.h"
 
 namespace apl {
     extern "C" {

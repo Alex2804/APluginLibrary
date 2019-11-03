@@ -1,8 +1,8 @@
 #ifndef APLUGINLIBRARY_PLUGINAPI_H
 #define APLUGINLIBRARY_PLUGINAPI_H
 
-#include "featuremanager.h"
-#include "macros.h"
+#include "implementation/featuremanager.h"
+#include "implementation/macros.h"
 
 namespace apl
 {
@@ -11,17 +11,16 @@ namespace apl
         extern "C"
         {
             APLUGINLIBRARY_EXPORT size_t getPluginFeatureCount();
-            APLUGINLIBRARY_EXPORT const apl::PluginFeatureInfo* getPluginFeatureInfo(size_t i);
+            APLUGINLIBRARY_EXPORT const apl::PluginFeatureInfo* getPluginFeatureInfo(size_t index);
             APLUGINLIBRARY_EXPORT const apl::PluginFeatureInfo * const* getPluginFeatureInfos();
 
             APLUGINLIBRARY_EXPORT size_t getPluginClassCount();
-            APLUGINLIBRARY_EXPORT const apl::PluginClassInfo* getPluginClassInfo(size_t i);
+            APLUGINLIBRARY_EXPORT const apl::PluginClassInfo* getPluginClassInfo(size_t index);
             APLUGINLIBRARY_EXPORT const apl::PluginClassInfo* const* getPluginClassInfos();
         }
     }
 }
 
-#include "implementation/pluginapi.cpp"
 
 #define A_PLUGIN_REGISTER_FEATURE(returnType, featureGroup, featureName, ...)                                          \
     A_PLUGIN_FEATURE_OPEN_NAMESPACE(featureGroup, featureName)                                                         \
@@ -39,6 +38,7 @@ namespace apl
                                                                                                                        \
     returnType A_PLUGIN_FEATURE_NAMESPACE(featureGroup, featureName)A_PLUGIN_FEATURE_NAME(featureGroup, featureName)   \
                                                                                           ::featureBody(__VA_ARGS__)
+
 
 #define A_PLUGIN_REGISTER_CLASS(interfaceName, className)                                                              \
     A_PLUGIN_CLASS_OPEN_NAMESPACE(interfaceName, className)                                                            \
@@ -64,5 +64,8 @@ namespace apl
             delete ptr;                                                                                                \
         }                                                                                                              \
     A_PLUGIN_CLASS_CLOSE_NAMESPACE
+
+
+#include "implementation/pluginapi.cpp"
 
 #endif //APLUGINLIBRARY_PLUGINAPI_H

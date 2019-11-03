@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "plugininfos.h"
+#include "../plugininfos.h"
 #include "macros.h"
 
 namespace apl
@@ -35,6 +35,6 @@ namespace apl
     }
 }
 
-# include "implementation/featuremanager.cpp"
+# include "featuremanager.cpp"
 
 #endif //APLUGINLIBRARY_FEATUREMANAGER_H

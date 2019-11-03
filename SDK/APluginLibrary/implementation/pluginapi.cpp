@@ -3,9 +3,9 @@ size_t apl::detail::getPluginFeatureCount()
 {
     return apl::detail::FeatureManager::getFeatureCount();
 }
-const apl::PluginFeatureInfo* apl::detail::getPluginFeatureInfo(size_t i)
+const apl::PluginFeatureInfo* apl::detail::getPluginFeatureInfo(size_t index)
 {
-    return apl::detail::FeatureManager::getFeatureInfo(i);
+    return apl::detail::FeatureManager::getFeatureInfo(index);
 }
 const apl::PluginFeatureInfo * const* apl::detail::getPluginFeatureInfos()
 {
@@ -16,9 +16,9 @@ size_t apl::detail::getPluginClassCount()
 {
     return apl::detail::FeatureManager::getClassCount();
 }
-const apl::PluginClassInfo* apl::detail::getPluginClassInfo(size_t i)
+const apl::PluginClassInfo* apl::detail::getPluginClassInfo(size_t index)
 {
-    return apl::detail::FeatureManager::getClassInfo(i);
+    return apl::detail::FeatureManager::getClassInfo(index);
 }
 const apl::PluginClassInfo* const* apl::detail::getPluginClassInfos()
 {
