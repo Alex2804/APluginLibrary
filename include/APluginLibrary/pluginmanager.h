@@ -15,14 +15,14 @@ namespace apl
         class PluginManagerPrivate;
     }
 
-    enum class APLUGINLIBRARY_EXPORT PluginFeatureFilter
+    enum class PluginFeatureFilter
     {
         FeatureGroup,
         FeatureName,
         ReturnType,
         ArgumentList,
     };
-    enum class APLUGINLIBRARY_EXPORT PluginClassFilter
+    enum class PluginClassFilter
     {
         InterfaceName,
         ClassName
