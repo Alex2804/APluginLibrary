@@ -37,7 +37,9 @@ endif()
 
 set(SOURCES
         src/libraryloader_test.cpp
-        src/pluginapi_test.cpp src/plugin_test.cpp src/pluginmanager_test.cpp)
+        src/pluginapi_test.cpp
+        src/plugin_test.cpp
+        src/pluginmanager_test.cpp)
 
 add_executable(APluginLibraryTest ${SOURCES})
 target_link_libraries(APluginLibraryTest APluginLibrary gtest_main)

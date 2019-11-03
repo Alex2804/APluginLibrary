@@ -1,5 +1,5 @@
-#ifndef APLUGINLIBRARY_FEATUREMANAGER_IPP
-#define APLUGINLIBRARY_FEATUREMANAGER_IPP
+
+apl::detail::FeatureManager manager;
 
 apl::detail::FeatureManager::~FeatureManager()
 {
@@ -21,22 +21,22 @@ apl::PluginFeatureInfo* apl::detail::FeatureManager::registerFeature(const char 
     info->returnType = returnType;
     info->argumentList = argumentList;
     info->functionPointer = functionPointer;
-    featureManagerInstance.feature_infos.push_back(info);
+    manager.feature_infos.push_back(info);
     return info;
 }
-size_t apl::detail::FeatureManager::getFeatureCount() const
+size_t apl::detail::FeatureManager::getFeatureCount()
 {
-    return feature_infos.size();
+    return manager.feature_infos.size();
 }
-const apl::PluginFeatureInfo* apl::detail::FeatureManager::getFeatureInfo(size_t i) const
+const apl::PluginFeatureInfo* apl::detail::FeatureManager::getFeatureInfo(size_t i)
 {
-    if(i < feature_infos.size())
-        return feature_infos[i];
+    if(i < manager.feature_infos.size())
+        return manager.feature_infos[i];
     return nullptr;
 }
-const apl::PluginFeatureInfo* const* apl::detail::FeatureManager::getFeatureInfos() const
+const apl::PluginFeatureInfo* const* apl::detail::FeatureManager::getFeatureInfos()
 {
-    return feature_infos.data();
+    return manager.feature_infos.data();
 }
 
 apl::PluginClassInfo* apl::detail::FeatureManager::registerClass(const char *interfaceClassName,
@@ -48,22 +48,20 @@ apl::PluginClassInfo* apl::detail::FeatureManager::registerClass(const char *int
     info->className = featureClassName;
     info->createInstance = createInstance;
     info->deleteInstance = deleteInstance;
-    featureManagerInstance.class_infos.push_back(info);
+    manager.class_infos.push_back(info);
     return info;
 }
-size_t apl::detail::FeatureManager::getClassCount() const
+size_t apl::detail::FeatureManager::getClassCount()
 {
-    return class_infos.size();
+    return manager.class_infos.size();
 }
-const apl::PluginClassInfo* apl::detail::FeatureManager::getClassInfo(size_t i) const
+const apl::PluginClassInfo* apl::detail::FeatureManager::getClassInfo(size_t i)
 {
-    if(i < class_infos.size())
-        return class_infos.at(i);
+    if(i < manager.class_infos.size())
+        return manager.class_infos.at(i);
     return nullptr;
 }
-const apl::PluginClassInfo* const* apl::detail::FeatureManager::getClassInfos() const
+const apl::PluginClassInfo* const* apl::detail::FeatureManager::getClassInfos()
 {
-    return class_infos.data();
+    return manager.class_infos.data();
 }
-
-#endif //APLUGINLIBRARY_FEATUREMANAGER_IPP

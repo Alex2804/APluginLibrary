@@ -25,9 +25,11 @@ std::mutex apl::detail::PluginManagerPrivate::mutex;
 bool apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
 {
     library_handle tmpHandle = LibraryLoader::load(path);
+    if (!tmpHandle)
+        return false;
     mutex.lock();
     auto iterator = loadedPlugins.find(tmpHandle);
-    LibraryLoader::unload(tmpHandle); // unload library handle to reduce ref count
+    LibraryLoader::unload(tmpHandle);
     if(iterator != loadedPlugins.end()) {
         std::shared_ptr<PluginInstance> instance = iterator->second.lock();
         if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end()) {

@@ -1,12 +1,8 @@
 #ifndef APLUGINLIBRARY_PLUGINAPI_H
 #define APLUGINLIBRARY_PLUGINAPI_H
 
-#include <vector>
-#include <mutex>
-#include <iostream>
-
 #include "featuremanager.h"
-#include "implementation/macros.ipp"
+#include "macros.h"
 
 namespace apl
 {
@@ -14,18 +10,18 @@ namespace apl
     {
         extern "C"
         {
-            A_PLUGIN_API size_t getPluginFeatureCount();
-            A_PLUGIN_API const apl::PluginFeatureInfo* getPluginFeatureInfo(size_t i);
-            A_PLUGIN_API const apl::PluginFeatureInfo * const* getPluginFeatureInfos();
+            APLUGINLIBRARY_EXPORT size_t getPluginFeatureCount();
+            APLUGINLIBRARY_EXPORT const apl::PluginFeatureInfo* getPluginFeatureInfo(size_t i);
+            APLUGINLIBRARY_EXPORT const apl::PluginFeatureInfo * const* getPluginFeatureInfos();
 
-            A_PLUGIN_API size_t getPluginClassCount();
-            A_PLUGIN_API const apl::PluginClassInfo* getPluginClassInfo(size_t i);
-            A_PLUGIN_API const apl::PluginClassInfo* const* getPluginClassInfos();
+            APLUGINLIBRARY_EXPORT size_t getPluginClassCount();
+            APLUGINLIBRARY_EXPORT const apl::PluginClassInfo* getPluginClassInfo(size_t i);
+            APLUGINLIBRARY_EXPORT const apl::PluginClassInfo* const* getPluginClassInfos();
         }
     }
 }
 
-#include "implementation/pluginapi.ipp"
+#include "implementation/pluginapi.cpp"
 
 #define A_PLUGIN_REGISTER_FEATURE(returnType, featureGroup, featureName, ...)                                          \
     A_PLUGIN_FEATURE_OPEN_NAMESPACE(featureGroup, featureName)                                                         \

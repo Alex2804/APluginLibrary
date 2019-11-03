@@ -1,10 +1,16 @@
-#ifndef APLUGINLIBRARY_MACROS_IPP
-#define APLUGINLIBRARY_MACROS_IPP
+#ifndef APLUGINLIBRARY_MACROS_H
+#define APLUGINLIBRARY_MACROS_H
 
-#ifdef _WIN32
-# define A_PLUGIN_API  __declspec( dllexport )
-#else
-# define A_PLUGIN_API
+#if !defined(APLUGINLIBRARY_EXPORT) && defined(_WIN32)
+# define APLUGINLIBRARY_EXPORT  __declspec( dllexport )
+#elif !defined(APLUGINLIBRARY_EXPORT)
+# define APLUGINLIBRARY_EXPORT
+#endif
+
+#if !defined(APLUGINLIBRARY_NO_EXPORT) && (defined(__unix__) || defined(__APPLE__))
+# define APLUGINLIBRARY_NO_EXPORT __attribute__((visibility("hidden")))
+#elif !defined(APLUGINLIBRARY_NO_EXPORT)
+# define APLUGINLIBRARY_NO_EXPORT
 #endif
 
 
@@ -27,4 +33,4 @@
 #define A_PLUGIN_CLASS_NAME(interfaceName, className) \
     APluginClass_##interfaceName##_##className
 
-#endif //APLUGINLIBRARY_MACROS_IPP
+#endif //APLUGINLIBRARY_MACROS_H

@@ -1,45 +1,40 @@
 #ifndef APLUGINLIBRARY_FEATUREMANAGER_H
 #define APLUGINLIBRARY_FEATUREMANAGER_H
 
+#include <vector>
+
 #include "plugininfos.h"
+#include "macros.h"
 
 namespace apl
 {
     namespace detail
     {
-        class FeatureManager
+        class APLUGINLIBRARY_NO_EXPORT FeatureManager final
         {
         public:
-            FeatureManager() = default;
-            FeatureManager(const FeatureManager &other) = delete;
-            FeatureManager(FeatureManager &&other) noexcept = delete;
             ~FeatureManager();
-
-            FeatureManager &operator=(const FeatureManager &other) = delete;
-            FeatureManager &operator=(FeatureManager &&other) noexcept = delete;
 
             static PluginFeatureInfo *registerFeature(const char *featureGroup, const char *featureName,
                                                       const char *returnType, const char *argumentList,
                                                       void *functionPointer);
-            size_t getFeatureCount() const;
-            const PluginFeatureInfo *getFeatureInfo(size_t i) const;
-            const PluginFeatureInfo *const *getFeatureInfos() const;
+            static size_t getFeatureCount();
+            static const PluginFeatureInfo *getFeatureInfo(size_t i);
+            static const PluginFeatureInfo *const *getFeatureInfos();
 
             static PluginClassInfo *registerClass(const char *interfaceClassName, const char *featureClassName,
                                                   void *createInstance, void *deleteInstance);
-            size_t getClassCount() const;
-            const PluginClassInfo *getClassInfo(size_t i) const;
-            const PluginClassInfo *const *getClassInfos() const;
+            static size_t getClassCount();
+            static const PluginClassInfo *getClassInfo(size_t i);
+            static const PluginClassInfo *const *getClassInfos();
 
         private:
             std::vector<PluginFeatureInfo*> feature_infos;
             std::vector<PluginClassInfo*> class_infos;
         };
-
-        FeatureManager featureManagerInstance; // no singleton because there should be one instance per shared library (plugin)
     }
 }
 
-#include "implementation/featuremanager.ipp"
+# include "implementation/featuremanager.cpp"
 
 #endif //APLUGINLIBRARY_FEATUREMANAGER_H

@@ -11,21 +11,21 @@
  * From a loaded Plugin you can query the features and classes of that plugin.
  */
 
-
 apl::Plugin::Plugin(std::string path, library_handle handle)
     : d_ptr(new detail::PluginPrivate())
 {
-    d_ptr->libraryPath = std::move(path);
-    d_ptr->libraryHandle = handle;
-    if(!d_ptr->libraryHandle)
-        return;
-    d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
-    d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->libraryHandle, "getPluginFeatureInfo");
-    d_ptr->getFeatureInfos = LibraryLoader::getSymbol<detail::getFeatureInfosFunction>(d_ptr->libraryHandle, "getPluginFeatureInfos");
+    if(handle) {
+        d_ptr->libraryPath = std::move(path);
+        d_ptr->libraryHandle = handle;
 
-    d_ptr->getClassCount = LibraryLoader::getSymbol<detail::getClassCountFunction>(d_ptr->libraryHandle, "getPluginClassCount");
-    d_ptr->getClassInfo = LibraryLoader::getSymbol<detail::getClassInfoFunction>(d_ptr->libraryHandle, "getPluginClassInfo");
-    d_ptr->getClassInfos = LibraryLoader::getSymbol<detail::getClassInfosFunction>(d_ptr->libraryHandle, "getPluginClassInfos");
+        d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
+        d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->libraryHandle, "getPluginFeatureInfo");
+        d_ptr->getFeatureInfos = LibraryLoader::getSymbol<detail::getFeatureInfosFunction>(d_ptr->libraryHandle, "getPluginFeatureInfos");
+
+        d_ptr->getClassCount = LibraryLoader::getSymbol<detail::getClassCountFunction>(d_ptr->libraryHandle, "getPluginClassCount");
+        d_ptr->getClassInfo = LibraryLoader::getSymbol<detail::getClassInfoFunction>(d_ptr->libraryHandle, "getPluginClassInfo");
+        d_ptr->getClassInfos = LibraryLoader::getSymbol<detail::getClassInfosFunction>(d_ptr->libraryHandle, "getPluginClassInfos");
+    }
 }
 /**
  * Destroys the Plugin object and unloads the plugin.
@@ -48,11 +48,10 @@ apl::Plugin::~Plugin()
 apl::Plugin* apl::Plugin::load(std::string path)
 {
     library_handle handle = LibraryLoader::load(path);
-    if(!handle)
+    if (!handle)
         return nullptr;
     auto plugin = new Plugin(std::move(path), handle);
-    if(!plugin->d_ptr->libraryHandle ||
-       !plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
+    if(!plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
        !plugin->d_ptr->getClassCount || !plugin->d_ptr->getClassInfo || !plugin->d_ptr->getClassInfos)
     {
         delete plugin;
