@@ -17,6 +17,22 @@
 std::string apl::LibraryLoader::errorString = std::string();
 
 /**
+ * @return The file extension for shared libraries on this platform
+ */
+const char* apl::LibraryLoader::libExtension()
+{
+#ifdef __unix__
+    return "so";
+#elif __APPLE__
+    return "dylib";
+#elif _WIN32
+    return "dll";
+#else
+# error "Unknown shared library extension on this platform!"
+#endif
+}
+
+/**
  * Appends the platform specific file extension for shared libraries to @p path and loads the library.
  *
  * @param path The path to the library without the file extension.
@@ -27,15 +43,7 @@ std::string apl::LibraryLoader::errorString = std::string();
  */
 apl::library_handle apl::LibraryLoader::load(std::string path)
 {
-#ifdef __unix__
-    return load(std::move(path), ".so");
-#elif __APPLE__
-    return load(std::move(path), ".dylib");
-#elif _WIN32
-    return load(std::move(path), ".dll");
-#else
-# error "Unsupported platform for library opening!"
-#endif
+    return load(std::move(path).append("."), libExtension());
 }
 /**
  * Appends suffix to @p path and loads the library.

@@ -40,6 +40,7 @@ namespace apl
         PluginManager& operator=(PluginManager&& other) noexcept;
 
         bool load(std::string path);
+        int loadDirectory(const std::string& path, bool recursive);
 
         size_t getLoadedPluginCount();
         std::vector<Plugin*> getLoadedPlugins();

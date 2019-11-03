@@ -3,6 +3,9 @@
 
 #include <unordered_set>
 #include <exception>
+#include <cstring>
+
+#include "tinydir/tinydir.h"
 
 /**
  * @class apl::PluginManager
@@ -87,6 +90,43 @@ bool apl::PluginManager::load(std::string path)
 {
     return d_ptr->loadPlugin(std::move(path));
 }
+/**
+ * Loads all plugins in the directory at path into this PluginManager.
+ *
+ * @param path The path to the directory.
+ * @param recursive If the directory should be searched recursive.
+ *
+ * @return The count of loaded plugins.
+ */
+int apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
+{
+    tinydir_dir dir;
+    tinydir_file file;
+    int count = 0;
+    std::string filePath;
+
+    tinydir_open(&dir, path.c_str());
+    while (dir.has_next)
+    {
+        tinydir_readfile(&dir, &file);
+
+        filePath = file.path;
+        if(strcmp(file.name, ".") != 0 && strcmp(file.name, "..") != 0) {
+            if (file.is_dir && recursive) {
+                count += loadDirectory(file.path, recursive);
+            } else if (!file.is_dir && strcmp(file.extension, apl::LibraryLoader::libExtension()) == 0
+                       && load(filePath.erase(filePath.size() - 1 - strlen(file.extension)))) {
+                ++count;
+            }
+        }
+
+        tinydir_next(&dir);
+    }
+
+    tinydir_close(&dir);
+    return count;
+}
+
 /**
  * @return The count of loaded Plugins int this PluginManager.
  */

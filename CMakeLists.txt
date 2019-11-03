@@ -17,6 +17,14 @@ set(SDK_HEADERS
 set(SDK_SOURCES
         )
 
+set(PUBLIC_INCLUDE_DIRECTORIES
+        include
+        SDK
+        ${CMAKE_CURRENT_BINARY_DIR}/exports)
+
+set(PRIVATE_INCLUDE_DIRECTORIES
+        libs/tinydir)
+
 if(WIN32)
     add_subdirectory(libs/dlfcn)
     list(APPEND CMAKE_DL_LIBS dlfcn-win32)
@@ -26,7 +34,9 @@ add_library(APluginLibrary STATIC ${HEADERS} ${SOURCES} ${SDK_HEADERS} ${SDK_SOU
 include(GenerateExportHeader)
 generate_export_header(APluginLibrary
         EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/exports/APluginLibrary/apluginlibrary_export.h)
-target_include_directories(APluginLibrary PUBLIC include SDK "${CMAKE_CURRENT_BINARY_DIR}/exports")
+target_include_directories(APluginLibrary
+        PUBLIC ${PUBLIC_INCLUDE_DIRECTORIES}
+        PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
 if(${APluginLibraryTest})

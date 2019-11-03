@@ -111,6 +111,32 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
+GTEST_TEST(PluginManager_Test, loadDirectory)
+{
+    apl::PluginManager manager = apl::PluginManager();
+
+    // test with specific unloading
+    manager.loadDirectory("plugins", false);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    manager.loadDirectory("plugins/first", false);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 1);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 1);
+
+    apl::Plugin* plugin = manager.getLoadedPlugins().front();
+    ASSERT_NE(plugin, nullptr);
+    ASSERT_TRUE(plugin->isLoaded());
+    ASSERT_EQ(plugin->getPath(), "plugins/first/first_plugin");
+
+    manager.loadDirectory("plugins", true);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 7);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 7);
+
+    manager.unloadAll();
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+}
+
 GTEST_TEST(PluginManager_Test, test_no_double_loading)
 {
     apl::PluginManager manager = apl::PluginManager();

@@ -13,6 +13,7 @@ namespace apl
     class APLUGINLIBRARY_EXPORT LibraryLoader
     {
     public:
+        static const char* libExtension();
         static library_handle load(std::string path);
         static library_handle load(std::string path, const std::string& suffix);
         static bool unload(library_handle handle);
