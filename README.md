@@ -6,8 +6,8 @@ All of the public API is in the **apl** namespace.
 ### <a name="Plugin">Plugin</a>
 Plugins are provided as shared libraries and can be loaded into the program at runtime.
 
-**For more information about plugins and how to write them, please check out
-[APluginSDK](https://github.com/Alex2804/APluginSDK)**
+For more information about plugins and how to write them, please check out
+**[APluginSDK](https://github.com/Alex2804/APluginSDK)**.
 
 ---
 ### <a name="PluginManager">PluginManager</a>
