@@ -1,4 +1,4 @@
-#include "APluginLibrary/pluginapi.h"
+#include "APluginSDK/pluginapi.h"
 #include "../../interface.h"
 
 A_PLUGIN_REGISTER_FEATURE(int, sixth_group_math, feature_add, int x1, int x2)

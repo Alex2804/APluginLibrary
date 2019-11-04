@@ -9,8 +9,8 @@
 #include <mutex>
 
 #include "APluginLibrary/plugin.h"
-#include "APluginLibrary/plugininfos.h"
 #include "APluginLibrary/libraryloader.h"
+#include "APluginSDK/plugininfos.h"
 
 #ifdef APLUGINLIBRARY_TEST
 # undef APLUGINLIBRARY_NO_EXPORT

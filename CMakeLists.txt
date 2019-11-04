@@ -13,15 +13,17 @@ set(SOURCES
         src/pluginmanager.cpp src/private/pluginmanagerprivate.cpp)
 
 set(SDK_HEADERS
-        SDK/APluginLibrary/plugininfos.h)
+        SDK/APluginSDK/pluginapi.h
+        SDK/APluginSDK/plugininfos.h
+        SDK/APluginSDK/implementation/featuremanager.h)
 set(SDK_SOURCES
-        )
+        SDK/APluginSDK/implementation/pluginapi.cpp
+        SDK/APluginSDK/implementation/featuremanager.cpp)
 
 set(PUBLIC_INCLUDE_DIRECTORIES
         include
         SDK
         ${CMAKE_CURRENT_BINARY_DIR}/exports)
-
 set(PRIVATE_INCLUDE_DIRECTORIES
         libs/tinydir)
 
@@ -37,6 +39,7 @@ generate_export_header(APluginLibrary
 target_include_directories(APluginLibrary
         PUBLIC ${PUBLIC_INCLUDE_DIRECTORIES}
         PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+target_compile_definitions(APluginLibrary PRIVATE A_PLUGIN_SDK_EXCLUDE_DEFINITION)
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
 if(${APluginLibraryTest})

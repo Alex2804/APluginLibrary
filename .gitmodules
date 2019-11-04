@@ -4,3 +4,6 @@
 [submodule "libs/tinydir/tinydir"]
 	path = libs/tinydir/tinydir
 	url = https://github.com/cxong/tinydir
+[submodule "SDK/APluginSDK"]
+	path = SDK/APluginSDK
+	url = https://github.com/Alex2804/APluginSDK.git

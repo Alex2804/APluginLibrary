@@ -5,8 +5,8 @@
 
 #include <string>
 
-#include "APluginLibrary/plugininfos.h"
 #include "APluginLibrary/libraryloader.h"
+#include "APluginSDK/plugininfos.h"
 
 namespace apl
 {

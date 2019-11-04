@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "APluginLibrary/libraryloader.h"
-#include "APluginLibrary/plugininfos.h"
+#include "APluginSDK/plugininfos.h"
 
 #include "../plugins/interface.h"
 

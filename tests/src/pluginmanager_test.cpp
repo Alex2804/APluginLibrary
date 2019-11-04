@@ -3,8 +3,8 @@
 #include <string>
 #include <algorithm>
 
-#include "APluginLibrary/plugininfos.h"
 #include "APluginLibrary/pluginmanager.h"
+#include "APluginSDK/plugininfos.h"
 
 #include "../../src/private/pluginmanagerprivate.h"
 
