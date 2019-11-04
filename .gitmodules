@@ -1,6 +1,3 @@
-[submodule "libs/dlfcn/dlfcn-win32"]
-	path = libs/dlfcn/dlfcn-win32
-	url = https://github.com/dlfcn-win32/dlfcn-win32
 [submodule "libs/tinydir/tinydir"]
 	path = libs/tinydir/tinydir
 	url = https://github.com/cxong/tinydir
