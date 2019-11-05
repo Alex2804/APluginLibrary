@@ -20,7 +20,9 @@ namespace apl
         FeatureGroup,
         FeatureName,
         ReturnType,
-        ArgumentList,
+        ParameterList,
+        ParameterTypes,
+        ParameterNames
     };
     enum class PluginClassFilter
     {

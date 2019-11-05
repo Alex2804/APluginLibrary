@@ -20,7 +20,7 @@
  * The return type of the feature.
  */
 /**
- * @var apl::PluginFeatureInfo::argumentList
+ * @var apl::PluginFeatureInfo::parameterList
  *
  * The parameter list of the feature.
  */

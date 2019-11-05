@@ -16,8 +16,8 @@ unloaded using one of the unload methods, or if the PluginManager is deleted.
 
 You can query how many and which plugins are loaded in this PluginManager.
 You can also get all loaded features and classes, where you can filter the features (with PluginFeatureFilter)
-by feature group, feature name, return type or argument list and the classes (with PluginClassFilter)
-by interface name or class name.
+by feature group, feature name, return type, parameter list, parameter list types or parameter list names
+and the classes (with PluginClassFilter) by interface name or class name.
 
 There can be multiple instances of PluginManager with different plugins.
 

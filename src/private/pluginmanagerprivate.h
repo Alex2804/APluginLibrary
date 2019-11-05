@@ -4,6 +4,7 @@
 #include "APluginLibrary/apluginlibrary_export.h"
 
 #include <vector>
+#include <string>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
@@ -44,6 +45,15 @@ namespace apl
             bool loadPlugin(std::string path); // loads a plugin into this PluginManager (tries to prevent duplicates)
             void unloadPlugin(Plugin* plugin); // unload a plugin from this PluginManager instance
         };
+    }
+
+    enum class PluginFeatureFilter;
+    enum class PluginClassFilter;
+
+    namespace detail
+    {
+        const char* filterFeatureInfo(const apl::PluginFeatureInfo* info, const apl::PluginFeatureFilter& filter);
+        const char* filterClassInfo(const apl::PluginClassInfo* info, const apl::PluginClassFilter& filter);
     }
 }
 

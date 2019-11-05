@@ -163,19 +163,6 @@ void apl::PluginManager::unloadAll()
     d_ptr->pluginInstances.clear();
 }
 
-inline const char* filterFeatureInfo(const apl::PluginFeatureInfo* info, const apl::PluginFeatureFilter& filter)
-{
-    if(filter == apl::PluginFeatureFilter::FeatureGroup)
-        return info->featureGroup;
-    else if(filter == apl::PluginFeatureFilter::FeatureName)
-        return info->featureName;
-    else if(filter == apl::PluginFeatureFilter::ArgumentList)
-        return info->argumentList;
-    else if(filter == apl::PluginFeatureFilter::ReturnType)
-        return info->returnType;
-    else
-        throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
-}
 /**
  * @return The PluginFeatureInfo's of all loaded plugins in this PluginManager.
  */
@@ -198,7 +185,7 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const
     std::vector<const PluginFeatureInfo*> features;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->featureCount; i++) {
-            if(string == filterFeatureInfo(pluginInstance->featureInfos[i], filter))
+            if(string == detail::filterFeatureInfo(pluginInstance->featureInfos[i], filter))
                 features.push_back(pluginInstance->featureInfos[i]);
         }
     }
@@ -214,7 +201,7 @@ std::vector<std::string> apl::PluginManager::getFeatureProperties(const PluginFe
     const char* property;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->featureCount; i++) {
-            property = filterFeatureInfo(pluginInstance->featureInfos[i], filter);
+            property = detail::filterFeatureInfo(pluginInstance->featureInfos[i], filter);
             if(propertiesSet.find(property) == propertiesSet.end())
                 propertiesSet.emplace(property);
         }
@@ -222,15 +209,6 @@ std::vector<std::string> apl::PluginManager::getFeatureProperties(const PluginFe
     return std::vector<std::string>(propertiesSet.begin(), propertiesSet.end());
 }
 
-inline const char* filterClassInfo(const apl::PluginClassInfo* info, const apl::PluginClassFilter& filter)
-{
-    if(filter == apl::PluginClassFilter::InterfaceName)
-        return info->interfaceName;
-    else if(filter == apl::PluginClassFilter::ClassName)
-        return info->className;
-    else
-        throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
-}
 /**
  * @return The PluginClassInfo's of all loaded plugins in this PluginManager.
  */
@@ -253,7 +231,7 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const st
     std::vector<const PluginClassInfo*> classes;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->classCount; i++) {
-            if(string == filterClassInfo(pluginInstance->classInfos[i], filter))
+            if(string == detail::filterClassInfo(pluginInstance->classInfos[i], filter))
                 classes.push_back(pluginInstance->classInfos[i]);
         }
     }
@@ -269,7 +247,7 @@ std::vector<std::string> apl::PluginManager::getClassProperties(const PluginClas
     const char* property;
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->classCount; i++) {
-            property = filterClassInfo(pluginInstance->classInfos[i], filter);
+            property = detail::filterClassInfo(pluginInstance->classInfos[i], filter);
             if(propertiesSet.find(property) == propertiesSet.end())
                 propertiesSet.emplace(property);
         }

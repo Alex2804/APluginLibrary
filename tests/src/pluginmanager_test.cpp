@@ -263,10 +263,18 @@ GTEST_TEST(PluginManager_Test, getFeatures_unfiltered)
                                   "feature_pow2", "feature_pow3",
                                   "feature1"};
     const char* returnTypes[] = {"int", "int", "int", "int", "int", "int", "int", "int"};
-    const char* argumentLists[] = {"int x1, int x2",
+    const char* parameterLists[] = {"int x1, int x2",
                                    "int x1, int x2", "int x1, int x2", "int x1, int x2", "int x1, int x2",
                                    "int x", "int x",
                                    "int x1, int x2"};
+    const char* parameterTypes[] = {"int, int",
+                                    "int, int", "int, int", "int, int", "int, int",
+                                    "int", "int",
+                                    "int, int"};
+    const char* parameterNames[] = {"x1, x2",
+                                    "x1, x2", "x1, x2", "x1, x2", "x1, x2",
+                                    "x", "x",
+                                    "x1, x2"};
     int results[] = {27, 12, 6, 27, 3, 49, 343, 27};
     const apl::PluginFeatureInfo* info;
     for(size_t i = 0; i < features.size(); i++) {
@@ -275,8 +283,10 @@ GTEST_TEST(PluginManager_Test, getFeatures_unfiltered)
         ASSERT_STREQ(info->featureGroup, featureGroups[i]);
         ASSERT_STREQ(info->featureName, featureNames[i]);
         ASSERT_STREQ(info->returnType, returnTypes[i]);
-        ASSERT_STREQ(info->argumentList, argumentLists[i]);
-        if(std::string(info->argumentList) == "int x")
+        ASSERT_STREQ(info->parameterList, parameterLists[i]);
+        ASSERT_STREQ(info->parameterTypes, parameterTypes[i]);
+        ASSERT_STREQ(info->parameterNames, parameterNames[i]);
+        if(std::string(info->parameterList) == "int x")
             ASSERT_EQ(reinterpret_cast<int(*)(int)>(info->functionPointer)(7), results[i]);
         else
             ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
@@ -306,7 +316,9 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
     std::vector<const char*> featureGroups;
     std::vector<const char*> featureNames = {"feature_add", "feature_sub", "feature_mul", "feature_div"};
     std::vector<const char*> returnTypes = {"int", "int", "int", "int"};
-    std::vector<const char*> argumentLists = {"int x1, int x2", "int x1, int x2", "int x1, int x2", "int x1, int x2"};
+    std::vector<const char*> parameterLists = {"int x1, int x2", "int x1, int x2", "int x1, int x2", "int x1, int x2"};
+    std::vector<const char*> parameterTypes = {"int, int", "int, int", "int, int", "int, int"};
+    std::vector<const char*> parameterNames = {"x1, x2", "x1, x2", "x1, x2", "x1, x2"};
     std::vector<int> results = {12, 6, 27, 3};
     const apl::PluginFeatureInfo* info;
     for(size_t i = 0; i < features.size(); i++) {
@@ -315,7 +327,9 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
         ASSERT_STREQ(info->featureGroup, "second_group_math");
         ASSERT_STREQ(info->featureName, featureNames[i]);
         ASSERT_STREQ(info->returnType, returnTypes[i]);
-        ASSERT_STREQ(info->argumentList, argumentLists[i]);
+        ASSERT_STREQ(info->parameterList, parameterLists[i]);
+        ASSERT_STREQ(info->parameterTypes, parameterTypes[i]);
+        ASSERT_STREQ(info->parameterNames, parameterNames[i]);
         ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
     }
 
@@ -324,7 +338,9 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
     ASSERT_EQ(features.size(), 2);
     featureGroups = {"first_group1", "fifth_group1"};
     returnTypes = {"int", "int"};
-    argumentLists = {"int x1, int x2", "int x1, int x2"};
+    parameterLists = {"int x1, int x2", "int x1, int x2"};
+    parameterTypes = {"int, int", "int, int"};
+    parameterNames = {"x1, x2", "x1, x2"};
     results = {27, 27};
     for(size_t i = 0; i < features.size(); i++) {
         info = features.at(i);
@@ -332,7 +348,9 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
         ASSERT_STREQ(info->featureGroup, featureGroups[i]);
         ASSERT_STREQ(info->featureName, "feature1");
         ASSERT_STREQ(info->returnType, returnTypes[i]);
-        ASSERT_STREQ(info->argumentList, argumentLists[i]);
+        ASSERT_STREQ(info->parameterList, parameterLists[i]);
+        ASSERT_STREQ(info->parameterTypes, parameterTypes[i]);
+        ASSERT_STREQ(info->parameterNames, parameterNames[i]);
         ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
     }
 
@@ -344,11 +362,13 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
     ASSERT_STREQ(info->featureGroup, "seventh_group1");
     ASSERT_STREQ(info->featureName, "convert_to_char");
     ASSERT_STREQ(info->returnType, "char");
-    ASSERT_STREQ(info->argumentList, "int x");
+    ASSERT_STREQ(info->parameterList, "int x");
+    ASSERT_STREQ(info->parameterTypes, "int");
+    ASSERT_STREQ(info->parameterNames, "x");
     ASSERT_EQ(reinterpret_cast<char(*)(int)>(info->functionPointer)(static_cast<int>('a')), 'a');
 
-    // filter argument lists
-    features = manager.getFeatures("int x", apl::PluginFeatureFilter::ArgumentList);
+    // filter parameter lists
+    features = manager.getFeatures("int x", apl::PluginFeatureFilter::ParameterList);
     ASSERT_EQ(features.size(), 3);
     featureGroups = {"second_group_pow", "second_group_pow", "seventh_group1"};
     featureNames = {"feature_pow2", "feature_pow3", "convert_to_char"};
@@ -360,7 +380,49 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
         ASSERT_STREQ(info->featureGroup, featureGroups[i]);
         ASSERT_STREQ(info->featureName, featureNames[i]);
         ASSERT_STREQ(info->returnType, returnTypes[i]);
-        ASSERT_STREQ(info->argumentList, "int x");
+        ASSERT_STREQ(info->parameterList, "int x");
+        ASSERT_STREQ(info->parameterTypes, "int");
+        ASSERT_STREQ(info->parameterNames, "x");
+        int x;
+        if(std::string(info->returnType) == "int")
+            x = reinterpret_cast<int(*)(int)>(info->functionPointer)(5);
+        else
+            x = static_cast<int>(reinterpret_cast<char(*)(int)>(info->functionPointer)(5));
+        ASSERT_EQ(x, results[i]);
+    }
+
+    // filter parameter types
+    features = manager.getFeatures("int", apl::PluginFeatureFilter::ParameterTypes);
+    ASSERT_EQ(features.size(), 3);
+    for(size_t i = 0; i < features.size(); i++) {
+        info = features.at(i);
+        ASSERT_NE(info, nullptr);
+        ASSERT_STREQ(info->featureGroup, featureGroups[i]);
+        ASSERT_STREQ(info->featureName, featureNames[i]);
+        ASSERT_STREQ(info->returnType, returnTypes[i]);
+        ASSERT_STREQ(info->parameterList, "int x");
+        ASSERT_STREQ(info->parameterTypes, "int");
+        ASSERT_STREQ(info->parameterNames, "x");
+        int x;
+        if(std::string(info->returnType) == "int")
+            x = reinterpret_cast<int(*)(int)>(info->functionPointer)(5);
+        else
+            x = static_cast<int>(reinterpret_cast<char(*)(int)>(info->functionPointer)(5));
+        ASSERT_EQ(x, results[i]);
+    }
+
+    // filter parameter names
+    features = manager.getFeatures("x", apl::PluginFeatureFilter::ParameterNames);
+    ASSERT_EQ(features.size(), 3);
+    for(size_t i = 0; i < features.size(); i++) {
+        info = features.at(i);
+        ASSERT_NE(info, nullptr);
+        ASSERT_STREQ(info->featureGroup, featureGroups[i]);
+        ASSERT_STREQ(info->featureName, featureNames[i]);
+        ASSERT_STREQ(info->returnType, returnTypes[i]);
+        ASSERT_STREQ(info->parameterList, "int x");
+        ASSERT_STREQ(info->parameterTypes, "int");
+        ASSERT_STREQ(info->parameterNames, "x");
         int x;
         if(std::string(info->returnType) == "int")
             x = reinterpret_cast<int(*)(int)>(info->functionPointer)(5);
@@ -410,9 +472,23 @@ GTEST_TEST(PluginManager_Test, getFeatureProperties)
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
 
-    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ArgumentList);
+    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterList);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
     result = {"int x1, int x2", "int x"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterTypes);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    result = {"int, int", "int"};
+    std::sort(result.begin(), result.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), result.size());
+    ASSERT_EQ(properties, result);
+
+    properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterNames);
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    result = {"x1, x2", "x"};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);

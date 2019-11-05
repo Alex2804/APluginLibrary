@@ -28,7 +28,9 @@ GTEST_TEST(PluginAPI_Test, feature_loading_single)
     ASSERT_STREQ(info->returnType, "int");
     ASSERT_STREQ(info->featureGroup, "first_group1");
     ASSERT_STREQ(info->featureName, "feature1");
-    ASSERT_STREQ(info->argumentList, "int x1, int x2");
+    ASSERT_STREQ(info->parameterList, "int x1, int x2");
+    ASSERT_STREQ(info->parameterTypes, "int, int");
+    ASSERT_STREQ(info->parameterNames, "x1, x2");
     ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(7, 3), 21);
 
     apl::LibraryLoader::unload(handle);
@@ -62,7 +64,9 @@ GTEST_TEST(PluginAPI_Test, feature_loading_multiple)
         ASSERT_STREQ(info->returnType, "int");
         ASSERT_STREQ(info->featureGroup, i >= 4 ? "second_group_pow" : "second_group_math");
         ASSERT_STREQ(info->featureName, featureNames[i]);
-        ASSERT_STREQ(info->argumentList, i >= 4 ? "int x" : "int x1, int x2");
+        ASSERT_STREQ(info->parameterList, i >= 4 ? "int x" : "int x1, int x2");
+        ASSERT_STREQ(info->parameterTypes, i >= 4 ? "int" : "int, int");
+        ASSERT_STREQ(info->parameterNames, i >= 4 ? "x" : "x1, x2");
         if(i >= 4)
             ASSERT_EQ(reinterpret_cast<int(*)(int)>(info->functionPointer)(7), results[i]);
         else
@@ -198,7 +202,9 @@ GTEST_TEST(PluginAPI_Test, feature_and_class_loading_single)
     ASSERT_STREQ(featureInfo->returnType, "int");
     ASSERT_STREQ(featureInfo->featureGroup, "fifth_group1");
     ASSERT_STREQ(featureInfo->featureName, "feature1");
-    ASSERT_STREQ(featureInfo->argumentList, "int x1, int x2");
+    ASSERT_STREQ(featureInfo->parameterList, "int x1, int x2");
+    ASSERT_STREQ(featureInfo->parameterTypes, "int, int");
+    ASSERT_STREQ(featureInfo->parameterNames, "x1, x2");
     ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(featureInfo->functionPointer)(7, 3), 21);
 
     // class check
@@ -268,7 +274,9 @@ GTEST_TEST(PluginAPI_Test, feature_and_class_loading_multiple)
         ASSERT_STREQ(featureInfo->returnType, "int");
         ASSERT_STREQ(featureInfo->featureGroup, i >= 4 ? "sixth_group_pow" : "sixth_group_math");
         ASSERT_STREQ(featureInfo->featureName, featureNames[i]);
-        ASSERT_STREQ(featureInfo->argumentList, i >= 4 ? "int x" : "int x1, int x2");
+        ASSERT_STREQ(featureInfo->parameterList, i >= 4 ? "int x" : "int x1, int x2");
+        ASSERT_STREQ(featureInfo->parameterTypes, i >= 4 ? "int" : "int, int");
+        ASSERT_STREQ(featureInfo->parameterNames, i >= 4 ? "x" : "x1, x2");
         if(i >= 4)
             ASSERT_EQ(reinterpret_cast<int(*)(int)>(featureInfo->functionPointer)(7), results[i]);
         else
