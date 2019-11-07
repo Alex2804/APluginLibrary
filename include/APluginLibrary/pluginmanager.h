@@ -44,19 +44,19 @@ namespace apl
         bool load(std::string path);
         int loadDirectory(const std::string& path, bool recursive);
 
-        size_t getLoadedPluginCount();
+        size_t getLoadedPluginCount() const;
         std::vector<Plugin*> getLoadedPlugins();
 
         void unload(Plugin* plugin);
         void unloadAll();
 
-        std::vector<const PluginFeatureInfo*> getFeatures();
-        std::vector<const PluginFeatureInfo*> getFeatures(const std::string& string, const PluginFeatureFilter& filter = PluginFeatureFilter::FeatureGroup);
-        std::vector<std::string> getFeatureProperties(const PluginFeatureFilter& filter);
+        std::vector<const PluginFeatureInfo*> getFeatures() const;
+        std::vector<const PluginFeatureInfo*> getFeatures(const std::string& string, const PluginFeatureFilter& filter = PluginFeatureFilter::FeatureGroup) const;
+        std::vector<std::string> getFeatureProperties(const PluginFeatureFilter& filter) const;
 
-        std::vector<const PluginClassInfo*> getClasses();
-        std::vector<const PluginClassInfo*> getClasses(const std::string& string, const PluginClassFilter& filter = PluginClassFilter::InterfaceName);
-        std::vector<std::string> getClassProperties(const PluginClassFilter& filter);
+        std::vector<const PluginClassInfo*> getClasses() const;
+        std::vector<const PluginClassInfo*> getClasses(const std::string& string, const PluginClassFilter& filter = PluginClassFilter::InterfaceName) const;
+        std::vector<std::string> getClassProperties(const PluginClassFilter& filter) const;
 
     private:
         detail::PluginManagerPrivate* d_ptr;
