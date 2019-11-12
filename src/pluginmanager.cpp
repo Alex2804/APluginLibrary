@@ -98,11 +98,11 @@ bool apl::PluginManager::load(std::string path)
  *
  * @return The count of loaded plugins.
  */
-int apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
+size_t apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
 {
     tinydir_dir dir;
     tinydir_file file;
-    int count = 0;
+    size_t count = 0;
     std::string filePath;
 
     tinydir_open(&dir, path.c_str());
@@ -113,7 +113,7 @@ int apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
         filePath = file.path;
         if(strcmp(file.name, ".") != 0 && strcmp(file.name, "..") != 0) {
             if (file.is_dir && recursive) {
-                count += loadDirectory(file.path, recursive);
+                count += loadDirectory(filePath, recursive);
             } else if (!file.is_dir && strcmp(file.extension, apl::LibraryLoader::libExtension()) == 0
                        && load(filePath.erase(filePath.size() - 1 - strlen(file.extension)))) {
                 ++count;
