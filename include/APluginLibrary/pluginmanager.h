@@ -48,6 +48,7 @@ namespace apl
         std::vector<Plugin*> getLoadedPlugins();
 
         void unload(Plugin* plugin);
+        void unload(const std::string& path);
         void unloadAll();
 
         std::vector<const PluginFeatureInfo*> getFeatures() const;

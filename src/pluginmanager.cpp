@@ -155,6 +155,17 @@ void apl::PluginManager::unload(apl::Plugin* plugin)
 {
     d_ptr->unloadPlugin(plugin);
 }
+void apl::PluginManager::unload(const std::string& path)
+{
+    std::vector<Plugin*> plugins;
+    for(const std::shared_ptr<detail::PluginInstance>& instance : d_ptr->pluginInstances) {
+        if(instance->plugin->getPath() == path)
+            plugins.push_back(instance->plugin);
+    }
+    for(Plugin* plugin : plugins) {
+        unload(plugin);
+    }
+}
 /**
  * Unloads all plugins in this PluginManager.
  */
