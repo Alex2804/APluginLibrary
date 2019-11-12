@@ -32,8 +32,8 @@ namespace apl
         std::string getPath() const;
         const_library_handle getHandle() const;
 
-        void* allocateMemory(size_t bytes);
-        bool freeMemory(void* ptr);
+        void* allocateMemory(size_t bytes) const;
+        bool freeMemory(void* ptr) const;
 
         size_t getFeatureCount() const;
         const PluginFeatureInfo* getFeatureInfo(size_t index) const;

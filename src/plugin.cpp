@@ -102,7 +102,7 @@ apl::const_library_handle apl::Plugin::getHandle() const
  * @param bytes The size of the memory to allocate in bytes.
  * @return A pointer to the allocated memory.
  */
-void* apl::Plugin::allocateMemory(size_t bytes)
+void* apl::Plugin::allocateMemory(size_t bytes) const
 {
     if(!isLoaded())
         return nullptr;
@@ -113,7 +113,7 @@ void* apl::Plugin::allocateMemory(size_t bytes)
  * @param ptr The pointer to free.
  * @return If it was possible to call the free function of the Plugin.
  */
-bool apl::Plugin::freeMemory(void *ptr)
+bool apl::Plugin::freeMemory(void *ptr) const
 {
     if(isLoaded()) {
         d_ptr->freeMemory(ptr);
