@@ -5,6 +5,35 @@
 
 #include "../plugins/interface.h"
 
+GTEST_TEST(PluginAPI_Test, memory_allocate_free)
+{
+    void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
+    ASSERT_NE(handle, nullptr);
+
+    auto allocateMemory = apl::LibraryLoader::getSymbol<void*(*)(size_t)>(handle, "allocatePluginMemory");
+    ASSERT_NE(allocateMemory, nullptr);
+    auto freeMemory = apl::LibraryLoader::getSymbol<void(*)(void*)>(handle, "freePluginMemory");
+    ASSERT_NE(freeMemory, nullptr);
+
+    void* ptr = allocateMemory(sizeof(apl::PluginClassInfo));
+    ASSERT_NE(ptr, nullptr);
+    auto classPtr = static_cast<apl::PluginClassInfo*>(ptr);
+
+    classPtr->className = "TestClassName";
+    classPtr->interfaceName = "TestInterfaceName";
+    classPtr->createInstance = nullptr;
+    classPtr->deleteInstance = nullptr;
+
+    ASSERT_STREQ(classPtr->className, "TestClassName");
+    ASSERT_STREQ(classPtr->interfaceName, "TestInterfaceName");
+    ASSERT_EQ(classPtr->createInstance, nullptr);
+    ASSERT_EQ(classPtr->deleteInstance, nullptr);
+
+    freeMemory(classPtr);
+
+    apl::LibraryLoader::unload(handle);
+}
+
 GTEST_TEST(PluginAPI_Test, feature_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");

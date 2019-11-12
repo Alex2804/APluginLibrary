@@ -18,6 +18,9 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
         d_ptr->libraryPath = std::move(path);
         d_ptr->libraryHandle = handle;
 
+        d_ptr->allocateMemory = LibraryLoader::getSymbol<detail::allocatePluginMemoryFunction>(d_ptr->libraryHandle, "allocatePluginMemory");
+        d_ptr->freeMemory = LibraryLoader::getSymbol<detail::freePluginMemoryFunction>(d_ptr->libraryHandle, "freePluginMemory");
+
         d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
         d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->libraryHandle, "getPluginFeatureInfo");
         d_ptr->getFeatureInfos = LibraryLoader::getSymbol<detail::getFeatureInfosFunction>(d_ptr->libraryHandle, "getPluginFeatureInfos");
@@ -51,7 +54,8 @@ apl::Plugin* apl::Plugin::load(std::string path)
     if (!handle)
         return nullptr;
     auto plugin = new Plugin(std::move(path), handle);
-    if(!plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
+    if(!plugin->d_ptr->allocateMemory || !plugin->d_ptr->freeMemory ||
+       !plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
        !plugin->d_ptr->getClassCount || !plugin->d_ptr->getClassInfo || !plugin->d_ptr->getClassInfos)
     {
         delete plugin;
@@ -90,6 +94,32 @@ std::string apl::Plugin::getPath() const
 apl::const_library_handle apl::Plugin::getHandle() const
 {
     return d_ptr->libraryHandle;
+}
+
+/**
+ * Calls the afl::detail::allocatePluginMemory function from the plugin api and returns the allocated memory or nullptr
+ * on failure.
+ * @param bytes The size of the memory to allocate in bytes.
+ * @return A pointer to the allocated memory.
+ */
+void* apl::Plugin::allocateMemory(size_t bytes)
+{
+    if(!isLoaded())
+        return nullptr;
+    return d_ptr->allocateMemory(bytes);
+}
+/**
+ * Calls the afl::detail::freePluginMemory function from the plugin api and returns if the function was available.
+ * @param ptr The pointer to free.
+ * @return If it was possible to call the free function of the Plugin.
+ */
+bool apl::Plugin::freeMemory(void *ptr)
+{
+    if(isLoaded()) {
+        d_ptr->freeMemory(ptr);
+        return true;
+    }
+    return false;
 }
 
 /**

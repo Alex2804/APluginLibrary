@@ -16,6 +16,9 @@
 namespace apl {
     namespace detail
     {
+        typedef void*(*allocatePluginMemoryFunction)(size_t);
+        typedef void(*freePluginMemoryFunction)(void*);
+
         typedef size_t(*getFeatureCountFunction)();
         typedef const PluginFeatureInfo*(*getFeatureInfoFunction)(size_t);
         typedef const PluginFeatureInfo*const*(*getFeatureInfosFunction)();
@@ -28,6 +31,9 @@ namespace apl {
         {
             std::string libraryPath;
             library_handle libraryHandle;
+
+            allocatePluginMemoryFunction allocateMemory;
+            freePluginMemoryFunction freeMemory;
 
             getFeatureCountFunction getFeatureCount;
             getFeatureInfoFunction getFeatureInfo;

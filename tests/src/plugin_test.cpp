@@ -33,6 +33,34 @@ GTEST_TEST(Plugin_Test, getPath)
     delete plugin;
 }
 
+GTEST_TEST(Plugin_Test, memory_allocate_free)
+{
+    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
+    ASSERT_NE(plugin, nullptr);
+    ASSERT_TRUE(plugin->isLoaded());
+
+    void* ptr = plugin->allocateMemory(sizeof(apl::PluginClassInfo));
+    ASSERT_NE(ptr, nullptr);
+    auto classPtr = static_cast<apl::PluginClassInfo*>(ptr);
+
+    classPtr->className = "TestClassName";
+    classPtr->interfaceName = "TestInterfaceName";
+    classPtr->createInstance = nullptr;
+    classPtr->deleteInstance = nullptr;
+
+    ASSERT_STREQ(classPtr->className, "TestClassName");
+    ASSERT_STREQ(classPtr->interfaceName, "TestInterfaceName");
+    ASSERT_EQ(classPtr->createInstance, nullptr);
+    ASSERT_EQ(classPtr->deleteInstance, nullptr);
+
+    ASSERT_TRUE(plugin->freeMemory(ptr));
+
+    plugin->unload();
+    ASSERT_FALSE(plugin->isLoaded());
+    ASSERT_FALSE(plugin->freeMemory(ptr));
+    delete plugin;
+}
+
 GTEST_TEST(Plugin_Test, feature_loading_single)
 {
     apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
