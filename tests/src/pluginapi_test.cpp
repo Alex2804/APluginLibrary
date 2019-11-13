@@ -10,9 +10,9 @@ GTEST_TEST(PluginAPI_Test, memory_allocate_free)
     void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
     ASSERT_NE(handle, nullptr);
 
-    auto allocateMemory = apl::LibraryLoader::getSymbol<void*(*)(size_t)>(handle, "allocatePluginMemory");
+    auto allocateMemory = apl::LibraryLoader::getSymbol<void*(*)(size_t)>(handle, "allocateMemory");
     ASSERT_NE(allocateMemory, nullptr);
-    auto freeMemory = apl::LibraryLoader::getSymbol<void(*)(void*)>(handle, "freePluginMemory");
+    auto freeMemory = apl::LibraryLoader::getSymbol<void(*)(void*)>(handle, "freeMemory");
     ASSERT_NE(freeMemory, nullptr);
 
     void* ptr = allocateMemory(sizeof(apl::PluginClassInfo));

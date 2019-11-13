@@ -18,8 +18,8 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
         d_ptr->libraryPath = std::move(path);
         d_ptr->libraryHandle = handle;
 
-        d_ptr->allocateMemory = LibraryLoader::getSymbol<detail::allocatePluginMemoryFunction>(d_ptr->libraryHandle, "allocatePluginMemory");
-        d_ptr->freeMemory = LibraryLoader::getSymbol<detail::freePluginMemoryFunction>(d_ptr->libraryHandle, "freePluginMemory");
+        d_ptr->allocateMemory = LibraryLoader::getSymbol<detail::allocatePluginMemoryFunction>(d_ptr->libraryHandle, "allocateMemory");
+        d_ptr->freeMemory = LibraryLoader::getSymbol<detail::freePluginMemoryFunction>(d_ptr->libraryHandle, "freeMemory");
 
         d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
         d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->libraryHandle, "getPluginFeatureInfo");
