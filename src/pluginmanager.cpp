@@ -213,8 +213,7 @@ std::vector<std::string> apl::PluginManager::getFeatureProperties(const PluginFe
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->featureCount; i++) {
             property = detail::filterFeatureInfo(pluginInstance->featureInfos[i], filter);
-            if(propertiesSet.find(property) == propertiesSet.end())
-                propertiesSet.emplace(property);
+            propertiesSet.emplace(property);
         }
     }
     return std::vector<std::string>(propertiesSet.begin(), propertiesSet.end());
@@ -259,8 +258,7 @@ std::vector<std::string> apl::PluginManager::getClassProperties(const PluginClas
     for(const auto& pluginInstance : d_ptr->pluginInstances) {
         for(size_t i = 0; i < pluginInstance->classCount; i++) {
             property = detail::filterClassInfo(pluginInstance->classInfos[i], filter);
-            if(propertiesSet.find(property) == propertiesSet.end())
-                propertiesSet.emplace(property);
+            propertiesSet.emplace(property);
         }
     }
     return std::vector<std::string>(propertiesSet.begin(), propertiesSet.end());
