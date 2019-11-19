@@ -4,7 +4,9 @@
 #include <algorithm>
 
 #include "APluginLibrary/pluginmanager.h"
+
 #include "APluginSDK/plugininfos.h"
+#include "APluginSDK/pluginapi.h"
 
 #include "../../src/private/pluginmanagerprivate.h"
 
@@ -238,6 +240,164 @@ GTEST_TEST(PluginManager_Test, copy_assign_construct)
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 0);
     ASSERT_EQ(manager2.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager2.getLoadedPlugins().size(), 0);
+}
+
+GTEST_TEST(PluginManager_Test, getPluginInfo_unfiltered)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    manager.load("plugins/first/first_plugin");
+    ASSERT_EQ(manager.getLoadedPluginCount(), 1);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 1);
+    manager.load("plugins/second/second_plugin");
+    ASSERT_EQ(manager.getLoadedPluginCount(), 2);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 2);
+
+    std::vector<const apl::PluginInfo*> infos = manager.getPluginInfos();
+    ASSERT_EQ(infos.size(), 2);
+    const apl::PluginInfo* info1 = infos.front();
+    ASSERT_NE(info1, nullptr);
+
+    ASSERT_STREQ(info1->pluginName, "first_plugin");
+    ASSERT_EQ(info1->pluginVersionMajor, 9);
+    ASSERT_EQ(info1->pluginVersionMinor, 87);
+    ASSERT_EQ(info1->pluginVersionPatch, 789);
+    ASSERT_EQ(info1->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info1->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info1->allocateMemory, nullptr);
+    ASSERT_NE(info1->freeMemory, nullptr);
+    ASSERT_NE(info1->getPluginFeatureCount, nullptr);
+    ASSERT_NE(info1->getPluginFeatureInfo, nullptr);
+    ASSERT_NE(info1->getPluginFeatureInfos, nullptr);
+    ASSERT_NE(info1->getPluginClassCount, nullptr);
+    ASSERT_NE(info1->getPluginClassInfo, nullptr);
+    ASSERT_NE(info1->getPluginClassInfos, nullptr);
+
+    const apl::PluginInfo* info2 = infos.back();
+    ASSERT_NE(info2, nullptr);
+
+    ASSERT_STREQ(info2->pluginName, "second_plugin");
+    ASSERT_EQ(info2->pluginVersionMajor, 3);
+    ASSERT_EQ(info2->pluginVersionMinor, 5);
+    ASSERT_EQ(info2->pluginVersionPatch, 12);
+    ASSERT_EQ(info2->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info2->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info2->allocateMemory, nullptr);
+    ASSERT_NE(info2->freeMemory, nullptr);
+    ASSERT_NE(info2->getPluginFeatureCount, nullptr);
+    ASSERT_NE(info2->getPluginFeatureInfo, nullptr);
+    ASSERT_NE(info2->getPluginFeatureInfos, nullptr);
+    ASSERT_NE(info2->getPluginClassCount, nullptr);
+    ASSERT_NE(info2->getPluginClassInfo, nullptr);
+    ASSERT_NE(info2->getPluginClassInfos, nullptr);
+}
+
+GTEST_TEST(PluginManager_Test, getPluginInfo_filtered)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    manager.load("plugins/first/first_plugin");
+    ASSERT_EQ(manager.getLoadedPluginCount(), 1);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 1);
+    manager.load("plugins/second/second_plugin");
+    ASSERT_EQ(manager.getLoadedPluginCount(), 2);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 2);
+
+    std::vector<const apl::PluginInfo*> infos = manager.getPluginInfos("first_plugin", apl::PluginInfoFilter::PluginName);
+    ASSERT_EQ(infos.size(), 1);
+    const apl::PluginInfo* info1 = infos.front();
+    ASSERT_NE(info1, nullptr);
+
+    ASSERT_STREQ(info1->pluginName, "first_plugin");
+    ASSERT_EQ(info1->pluginVersionMajor, 9);
+    ASSERT_EQ(info1->pluginVersionMinor, 87);
+    ASSERT_EQ(info1->pluginVersionPatch, 789);
+    ASSERT_EQ(info1->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info1->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info1->allocateMemory, nullptr);
+    ASSERT_NE(info1->freeMemory, nullptr);
+    ASSERT_NE(info1->getPluginFeatureCount, nullptr);
+    ASSERT_NE(info1->getPluginFeatureInfo, nullptr);
+    ASSERT_NE(info1->getPluginFeatureInfos, nullptr);
+    ASSERT_NE(info1->getPluginClassCount, nullptr);
+    ASSERT_NE(info1->getPluginClassInfo, nullptr);
+    ASSERT_NE(info1->getPluginClassInfos, nullptr);
+
+    infos = manager.getPluginInfos("3.5.12", apl::PluginInfoFilter::PluginVersion);
+    ASSERT_EQ(infos.size(), 1);
+    const apl::PluginInfo* info2 = infos.front();
+    ASSERT_NE(info2, nullptr);
+
+    ASSERT_STREQ(info2->pluginName, "second_plugin");
+    ASSERT_EQ(info2->pluginVersionMajor, 3);
+    ASSERT_EQ(info2->pluginVersionMinor, 5);
+    ASSERT_EQ(info2->pluginVersionPatch, 12);
+    ASSERT_EQ(info2->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info2->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info2->allocateMemory, nullptr);
+    ASSERT_NE(info2->freeMemory, nullptr);
+    ASSERT_NE(info2->getPluginFeatureCount, nullptr);
+    ASSERT_NE(info2->getPluginFeatureInfo, nullptr);
+    ASSERT_NE(info2->getPluginFeatureInfos, nullptr);
+    ASSERT_NE(info2->getPluginClassCount, nullptr);
+    ASSERT_NE(info2->getPluginClassInfo, nullptr);
+    ASSERT_NE(info2->getPluginClassInfos, nullptr);
+
+    // test name filter
+    infos = manager.getPluginInfos("first_plugin", apl::PluginInfoFilter::PluginName);
+    ASSERT_EQ(infos.size(), 1);
+    infos = manager.getPluginInfos("second_plugin", apl::PluginInfoFilter::PluginName);
+    ASSERT_EQ(infos.size(), 1);
+    infos = manager.getPluginInfos("imaginary_plugin_name", apl::PluginInfoFilter::PluginName);
+    ASSERT_EQ(infos.size(), 0);
+
+    // test plugin version filter
+    infos = manager.getPluginInfos("9.87.789", apl::PluginInfoFilter::PluginVersion);
+    ASSERT_EQ(infos.size(), 1);
+    infos = manager.getPluginInfos("3.5.12", apl::PluginInfoFilter::PluginVersion);
+    ASSERT_EQ(infos.size(), 1);
+    infos = manager.getPluginInfos("0.0.0", apl::PluginInfoFilter::PluginVersion);
+    ASSERT_EQ(infos.size(), 0);
+
+    // test api version filter
+    infos = manager.getPluginInfos(std::to_string(apl::A_PLUGIN_API_VERSION_MAJOR).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_MINOR)).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_PATCH)), apl::PluginInfoFilter::ApiVersion);
+    ASSERT_EQ(infos.size(), 2);
+    infos = manager.getPluginInfos(std::to_string(apl::A_PLUGIN_API_VERSION_MAJOR).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_MINOR)).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_PATCH + 1)), apl::PluginInfoFilter::ApiVersion);
+    ASSERT_EQ(infos.size(), 0);
+}
+
+GTEST_TEST(PluginManager_Test, getPluginProperties)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    manager.load("plugins/first/first_plugin");
+    ASSERT_EQ(manager.getLoadedPluginCount(), 1);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 1);
+    manager.load("plugins/second/second_plugin");
+    ASSERT_EQ(manager.getLoadedPluginCount(), 2);
+    ASSERT_EQ(manager.getLoadedPlugins().size(), 2);
+
+    std::vector<std::string> properties = manager.getPluginProperties(apl::PluginInfoFilter::PluginName);
+    std::vector<std::string> expectedProperties = {"first_plugin", "second_plugin"};
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    std::sort(expectedProperties.begin(), expectedProperties.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), expectedProperties.size());
+    ASSERT_EQ(properties, expectedProperties);
+
+    properties = manager.getPluginProperties(apl::PluginInfoFilter::PluginVersion);
+    expectedProperties = {"9.87.789", "3.5.12"};
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    std::sort(expectedProperties.begin(), expectedProperties.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), expectedProperties.size());
+    ASSERT_EQ(properties, expectedProperties);
+
+    properties = manager.getPluginProperties(apl::PluginInfoFilter::ApiVersion);
+    expectedProperties = {"1.0.0"};
+    std::sort(properties.begin(), properties.end(), std::greater<std::string>());
+    std::sort(expectedProperties.begin(), expectedProperties.end(), std::greater<std::string>());
+    ASSERT_EQ(properties.size(), expectedProperties.size());
+    ASSERT_EQ(properties, expectedProperties);
 }
 
 GTEST_TEST(PluginManager_Test, getFeatures_unfiltered)

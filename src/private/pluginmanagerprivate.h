@@ -29,10 +29,6 @@ namespace apl
             ~PluginInstance();
 
             Plugin* plugin;
-            size_t featureCount;
-            size_t classCount;
-            const PluginFeatureInfo* const* featureInfos;
-            const PluginClassInfo* const* classInfos;
         };
 
         class APLUGINLIBRARY_NO_EXPORT PluginManagerPrivate
@@ -47,13 +43,15 @@ namespace apl
         };
     }
 
+    enum class PluginInfoFilter;
     enum class PluginFeatureFilter;
     enum class PluginClassFilter;
 
     namespace detail
     {
-        const char* filterFeatureInfo(const apl::PluginFeatureInfo* info, const apl::PluginFeatureFilter& filter);
-        const char* filterClassInfo(const apl::PluginClassInfo* info, const apl::PluginClassFilter& filter);
+        std::string filterPluginInfo(const PluginInfo* info, PluginInfoFilter filter);
+        const char* filterFeatureInfo(const PluginFeatureInfo* info, PluginFeatureFilter filter);
+        const char* filterClassInfo(const PluginClassInfo* info, PluginClassFilter filter);
     }
 }
 

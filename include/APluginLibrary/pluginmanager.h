@@ -15,6 +15,12 @@ namespace apl
         class PluginManagerPrivate;
     }
 
+    enum class PluginInfoFilter
+    {
+        PluginName,
+        PluginVersion,
+        ApiVersion
+    };
     enum class PluginFeatureFilter
     {
         FeatureGroup,
@@ -51,13 +57,17 @@ namespace apl
         void unload(const std::string& path);
         void unloadAll();
 
+        std::vector<const PluginInfo*> getPluginInfos() const;
+        std::vector<const PluginInfo*> getPluginInfos(const std::string& string, PluginInfoFilter = PluginInfoFilter::PluginName) const;
+        std::vector<std::string> getPluginProperties(PluginInfoFilter filter) const;
+
         std::vector<const PluginFeatureInfo*> getFeatures() const;
-        std::vector<const PluginFeatureInfo*> getFeatures(const std::string& string, const PluginFeatureFilter& filter = PluginFeatureFilter::FeatureGroup) const;
-        std::vector<std::string> getFeatureProperties(const PluginFeatureFilter& filter) const;
+        std::vector<const PluginFeatureInfo*> getFeatures(const std::string& string, PluginFeatureFilter filter = PluginFeatureFilter::FeatureGroup) const;
+        std::vector<std::string> getFeatureProperties(PluginFeatureFilter filter) const;
 
         std::vector<const PluginClassInfo*> getClasses() const;
-        std::vector<const PluginClassInfo*> getClasses(const std::string& string, const PluginClassFilter& filter = PluginClassFilter::InterfaceName) const;
-        std::vector<std::string> getClassProperties(const PluginClassFilter& filter) const;
+        std::vector<const PluginClassInfo*> getClasses(const std::string& string, PluginClassFilter filter = PluginClassFilter::InterfaceName) const;
+        std::vector<std::string> getClassProperties(PluginClassFilter filter) const;
 
     private:
         detail::PluginManagerPrivate* d_ptr;

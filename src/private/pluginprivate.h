@@ -16,32 +16,15 @@
 namespace apl {
     namespace detail
     {
-        typedef void*(*allocatePluginMemoryFunction)(size_t);
-        typedef void(*freePluginMemoryFunction)(void*);
-
-        typedef size_t(*getFeatureCountFunction)();
-        typedef const PluginFeatureInfo*(*getFeatureInfoFunction)(size_t);
-        typedef const PluginFeatureInfo*const*(*getFeatureInfosFunction)();
-
-        typedef size_t(*getClassCountFunction)();
-        typedef const PluginClassInfo*(*getClassInfoFunction)(size_t);
-        typedef const PluginClassInfo*const*(*getClassInfosFunction)();
+        typedef const PluginInfo*(*getPluginInfoFunction)();
 
         struct APLUGINLIBRARY_NO_EXPORT PluginPrivate
         {
             std::string libraryPath;
             library_handle libraryHandle;
 
-            allocatePluginMemoryFunction allocateMemory;
-            freePluginMemoryFunction freeMemory;
-
-            getFeatureCountFunction getFeatureCount;
-            getFeatureInfoFunction getFeatureInfo;
-            getFeatureInfosFunction getFeatureInfos;
-
-            getClassCountFunction getClassCount;
-            getClassInfoFunction getClassInfo;
-            getClassInfosFunction getClassInfos;
+            getPluginInfoFunction getPluginInfo;
+            const PluginInfo* pluginInfo;
         };
     }
 }

@@ -18,16 +18,9 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
         d_ptr->libraryPath = std::move(path);
         d_ptr->libraryHandle = handle;
 
-        d_ptr->allocateMemory = LibraryLoader::getSymbol<detail::allocatePluginMemoryFunction>(d_ptr->libraryHandle, "allocateMemory");
-        d_ptr->freeMemory = LibraryLoader::getSymbol<detail::freePluginMemoryFunction>(d_ptr->libraryHandle, "freeMemory");
-
-        d_ptr->getFeatureCount = LibraryLoader::getSymbol<detail::getFeatureCountFunction>(d_ptr->libraryHandle, "getPluginFeatureCount");
-        d_ptr->getFeatureInfo = LibraryLoader::getSymbol<detail::getFeatureInfoFunction>(d_ptr->libraryHandle, "getPluginFeatureInfo");
-        d_ptr->getFeatureInfos = LibraryLoader::getSymbol<detail::getFeatureInfosFunction>(d_ptr->libraryHandle, "getPluginFeatureInfos");
-
-        d_ptr->getClassCount = LibraryLoader::getSymbol<detail::getClassCountFunction>(d_ptr->libraryHandle, "getPluginClassCount");
-        d_ptr->getClassInfo = LibraryLoader::getSymbol<detail::getClassInfoFunction>(d_ptr->libraryHandle, "getPluginClassInfo");
-        d_ptr->getClassInfos = LibraryLoader::getSymbol<detail::getClassInfosFunction>(d_ptr->libraryHandle, "getPluginClassInfos");
+        d_ptr->getPluginInfo = LibraryLoader::getSymbol<detail::getPluginInfoFunction>(d_ptr->libraryHandle, "getPluginInfo");
+        if(d_ptr->getPluginInfo != nullptr)
+            d_ptr->pluginInfo = d_ptr->getPluginInfo();
     }
 }
 /**
@@ -54,10 +47,7 @@ apl::Plugin* apl::Plugin::load(std::string path)
     if (!handle)
         return nullptr;
     auto plugin = new Plugin(std::move(path), handle);
-    if(!plugin->d_ptr->allocateMemory || !plugin->d_ptr->freeMemory ||
-       !plugin->d_ptr->getFeatureCount || !plugin->d_ptr->getFeatureInfo || !plugin->d_ptr->getFeatureInfos ||
-       !plugin->d_ptr->getClassCount || !plugin->d_ptr->getClassInfo || !plugin->d_ptr->getClassInfos)
-    {
+    if(plugin->d_ptr->pluginInfo == nullptr) {
         delete plugin;
         plugin = nullptr;
     }
@@ -71,6 +61,8 @@ void apl::Plugin::unload()
     if(isLoaded()) {
         LibraryLoader::unload(d_ptr->libraryHandle);
         d_ptr->libraryHandle = nullptr;
+        d_ptr->getPluginInfo = nullptr;
+        d_ptr->pluginInfo = nullptr;
     }
 }
 /**
@@ -78,7 +70,7 @@ void apl::Plugin::unload()
  */
 bool apl::Plugin::isLoaded() const
 {
-    return d_ptr != nullptr && d_ptr->libraryHandle != nullptr;
+    return d_ptr != nullptr && d_ptr->libraryHandle != nullptr && d_ptr->pluginInfo != nullptr;
 }
 
 /**
@@ -86,14 +78,22 @@ bool apl::Plugin::isLoaded() const
  */
 std::string apl::Plugin::getPath() const
 {
-    return d_ptr != nullptr ? d_ptr->libraryPath : "";
+    return d_ptr == nullptr ? "" : d_ptr->libraryPath;
 }
 /**
  * @return The handle to the shared library of the Plugin
  */
 apl::const_library_handle apl::Plugin::getHandle() const
 {
-    return d_ptr->libraryHandle;
+    return isLoaded() ? d_ptr->libraryHandle : nullptr;
+}
+
+/**
+ * @return The PluginInfo or nullptr if the plugin is not loaded.
+ */
+const apl::PluginInfo* apl::Plugin::getPluginInfo()
+{
+    return isLoaded() ? d_ptr->pluginInfo : nullptr;
 }
 
 /**
@@ -106,7 +106,7 @@ void* apl::Plugin::allocateMemory(size_t bytes) const
 {
     if(!isLoaded())
         return nullptr;
-    return d_ptr->allocateMemory(bytes);
+    return d_ptr->pluginInfo->allocateMemory(bytes);
 }
 /**
  * Calls the afl::detail::freePluginMemory function from the plugin api and returns if the function was available.
@@ -116,7 +116,7 @@ void* apl::Plugin::allocateMemory(size_t bytes) const
 bool apl::Plugin::freeMemory(void *ptr) const
 {
     if(isLoaded()) {
-        d_ptr->freeMemory(ptr);
+        d_ptr->pluginInfo->freeMemory(ptr);
         return true;
     }
     return false;
@@ -127,7 +127,7 @@ bool apl::Plugin::freeMemory(void *ptr) const
  */
 size_t apl::Plugin::getFeatureCount() const
 {
-    return isLoaded() ? d_ptr->getFeatureCount() : 0;
+    return isLoaded() ? d_ptr->pluginInfo->getPluginFeatureCount() : 0;
 }
 /**
  * @param index The index of the PluginFeatureInfo
@@ -137,16 +137,16 @@ size_t apl::Plugin::getFeatureCount() const
  */
 const apl::PluginFeatureInfo *apl::Plugin::getFeatureInfo(size_t index) const
 {
-    return isLoaded() ? d_ptr->getFeatureInfo(index) : nullptr;
+    return isLoaded() ? d_ptr->pluginInfo->getPluginFeatureInfo(index) : nullptr;
 }
 /**
  * @return A PluginFeatureInfo array, with all PluginFeatureInfo's of the plugin.
  *
  * @see getFeatureCount()
  */
-const apl::PluginFeatureInfo* const *apl::Plugin::getFeatureInfos() const
+const apl::PluginFeatureInfo* const* apl::Plugin::getFeatureInfos() const
 {
-    return isLoaded() ? d_ptr->getFeatureInfos() : nullptr;
+    return isLoaded() ? d_ptr->pluginInfo->getPluginFeatureInfos() : nullptr;
 }
 
 /**
@@ -154,7 +154,7 @@ const apl::PluginFeatureInfo* const *apl::Plugin::getFeatureInfos() const
  */
 size_t apl::Plugin::getClassCount() const
 {
-    return isLoaded() ? d_ptr->getClassCount() : 0;
+    return isLoaded() ? d_ptr->pluginInfo->getPluginClassCount() : 0;
 }
 /**
  * @param index The index of the PluginClassInfo
@@ -164,7 +164,7 @@ size_t apl::Plugin::getClassCount() const
  */
 const apl::PluginClassInfo *apl::Plugin::getClassInfo(size_t index) const
 {
-    return isLoaded() ? d_ptr->getClassInfo(index) : nullptr;
+    return isLoaded() ? d_ptr->pluginInfo->getPluginClassInfo(index) : nullptr;
 }
 /**
  * @return A PluginClassInfo array, with all PluginClassInfo's of the plugin.
@@ -173,5 +173,5 @@ const apl::PluginClassInfo *apl::Plugin::getClassInfo(size_t index) const
  */
 const apl::PluginClassInfo *const *apl::Plugin::getClassInfos() const
 {
-    return isLoaded() ? d_ptr->getClassInfos() : nullptr;
+    return isLoaded() ? d_ptr->pluginInfo->getPluginClassInfos() : nullptr;
 }

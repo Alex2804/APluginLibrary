@@ -10,15 +10,14 @@ set(HEADERS
 set(SOURCES
         src/libraryloader.cpp include/APluginLibrary/implementation/libraryloader.tpp
         src/plugin.cpp
-        src/pluginmanager.cpp src/private/pluginmanagerprivate.cpp)
+        src/pluginmanager.cpp src/private/src/pluginmanagerprivate.cpp)
 
 set(SDK_HEADERS
         SDK/APluginSDK/pluginapi.h
         SDK/APluginSDK/plugininfos.h
-        SDK/APluginSDK/implementation/featuremanager.h)
+        SDK/APluginSDK/implementation/infomanager.h)
 set(SDK_SOURCES
-        SDK/APluginSDK/implementation/pluginapi.cpp
-        SDK/APluginSDK/implementation/featuremanager.cpp)
+        SDK/APluginSDK/implementation/pluginapi.cpp)
 
 set(PUBLIC_INCLUDE_DIRECTORIES
         include
@@ -39,7 +38,7 @@ generate_export_header(APluginLibrary
 target_include_directories(APluginLibrary
         PUBLIC ${PUBLIC_INCLUDE_DIRECTORIES}
         PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
-target_compile_definitions(APluginLibrary PRIVATE A_PLUGIN_SDK_EXCLUDE_DEFINITION)
+target_compile_definitions(APluginLibrary PUBLIC A_PLUGIN_SDK_EXCLUDE_DEFINITIONS)
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
 if(${APluginLibraryTest})

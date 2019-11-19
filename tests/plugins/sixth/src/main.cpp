@@ -1,6 +1,8 @@
 #include "APluginSDK/pluginapi.h"
 #include "../../interface.h"
 
+A_PLUGIN_SET_NAME(sixth_plugin)
+
 A_PLUGIN_REGISTER_FEATURE(int, sixth_group_math, feature_add, int x1, int x2)
 {
     return x1 + x2;
@@ -78,3 +80,5 @@ int Implementation2::function1(int x1, int x2) {
 int Implementation2::function2(int x) {
     return x * x * x * x;
 }
+
+A_PLUGIN_SET_VERSION(1, 2, 3)

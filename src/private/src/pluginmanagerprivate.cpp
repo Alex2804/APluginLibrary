@@ -1,4 +1,4 @@
-#include "pluginmanagerprivate.h"
+#include "../pluginmanagerprivate.h"
 
 #include <algorithm>
 
@@ -6,10 +6,6 @@
 
 apl::detail::PluginInstance::PluginInstance(Plugin* plugin)
     : plugin(plugin)
-    , featureCount(this->plugin->getFeatureCount())
-    , classCount(this->plugin->getClassCount())
-    , featureInfos(featureCount > 0 ? this->plugin->getFeatureInfos() : nullptr)
-    , classInfos(classCount > 0 ? this->plugin->getClassInfos() : nullptr)
 {}
 apl::detail::PluginInstance::~PluginInstance()
 {
@@ -67,30 +63,41 @@ void apl::detail::PluginManagerPrivate::unloadPlugin(apl::Plugin* plugin)
     mutex.unlock();
 }
 
-
-const char* apl::detail::filterFeatureInfo(const apl::PluginFeatureInfo *info, const apl::PluginFeatureFilter &filter)
+std::string apl::detail::filterPluginInfo(const PluginInfo *info, PluginInfoFilter filter)
 {
-    if(filter == apl::PluginFeatureFilter::FeatureGroup) {
+    if(filter == PluginInfoFilter::PluginName) {
+        return info->pluginName;
+    } else if(filter == PluginInfoFilter::PluginVersion) {
+        return std::to_string(info->pluginVersionMajor).append(".").append(std::to_string(info->pluginVersionMinor)).append(".").append(std::to_string(info->pluginVersionPatch));
+    } else if(filter == PluginInfoFilter::ApiVersion) {
+        return std::to_string(info->apiVersionMajor).append(".").append(std::to_string(info->apiVersionMinor)).append(".").append(std::to_string(info->apiVersionPatch));
+    } else {
+        throw std::runtime_error("Unsupported apl::PluginInfoFilter");
+    }
+}
+const char* apl::detail::filterFeatureInfo(const PluginFeatureInfo *info, const PluginFeatureFilter filter)
+{
+    if(filter == PluginFeatureFilter::FeatureGroup) {
         return info->featureGroup;
-    } else if(filter == apl::PluginFeatureFilter::FeatureName) {
+    } else if(filter == PluginFeatureFilter::FeatureName) {
         return info->featureName;
-    } else if(filter == apl::PluginFeatureFilter::ReturnType) {
+    } else if(filter == PluginFeatureFilter::ReturnType) {
         return info->returnType;
-    } else if(filter == apl::PluginFeatureFilter::ParameterList) {
+    } else if(filter == PluginFeatureFilter::ParameterList) {
         return info->parameterList;
-    } else if (filter == apl::PluginFeatureFilter::ParameterTypes) {
+    } else if (filter == PluginFeatureFilter::ParameterTypes) {
         return info->parameterTypes;
-    } else if (filter == apl::PluginFeatureFilter::ParameterNames) {
+    } else if (filter == PluginFeatureFilter::ParameterNames) {
         return info->parameterNames;
     } else {
         throw std::runtime_error("Unsupported apl::PluginFeatureFilter");
     }
 }
-const char* apl::detail::filterClassInfo(const apl::PluginClassInfo* info, const apl::PluginClassFilter& filter)
+const char* apl::detail::filterClassInfo(const PluginClassInfo* info, PluginClassFilter filter)
 {
-    if(filter == apl::PluginClassFilter::InterfaceName) {
+    if(filter == PluginClassFilter::InterfaceName) {
         return info->interfaceName;
-    } else if(filter == apl::PluginClassFilter::ClassName) {
+    } else if(filter == PluginClassFilter::ClassName) {
         return info->className;
     } else {
         throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");

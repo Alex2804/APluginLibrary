@@ -1,7 +1,9 @@
 #include "gtest/gtest.h"
 
 #include "APluginLibrary/libraryloader.h"
+
 #include "APluginSDK/plugininfos.h"
+#include "APluginSDK/pluginapi.h"
 
 #include "../plugins/interface.h"
 
@@ -32,6 +34,60 @@ GTEST_TEST(PluginAPI_Test, memory_allocate_free)
     freeMemory(classPtr);
 
     apl::LibraryLoader::unload(handle);
+}
+
+GTEST_TEST(PluginAPI_Test, getPluginInfo)
+{
+    void* handle1 = apl::LibraryLoader::load("plugins/first/first_plugin");
+    ASSERT_NE(handle1, nullptr);
+    void* handle2 = apl::LibraryLoader::load("plugins/second/second_plugin");
+    ASSERT_NE(handle2, nullptr);
+
+    auto getPluginInfo1 = apl::LibraryLoader::getSymbol<const apl::PluginInfo*(*)()>(handle1, "getPluginInfo");
+    ASSERT_NE(getPluginInfo1, nullptr);
+    auto getPluginInfo2 = apl::LibraryLoader::getSymbol<const apl::PluginInfo*(*)()>(handle2, "getPluginInfo");
+    ASSERT_NE(getPluginInfo2, nullptr);
+
+    const apl::PluginInfo* info1 = getPluginInfo1();
+    ASSERT_NE(info1, nullptr);
+
+    ASSERT_STREQ(info1->pluginName, "first_plugin");
+    ASSERT_EQ(info1->pluginVersionMajor, 9);
+    ASSERT_EQ(info1->pluginVersionMinor, 87);
+    ASSERT_EQ(info1->pluginVersionPatch, 789);
+    ASSERT_EQ(info1->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info1->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info1->allocateMemory, nullptr);
+    ASSERT_NE(info1->freeMemory, nullptr);
+    ASSERT_NE(info1->getPluginFeatureCount, nullptr);
+    ASSERT_NE(info1->getPluginFeatureInfo, nullptr);
+    ASSERT_NE(info1->getPluginFeatureInfos, nullptr);
+    ASSERT_NE(info1->getPluginClassCount, nullptr);
+    ASSERT_NE(info1->getPluginClassInfo, nullptr);
+    ASSERT_NE(info1->getPluginClassInfos, nullptr);
+
+    const apl::PluginInfo* info2 = getPluginInfo2();
+    ASSERT_NE(info2, nullptr);
+
+    ASSERT_STREQ(info2->pluginName, "second_plugin");
+    ASSERT_EQ(info2->pluginVersionMajor, 3);
+    ASSERT_EQ(info2->pluginVersionMinor, 5);
+    ASSERT_EQ(info2->pluginVersionPatch, 12);
+    ASSERT_EQ(info2->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info2->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info2->allocateMemory, nullptr);
+    ASSERT_NE(info2->freeMemory, nullptr);
+    ASSERT_NE(info2->getPluginFeatureCount, nullptr);
+    ASSERT_NE(info2->getPluginFeatureInfo, nullptr);
+    ASSERT_NE(info2->getPluginFeatureInfos, nullptr);
+    ASSERT_NE(info2->getPluginClassCount, nullptr);
+    ASSERT_NE(info2->getPluginClassInfo, nullptr);
+    ASSERT_NE(info2->getPluginClassInfos, nullptr);
+
+    apl::LibraryLoader::unload(handle1);
+    apl::LibraryLoader::unload(handle2);
 }
 
 GTEST_TEST(PluginAPI_Test, feature_loading_single)
@@ -341,6 +397,62 @@ GTEST_TEST(PluginAPI_Test, feature_and_class_loading_multiple)
         ASSERT_EQ(interface->function2(5), result2[i]);
 
         deleteInstance(interface);
+    }
+
+    apl::LibraryLoader::unload(handle);
+}
+
+
+GTEST_TEST(PluginAPI_Test, feature_and_class_plugin_infos)
+{
+    void* handle = apl::LibraryLoader::load("plugins/sixth/sixth_plugin");
+    ASSERT_NE(handle, nullptr);
+
+    // load feature methods
+    auto getFeatureCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginFeatureCount");
+    ASSERT_NE(getFeatureCount, nullptr);
+    auto getFeatureInfo = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*(*)(size_t)>(handle, "getPluginFeatureInfo");
+    ASSERT_NE(getFeatureInfo, nullptr);
+    auto getFeatureInfos = apl::LibraryLoader::getSymbol<const apl::PluginFeatureInfo*const*(*)()>(handle, "getPluginFeatureInfos");
+    ASSERT_NE(getFeatureInfos, nullptr);
+
+    // load class methods
+    auto getClassCount = apl::LibraryLoader::getSymbol<size_t(*)()>(handle, "getPluginClassCount");
+    ASSERT_NE(getClassCount, nullptr);
+    auto getClassInfo = apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*(*)(size_t)>(handle, "getPluginClassInfo");
+    ASSERT_NE(getClassInfo, nullptr);
+    auto getClassInfos= apl::LibraryLoader::getSymbol<const apl::PluginClassInfo*const*(*)()>(handle, "getPluginClassInfos");
+    ASSERT_NE(getClassInfos, nullptr);
+
+    ASSERT_EQ(getFeatureCount(), 6);
+    ASSERT_EQ(getClassCount(), 3);
+
+    // feature check
+    const apl::PluginFeatureInfo* featureInfo;
+    const apl::PluginFeatureInfo* const* featureInfos = getFeatureInfos();
+    ASSERT_NE(featureInfos, nullptr);
+    for(int i = 0; i < 6; i++) {
+        featureInfo = getFeatureInfo(i);
+        ASSERT_EQ(featureInfos[i], featureInfo);
+        ASSERT_TRUE(featureInfo);
+        ASSERT_STREQ(featureInfo->pluginInfo->pluginName, "sixth_plugin");
+        ASSERT_EQ(featureInfo->pluginInfo->pluginVersionMajor, 1);
+        ASSERT_EQ(featureInfo->pluginInfo->pluginVersionMinor, 2);
+        ASSERT_EQ(featureInfo->pluginInfo->pluginVersionPatch, 3);
+    }
+
+    // class check
+    const apl::PluginClassInfo* classInfo;
+    const apl::PluginClassInfo* const* classInfos = getClassInfos();
+    ASSERT_NE(classInfos, nullptr);
+    for(size_t i = 0; i < 3; i++) {
+        classInfo = getClassInfo(i);
+        ASSERT_NE(classInfo, nullptr);
+        ASSERT_EQ(classInfos[i], classInfo);
+        ASSERT_STREQ(classInfo->pluginInfo->pluginName, "sixth_plugin");
+        ASSERT_EQ(classInfo->pluginInfo->pluginVersionMajor, 1);
+        ASSERT_EQ(classInfo->pluginInfo->pluginVersionMinor, 2);
+        ASSERT_EQ(classInfo->pluginInfo->pluginVersionPatch, 3);
     }
 
     apl::LibraryLoader::unload(handle);
