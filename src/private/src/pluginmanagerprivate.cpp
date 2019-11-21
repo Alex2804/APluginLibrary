@@ -20,31 +20,33 @@ std::unordered_map<apl::const_library_handle, std::weak_ptr<apl::detail::PluginI
                                                                     apl::detail::PluginManagerPrivate::loadedPlugins;
 std::mutex apl::detail::PluginManagerPrivate::mutex;
 
-bool apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
+apl::Plugin* apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
 {
     library_handle tmpHandle = LibraryLoader::load(path);
     if (!tmpHandle)
-        return false;
+        return nullptr;
     mutex.lock();
     auto iterator = loadedPlugins.find(tmpHandle);
     LibraryLoader::unload(tmpHandle);
+    Plugin* plugin = nullptr;
     if(iterator != loadedPlugins.end()) {
         std::shared_ptr<PluginInstance> instance = iterator->second.lock();
+        plugin = instance->plugin;
         if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end()) {
-            pluginInstances.push_back(instance);
+            pluginInstances.push_back(std::move(instance));
         }
     } else {
-        Plugin* plugin = Plugin::load(std::move(path));
+        plugin = Plugin::load(std::move(path));
         if(plugin == nullptr) {
             mutex.unlock();
-            return false;
+            return nullptr;
         }
         std::shared_ptr<PluginInstance> instance = std::make_shared<PluginInstance>(plugin);
         pluginInstances.push_back(instance);
         loadedPlugins.insert({instance->plugin->getHandle(), instance});
     }
     mutex.unlock();
-    return true;
+    return plugin;
 }
 void apl::detail::PluginManagerPrivate::unloadPlugin(apl::Plugin* plugin)
 {

@@ -47,10 +47,11 @@ namespace apl
         PluginManager& operator=(const PluginManager& other);
         PluginManager& operator=(PluginManager&& other) noexcept;
 
-        bool load(std::string path);
-        size_t loadDirectory(const std::string& path, bool recursive);
+        Plugin* load(std::string path);
+        std::vector<Plugin*> loadDirectory(const std::string& path, bool recursive);
 
         size_t getLoadedPluginCount() const;
+        std::vector<const Plugin*> getLoadedPlugins() const;
         std::vector<Plugin*> getLoadedPlugins();
 
         void unload(Plugin* plugin);

@@ -38,7 +38,7 @@ namespace apl
             static std::unordered_map<const_library_handle, std::weak_ptr<PluginInstance>> loadedPlugins; // loaded plugins of ALL PluginManager instances
             static std::mutex mutex;
 
-            bool loadPlugin(std::string path); // loads a plugin into this PluginManager (tries to prevent duplicates)
+            apl::Plugin* loadPlugin(std::string path); // loads a plugin into this PluginManager (tries to prevent duplicates)
             void unloadPlugin(Plugin* plugin); // unload a plugin from this PluginManager instance
         };
     }

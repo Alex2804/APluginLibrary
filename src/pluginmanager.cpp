@@ -84,9 +84,9 @@ apl::PluginManager &apl::PluginManager::operator=(PluginManager&& other) noexcep
  *
  * @param path The path to the shared library containing the plugin.
  *
- * @return True if the plugin was loaded successfully and false if not.
+ * @return The plugin if it was loaded successfully and nullptr if not.
  */
-bool apl::PluginManager::load(std::string path)
+apl::Plugin* apl::PluginManager::load(std::string path)
 {
     return d_ptr->loadPlugin(std::move(path));
 }
@@ -96,13 +96,14 @@ bool apl::PluginManager::load(std::string path)
  * @param path The path to the directory.
  * @param recursive If the directory should be searched recursive.
  *
- * @return The count of loaded plugins.
+ * @return The loaded plugins.
  */
-size_t apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
+std::vector<apl::Plugin*> apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
 {
     tinydir_dir dir;
     tinydir_file file;
-    size_t count = 0;
+    std::vector<apl::Plugin*> plugins, tmpPlugins;
+    apl::Plugin* tmpPlugin;
     std::string filePath;
 
     tinydir_open(&dir, path.c_str());
@@ -113,10 +114,11 @@ size_t apl::PluginManager::loadDirectory(const std::string& path, bool recursive
         filePath = file.path;
         if(strcmp(file.name, ".") != 0 && strcmp(file.name, "..") != 0) {
             if (file.is_dir && recursive) {
-                count += loadDirectory(filePath, recursive);
+                tmpPlugins = loadDirectory(filePath, recursive);
+                plugins.insert(plugins.end(), tmpPlugins.begin(), tmpPlugins.end());
             } else if (!file.is_dir && strcmp(file.extension, apl::LibraryLoader::libExtension()) == 0
-                       && load(filePath.erase(filePath.size() - 1 - strlen(file.extension)))) {
-                ++count;
+                       && (tmpPlugin = load(filePath.erase(filePath.size() - 1 - strlen(file.extension)))) != nullptr) {
+                plugins.emplace_back(tmpPlugin);
             }
         }
 
@@ -124,7 +126,7 @@ size_t apl::PluginManager::loadDirectory(const std::string& path, bool recursive
     }
 
     tinydir_close(&dir);
-    return count;
+    return plugins;
 }
 
 /**
@@ -133,6 +135,17 @@ size_t apl::PluginManager::loadDirectory(const std::string& path, bool recursive
 size_t apl::PluginManager::getLoadedPluginCount() const
 {
     return d_ptr->pluginInstances.size();
+}
+/**
+ * @return The loaded Plugins as constant pointers in this PluginManager.
+ */
+std::vector<const apl::Plugin*> apl::PluginManager::getLoadedPlugins() const
+{
+    std::vector<const Plugin*> plugins;
+    for(const auto& pluginInstance : d_ptr->pluginInstances) {
+        plugins.push_back(pluginInstance->plugin);
+    }
+    return plugins;
 }
 /**
  * @return The loaded Plugins in this PluginManager.
