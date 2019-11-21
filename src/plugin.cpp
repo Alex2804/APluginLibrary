@@ -91,7 +91,7 @@ apl::const_library_handle apl::Plugin::getHandle() const
 /**
  * @return The PluginInfo or nullptr if the plugin is not loaded.
  */
-const apl::PluginInfo* apl::Plugin::getPluginInfo()
+const apl::PluginInfo* apl::Plugin::getPluginInfo() const
 {
     return isLoaded() ? d_ptr->pluginInfo : nullptr;
 }
