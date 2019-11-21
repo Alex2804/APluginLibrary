@@ -113,7 +113,7 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, loadDirectory)
+GTEST_TEST(PluginManager_Test, loadDirectory_getPluginByPath)
 {
     apl::PluginManager manager = apl::PluginManager();
 
@@ -139,8 +139,19 @@ GTEST_TEST(PluginManager_Test, loadDirectory)
     std::sort(plugins.begin(), plugins.end());
     ASSERT_EQ(loadedVector, plugins);
 
+    // test same for const manager
+    const apl::PluginManager constManager = manager;
+    auto constLoadedVector = constManager.getLoadedPlugins();
+    ASSERT_EQ(constManager.getLoadedPluginCount(), 7);
+    auto constPlugins = constManager.getLoadedPlugins();
+    std::sort(constLoadedVector.begin(), constLoadedVector.end());
+    std::sort(constPlugins.begin(), constPlugins.end());
+    ASSERT_EQ(constLoadedVector, constPlugins);
+
+    ASSERT_EQ(manager.getLoadedPlugin("plugins/first/first_plugin"), plugin);
+    ASSERT_EQ(constManager.getLoadedPlugin("plugins/first/first_plugin"), plugin);
+
     manager.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
 }
 

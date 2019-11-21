@@ -51,6 +51,8 @@ namespace apl
         std::vector<Plugin*> loadDirectory(const std::string& path, bool recursive);
 
         size_t getLoadedPluginCount() const;
+        const Plugin* getLoadedPlugin(const std::string& path) const;
+        Plugin* getLoadedPlugin(const std::string& path);
         std::vector<const Plugin*> getLoadedPlugins() const;
         std::vector<Plugin*> getLoadedPlugins();
 

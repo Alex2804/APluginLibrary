@@ -137,6 +137,30 @@ size_t apl::PluginManager::getLoadedPluginCount() const
     return d_ptr->pluginInstances.size();
 }
 /**
+ * @return The loaded Plugin with the given @p path as constant pointers in this PluginManager or nullptr if no plugin
+ * with the given path exists in this PluginManager.
+ */
+const apl::Plugin* apl::PluginManager::getLoadedPlugin(const std::string& path) const
+{
+    for(const auto& pluginInstance : d_ptr->pluginInstances) {
+        if(pluginInstance->plugin->getPath() == path)
+            return pluginInstance->plugin;
+    }
+    return nullptr;
+}
+/**
+ * @return The loaded Plugin iwth the given @p path in this PluginManager or nullptr if no plugin with the given path
+ * exists in this PluginManager.
+ */
+apl::Plugin* apl::PluginManager::getLoadedPlugin(const std::string& path)
+{
+    for(const auto& pluginInstance : d_ptr->pluginInstances) {
+        if(pluginInstance->plugin->getPath() == path)
+            return pluginInstance->plugin;
+    }
+    return nullptr;
+}
+/**
  * @return The loaded Plugins as constant pointers in this PluginManager.
  */
 std::vector<const apl::Plugin*> apl::PluginManager::getLoadedPlugins() const
