@@ -793,7 +793,7 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
             OtherInterface* otherInterface = createInstance();
             ASSERT_NE(otherInterface, nullptr);
 
-            ASSERT_EQ(otherInterface->otherFunction1(3, 12, 7), 8);
+            ASSERT_EQ(otherInterface->otherFunction1(3, 12, 7), 8); // issue under macos with gcc (see README.md)
             ASSERT_STREQ(otherInterface->otherFunction2(), "This is for testing!");
             ASSERT_EQ(otherInterface->otherFunction3(4.2), 4);
 
