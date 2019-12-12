@@ -23,7 +23,6 @@ namespace apl {
             std::string libraryPath;
             library_handle libraryHandle;
 
-            getPluginInfoFunction getPluginInfo;
             const PluginInfo* pluginInfo;
         };
     }

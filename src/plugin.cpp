@@ -18,9 +18,9 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
         d_ptr->libraryPath = std::move(path);
         d_ptr->libraryHandle = handle;
 
-        d_ptr->getPluginInfo = LibraryLoader::getSymbol<detail::getPluginInfoFunction>(d_ptr->libraryHandle, "getPluginInfo");
-        if(d_ptr->getPluginInfo != nullptr)
-            d_ptr->pluginInfo = d_ptr->getPluginInfo();
+        auto getPluginInfo = LibraryLoader::getSymbol<detail::getPluginInfoFunction>(d_ptr->libraryHandle, "getPluginInfo");
+        if(getPluginInfo != nullptr)
+            d_ptr->pluginInfo = getPluginInfo();
     }
 }
 /**
@@ -61,7 +61,6 @@ void apl::Plugin::unload()
     if(isLoaded()) {
         LibraryLoader::unload(d_ptr->libraryHandle);
         d_ptr->libraryHandle = nullptr;
-        d_ptr->getPluginInfo = nullptr;
         d_ptr->pluginInfo = nullptr;
     }
 }
