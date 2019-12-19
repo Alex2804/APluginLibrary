@@ -13,9 +13,7 @@ set(SOURCES
         src/pluginmanager.cpp src/private/src/pluginmanagerprivate.cpp)
 
 set(SDK_HEADERS
-        SDK/APluginSDK/pluginapi.h
-        SDK/APluginSDK/plugininfos.h
-        SDK/APluginSDK/implementation/infomanager.h)
+        SDK/APluginSDK/pluginapi.h)
 set(SDK_SOURCES
         SDK/APluginSDK/implementation/pluginapi.cpp)
 
