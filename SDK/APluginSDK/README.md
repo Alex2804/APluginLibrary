@@ -15,9 +15,9 @@ ABI incompatibility.
 pluginapi.h must be included to develop plugins.
 
 If a plugin consists of multiple source files, either A_PLUGIN_SDK_EXCLUDE_DEFINITIONS must always except once be
-defined before pluginapi.h is included to prevent redefinitions of functions, or pluginapi.cpp is compiled as source
-file (A_PLUGIN_SDK_EXCLUDE_DEFINITIONS must be defined) and A_PLUGIN_SDK_EXCLUDE_DEFINITIONS is defined always before
-pluginapi.h is included (you can also define it for the whole project).
+defined before pluginapi.h is included to prevent redefinitions of functions and classes, or pluginapi.cpp is compiled as
+source file and A_PLUGIN_SDK_EXCLUDE_DEFINITIONS is defined always before pluginapi.h is included (or you define it
+for the whole project).
 
 ---
 ### <a name="names_and_versions">Name and Version</a>
@@ -51,7 +51,7 @@ for example:
 A class is a normal C++ class which is derived from an interface and implements its virtual methods.  
 For each registered class there is one PluginClassInfo object in the plugin.
 
-There is no guarantee that plugins with different interfaces but the same interface names will be loaded.
+There is no guarantee that there are no plugins with different interfaces but the same interface names.
 
 Classes can be registered with the following macro:
 
@@ -72,7 +72,7 @@ for example:
     };
 <!-- tsk -->
     // whatever_plugin.cpp
-    #include "APluginLibrary/pluginapi.h" // this must be included
+    #include "APluginSDK/pluginapi.h" // this must be included
     #include "path/to/interface.h"
     
     class Implementation : public Interface
