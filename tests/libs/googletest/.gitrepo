@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/google/googletest
 	branch = master
-	commit = d854bd6acc47f7f6e168007d58b5f509e4981b36
-	parent = 0c0b91acfd96aac528e8f193720db99a9215c055
+	commit = 23b2a3b1cf803999fb38175f6e9e038a4495c8a5
+	parent = 83ea10f06d3a541cdd2af211881c18b22ad98098
 	method = merge
-	cmdver = 0.4.0
+	cmdver = 0.4.1
