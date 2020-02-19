@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/cxong/tinydir
 	branch = master
-	commit = 5d907978e1e6f2a3b0ad8d51fa186d6fda863ea6
-	parent = bf7fb057844e6182394dbcd299b0895abaa1183d
+	commit = ec6bff2043eaac3ad25423705e63a781762a0dfd
+	parent = bd4035b30285a7402899a1a115775185c2ff0151
 	method = merge
-	cmdver = 0.4.0
+	cmdver = 0.4.1
