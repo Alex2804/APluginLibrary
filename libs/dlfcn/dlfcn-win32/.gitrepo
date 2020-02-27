@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/dlfcn-win32/dlfcn-win32
 	branch = master
-	commit = 974b39c7a481e2b2cf767090ebd6c104ad16c4b3
-	parent = cbb6ce828b717357517e33ef59e36a181849d445
+	commit = 32be076553649fda2f99748e0e982c08b10a78ed
+	parent = 1d55228d9fcf2fc7ad6a014d65dd5b53e0c2d2b7
 	method = merge
-	cmdver = 0.4.0
+	cmdver = 0.4.1
