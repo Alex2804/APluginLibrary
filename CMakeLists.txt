@@ -36,7 +36,7 @@ generate_export_header(APluginLibrary
 target_include_directories(APluginLibrary
         PUBLIC ${PUBLIC_INCLUDE_DIRECTORIES}
         PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
-target_compile_definitions(APluginLibrary PUBLIC A_PLUGIN_SDK_EXCLUDE_DEFINITIONS A_PLUGIN_SDK_DONT_EXPORT_API)
+target_compile_definitions(APluginLibrary PUBLIC A_PLUGIN_SDK_EXCLUDE_IMPLEMENTATION A_PLUGIN_SDK_DONT_EXPORT_API)
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
 if(${APluginLibraryTest})
