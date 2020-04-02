@@ -10,7 +10,7 @@ typedef char*(*setToCharFunc)(char*,char,int);
 typedef void*(*allocateFunc)(size_t);
 typedef void(*releaseFunc)(void*);
 
-GTEST_TEST(LibraryLoader_Test, load_getSymbol_unload_single)
+GTEST_TEST(Test_LibraryLoader, load_getSymbol_unload_single)
 {
 	void* handle = apl::LibraryLoader::load("libraries/first/first_lib");
 	ASSERT_NE(handle, nullptr);
@@ -39,7 +39,7 @@ GTEST_TEST(LibraryLoader_Test, load_getSymbol_unload_single)
 	ASSERT_TRUE(apl::LibraryLoader::unload(handle));
 }
 
-GTEST_TEST(LibraryLoader_Test, load_getSymbol_unload_mutiple)
+GTEST_TEST(Test_LibraryLoader, load_getSymbol_unload_mutiple)
 {
     void* imaginary1 = apl::LibraryLoader::load("libraries/invalid/imaginary1/imaginary1_lib");
     void* first = apl::LibraryLoader::load("libraries/first/first_lib");
@@ -102,7 +102,7 @@ GTEST_TEST(LibraryLoader_Test, load_getSymbol_unload_mutiple)
     ASSERT_TRUE(apl::LibraryLoader::unload(second));
 }
 
-GTEST_TEST(LibraryLoader_Test, error_handling)
+GTEST_TEST(Test_LibraryLoader, error_handling)
 {
     apl::LibraryLoader::clearError();
     ASSERT_EQ(apl::LibraryLoader::getError(), nullptr);

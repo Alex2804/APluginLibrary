@@ -8,7 +8,7 @@
  *
  * Using a plugin object simplifies the loading and unloading of plugins (shared libraries with the plugin api) using
  * the @ref load and @ref unload method.\n
- * From a loaded Plugin you can query the features and classes of that plugin.
+ * Also the features and classes of loaded Plugin's can queried.
  */
 
 apl::Plugin::Plugin(std::string path, library_handle handle)
@@ -44,12 +44,12 @@ apl::Plugin::~Plugin()
 apl::Plugin* apl::Plugin::load(std::string path)
 {
     library_handle handle = LibraryLoader::load(path);
-    if (!handle)
+    if (handle == nullptr)
         return nullptr;
     auto plugin = new Plugin(std::move(path), handle);
     if(plugin->d_ptr->pluginInfo == nullptr) {
         delete plugin;
-        plugin = nullptr;
+        return nullptr;
     }
     return plugin;
 }
@@ -58,11 +58,10 @@ apl::Plugin* apl::Plugin::load(std::string path)
  */
 void apl::Plugin::unload()
 {
-    if(isLoaded()) {
+    if(d_ptr->libraryHandle != nullptr)
         LibraryLoader::unload(d_ptr->libraryHandle);
-        d_ptr->libraryHandle = nullptr;
-        d_ptr->pluginInfo = nullptr;
-    }
+    d_ptr->libraryHandle = nullptr;
+    d_ptr->pluginInfo = nullptr;
 }
 /**
  * @return True if the plugin is loaded or false if not.

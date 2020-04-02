@@ -13,14 +13,14 @@
 #include "../plugins/interface.h"
 #include "../plugins/otherinterface.h"
 
-GTEST_TEST(PluginManager_Test, load_unload_single)
+GTEST_TEST(Test_PluginManager, load_unload_single)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string path = "plugins/first/first_plugin";
 
     // test with specific unloading
     ASSERT_NE(manager.load(path), nullptr);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 1);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 1);
     ASSERT_EQ(manager.getLoadedPluginCount(), 1);
 
     apl::Plugin* plugin = manager.getLoadedPlugins().front();
@@ -30,6 +30,7 @@ GTEST_TEST(PluginManager_Test, load_unload_single)
 
     manager.unload(plugin);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
 
     // test with unloadAll
     ASSERT_NE(manager.load(path), nullptr);
@@ -41,11 +42,11 @@ GTEST_TEST(PluginManager_Test, load_unload_single)
     ASSERT_EQ(plugin->getPath(), path);
 
     manager.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, load_unload_multiple)
+GTEST_TEST(Test_PluginManager, load_unload_multiple)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/third/third_plugin"};
@@ -54,11 +55,11 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     for(size_t i = 0; i < 3; i++) {
         ASSERT_NE(manager.load(paths[i]), nullptr);
         ASSERT_EQ(manager.getLoadedPluginCount(), i + 1);
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), i + 1);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), i + 1);
     }
     ASSERT_EQ(manager.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
     // test existing but invalid shared lib
     ASSERT_TRUE(manager.load("libraries/first/first_lib") == nullptr);
@@ -75,9 +76,9 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
 
     for(size_t i = 0; i < plugins.size(); i++) {
         ASSERT_EQ(manager.getLoadedPluginCount(), 3 - i);
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3 - i);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3 - i);
         manager.unload(plugins.at(i));
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 2 - i);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 2 - i);
         ASSERT_EQ(manager.getLoadedPluginCount(), 2 - i);
         ASSERT_EQ(manager.getLoadedPlugins().size(), 2 - i);
     }
@@ -93,11 +94,11 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     for(size_t i = 0; i < 3; i++) {
         ASSERT_NE(manager.load(paths[i]), nullptr);
         ASSERT_EQ(manager.getLoadedPluginCount(), i + 1);
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), i + 1);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), i + 1);
     }
     ASSERT_EQ(manager.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
     plugins = manager.getLoadedPlugins();
     ASSERT_EQ(plugins.size(), 3);
@@ -108,23 +109,23 @@ GTEST_TEST(PluginManager_Test, load_unload_multiple)
     }
 
     manager.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, loadDirectory_getPluginByPath)
+GTEST_TEST(Test_PluginManager, loadDirectory_getPluginByPath)
 {
     apl::PluginManager manager = apl::PluginManager();
 
     // test with specific unloading
     ASSERT_EQ(manager.loadDirectory("plugins", false), std::vector<apl::Plugin*>());
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
     auto loadedVector = manager.loadDirectory("plugins/first", false);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 1);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 1);
     ASSERT_EQ(manager.getLoadedPluginCount(), 1);
-    ASSERT_EQ(loadedVector, std::vector<apl::Plugin*>({apl::detail::PluginManagerPrivate::loadedPlugins.begin()->second.lock()->plugin}));
+    ASSERT_EQ(loadedVector, std::vector<apl::Plugin*>({apl::detail::PluginManagerPrivate::allPlugins.begin()->second.second}));
 
     apl::Plugin* plugin = manager.getLoadedPlugins().front();
     ASSERT_NE(plugin, nullptr);
@@ -132,7 +133,7 @@ GTEST_TEST(PluginManager_Test, loadDirectory_getPluginByPath)
     ASSERT_EQ(plugin->getPath(), "plugins/first/first_plugin");
 
     loadedVector = manager.loadDirectory("plugins", true);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 7);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 7);
     ASSERT_EQ(manager.getLoadedPluginCount(), 7);
     auto plugins = manager.getLoadedPlugins();
     std::sort(loadedVector.begin(), loadedVector.end());
@@ -155,7 +156,7 @@ GTEST_TEST(PluginManager_Test, loadDirectory_getPluginByPath)
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, test_no_double_loading)
+GTEST_TEST(Test_PluginManager, test_no_double_loading)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/first/first_plugin", "plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/third/third_plugin"};
@@ -165,15 +166,15 @@ GTEST_TEST(PluginManager_Test, test_no_double_loading)
     }
     ASSERT_EQ(manager.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
     manager.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, test_shared_plugin_instances)
+GTEST_TEST(Test_PluginManager, test_shared_plugin_instances)
 {
     apl::PluginManager manager1 = apl::PluginManager();
     apl::PluginManager manager2 = apl::PluginManager();
@@ -187,22 +188,22 @@ GTEST_TEST(PluginManager_Test, test_shared_plugin_instances)
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 3);
     ASSERT_EQ(manager2.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager2.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
     manager1.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
     ASSERT_EQ(manager1.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 0);
     ASSERT_EQ(manager2.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager2.getLoadedPlugins().size(), 3);
 
     manager2.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
     ASSERT_EQ(manager2.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager2.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, copy_assign_construct)
+GTEST_TEST(Test_PluginManager, copy_assign_construct)
 {
     apl::PluginManager manager1 = apl::PluginManager();
     std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/third/third_plugin"};
@@ -211,11 +212,11 @@ GTEST_TEST(PluginManager_Test, copy_assign_construct)
     for(size_t i = 0; i < 3; i++) {
         ASSERT_NE(manager1.load(paths[i]), nullptr);
         ASSERT_EQ(manager1.getLoadedPluginCount(), i + 1);
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), i + 1);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), i + 1);
     }
     ASSERT_EQ(manager1.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
     std::vector<apl::Plugin*> plugins = manager1.getLoadedPlugins();
     ASSERT_EQ(plugins.size(), 3);
@@ -226,15 +227,15 @@ GTEST_TEST(PluginManager_Test, copy_assign_construct)
     }
 
     apl::PluginManager manager2 = manager1;
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
     ASSERT_EQ(manager2.getLoadedPluginCount(), manager1.getLoadedPluginCount());
     ASSERT_EQ(manager2.getLoadedPlugins(), manager1.getLoadedPlugins());
 
     for(size_t i = 0; i < plugins.size(); i++) {
         ASSERT_EQ(manager1.getLoadedPluginCount(), 3 - i);
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
         manager1.unload(plugins.at(i));
-        ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+        ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
         ASSERT_EQ(manager1.getLoadedPluginCount(), 2 - i);
         ASSERT_EQ(manager1.getLoadedPlugins().size(), 2 - i);
         ASSERT_EQ(manager2.getLoadedPluginCount(), 3);
@@ -243,7 +244,7 @@ GTEST_TEST(PluginManager_Test, copy_assign_construct)
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 0);
     ASSERT_EQ(manager2.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager2.getLoadedPlugins().size(), 3);
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 3);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
     for(size_t i = 0; i < plugins.size(); i++) {
         ASSERT_TRUE(plugins.at(i)->isLoaded());
@@ -251,14 +252,14 @@ GTEST_TEST(PluginManager_Test, copy_assign_construct)
     }
 
     manager2.unloadAll();
-    ASSERT_EQ(apl::detail::PluginManagerPrivate::loadedPlugins.size(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
     ASSERT_EQ(manager1.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 0);
     ASSERT_EQ(manager2.getLoadedPluginCount(), 0);
     ASSERT_EQ(manager2.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getPluginInfo_unfiltered)
+GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
 {
     apl::PluginManager manager = apl::PluginManager();
     ASSERT_NE(manager.load("plugins/first/first_plugin"), nullptr);
@@ -309,7 +310,7 @@ GTEST_TEST(PluginManager_Test, getPluginInfo_unfiltered)
     ASSERT_NE(info2->getPluginClassInfos, nullptr);
 }
 
-GTEST_TEST(PluginManager_Test, getPluginInfo_filtered)
+GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
 {
     apl::PluginManager manager = apl::PluginManager();
     ASSERT_NE(manager.load("plugins/first/first_plugin"), nullptr);
@@ -384,7 +385,7 @@ GTEST_TEST(PluginManager_Test, getPluginInfo_filtered)
     ASSERT_EQ(infos.size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getPluginProperties)
+GTEST_TEST(Test_PluginManager, getPluginProperties)
 {
     apl::PluginManager manager = apl::PluginManager();
     ASSERT_NE(manager.load("plugins/first/first_plugin"), nullptr);
@@ -416,7 +417,7 @@ GTEST_TEST(PluginManager_Test, getPluginProperties)
     ASSERT_EQ(properties, expectedProperties);
 }
 
-GTEST_TEST(PluginManager_Test, getFeatures_unfiltered)
+GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/fifth/fifth_plugin"};
@@ -473,7 +474,7 @@ GTEST_TEST(PluginManager_Test, getFeatures_unfiltered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getFeatures_filtered)
+GTEST_TEST(Test_PluginManager, getFeatures_filtered)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/fifth/fifth_plugin",
@@ -612,7 +613,7 @@ GTEST_TEST(PluginManager_Test, getFeatures_filtered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getFeatureProperties)
+GTEST_TEST(Test_PluginManager, getFeatureProperties)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/first/first_plugin", "plugins/second/second_plugin", "plugins/fifth/fifth_plugin",
@@ -674,7 +675,7 @@ GTEST_TEST(PluginManager_Test, getFeatureProperties)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getClasses_unfiltered)
+GTEST_TEST(Test_PluginManager, getClasses_unfiltered)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/third/third_plugin", "plugins/fourth/fourth_plugin", "plugins/fifth/fifth_plugin"};
@@ -721,7 +722,7 @@ GTEST_TEST(PluginManager_Test, getClasses_unfiltered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getClasses_filtered)
+GTEST_TEST(Test_PluginManager, getClasses_filtered)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/fourth/fourth_plugin", "plugins/fifth/fifth_plugin", "plugins/seventh/seventh_plugin"};
@@ -808,7 +809,7 @@ GTEST_TEST(PluginManager_Test, getClasses_filtered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 0);
 }
 
-GTEST_TEST(PluginManager_Test, getClassProperties)
+GTEST_TEST(Test_PluginManager, getClassProperties)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string paths[] = {"plugins/fourth/fourth_plugin", "plugins/fifth/fifth_plugin", "plugins/seventh/seventh_plugin"};

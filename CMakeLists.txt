@@ -6,11 +6,13 @@ set(CMAKE_CXX_STANDARD 11)
 set(HEADERS
         include/APluginLibrary/libraryloader.h
         include/APluginLibrary/plugin.h src/private/pluginprivate.h
-        include/APluginLibrary/pluginmanager.h src/private/pluginmanagerprivate.h)
+        include/APluginLibrary/pluginmanager.h src/private/pluginmanagerprivate.h
+        include/APluginLibrary/pluginmanagerobserver.h)
 set(SOURCES
         src/libraryloader.cpp include/APluginLibrary/implementation/libraryloader.tpp
         src/plugin.cpp
-        src/pluginmanager.cpp src/private/src/pluginmanagerprivate.cpp)
+        src/pluginmanager.cpp src/private/src/pluginmanagerprivate.cpp
+        src/pluginmanagerobserver.cpp)
 
 set(SDK_HEADERS
         SDK/APluginSDK/pluginapi.h)

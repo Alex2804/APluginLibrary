@@ -36,6 +36,8 @@ namespace apl
         ClassName
     };
 
+    class PluginManagerObserver;
+
     class APLUGINLIBRARY_EXPORT PluginManager
     {
     public:
@@ -57,7 +59,6 @@ namespace apl
         std::vector<Plugin*> getLoadedPlugins();
 
         void unload(Plugin* plugin);
-        void unload(const std::string& path);
         void unloadAll();
 
         std::vector<const PluginInfo*> getPluginInfos() const;
@@ -71,6 +72,9 @@ namespace apl
         std::vector<const PluginClassInfo*> getClasses() const;
         std::vector<const PluginClassInfo*> getClasses(const std::string& string, PluginClassFilter filter = PluginClassFilter::InterfaceName) const;
         std::vector<std::string> getClassProperties(PluginClassFilter filter) const;
+
+        void addObserver(PluginManagerObserver* observer);
+        void removeObserver(PluginManagerObserver* observer);
 
     private:
         detail::PluginManagerPrivate* d_ptr;

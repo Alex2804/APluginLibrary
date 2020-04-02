@@ -1,68 +1,62 @@
 #include "../pluginmanagerprivate.h"
 
 #include <algorithm>
+#include <climits>
 
-#include "APluginLibrary/pluginmanager.h"
+#if defined(__unix__) || defined(__APPLE__)
+# include <cstdlib>
+#elif defined(_WIN32)
+#include <windows.h>
+#define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
+#endif
 
-apl::detail::PluginInstance::PluginInstance(Plugin* plugin)
-    : plugin(plugin)
-{}
-apl::detail::PluginInstance::~PluginInstance()
-{
-    PluginManagerPrivate::mutex.lock();
-    PluginManagerPrivate::loadedPlugins.erase(plugin->getHandle());
-    PluginManagerPrivate::mutex.unlock();
-    delete plugin;
-}
+#include "APluginLibrary/pluginmanagerobserver.h"
 
 
-std::unordered_map<apl::const_library_handle, std::weak_ptr<apl::detail::PluginInstance>>
-                                                                    apl::detail::PluginManagerPrivate::loadedPlugins;
-std::mutex apl::detail::PluginManagerPrivate::mutex;
+std::unordered_map<std::string, std::pair<size_t, apl::Plugin*>> apl::detail::PluginManagerPrivate::allPlugins;
+std::mutex apl::detail::PluginManagerPrivate::staticMutex;
 
 apl::Plugin* apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
 {
-    library_handle tmpHandle = LibraryLoader::load(path);
-    if (!tmpHandle)
-        return nullptr;
-    mutex.lock();
-    auto iterator = loadedPlugins.find(tmpHandle);
-    LibraryLoader::unload(tmpHandle);
-    Plugin* plugin = nullptr;
-    if(iterator != loadedPlugins.end()) {
-        std::shared_ptr<PluginInstance> instance = iterator->second.lock();
-        plugin = instance->plugin;
-        if(std::find(pluginInstances.begin(), pluginInstances.end(), instance) == pluginInstances.end()) {
-            pluginInstances.push_back(std::move(instance));
-        }
-    } else {
-        plugin = Plugin::load(std::move(path));
-        if(plugin == nullptr) {
-            mutex.unlock();
-            return nullptr;
-        }
-        std::shared_ptr<PluginInstance> instance = std::make_shared<PluginInstance>(plugin);
-        pluginInstances.push_back(instance);
-        loadedPlugins.insert({instance->plugin->getHandle(), instance});
+    std::string absolutePath = detail::getAbsolutePath((path + ".").append(LibraryLoader::libExtension()));
+    std::lock_guard<std::mutex> lockGuard(staticMutex);
+    auto iterator = allPlugins.find(absolutePath);
+    if(iterator != allPlugins.end()) {
+        iterator->second.first += 1;
+        return iterator->second.second;
     }
-    mutex.unlock();
+    Plugin* plugin = Plugin::load(std::move(path));
+    if(plugin != nullptr)
+        allPlugins.emplace(std::move(absolutePath), std::make_pair(1, plugin));
     return plugin;
 }
+
+void apl::detail::PluginManagerPrivate::loadPlugin(apl::Plugin* plugin)
+{
+    if(plugin == nullptr)
+        return;
+    std::string absolutePath = detail::getAbsolutePath(plugin->getPath().append(".").append(LibraryLoader::libExtension()));
+    staticMutex.lock();
+    auto iterator = allPlugins.find(absolutePath);
+    if(iterator != allPlugins.end())
+        iterator->second.first += 1;
+    else
+        allPlugins.emplace(std::move(absolutePath), std::make_pair(1, plugin));
+    staticMutex.unlock();
+}
+
 void apl::detail::PluginManagerPrivate::unloadPlugin(apl::Plugin* plugin)
 {
     if(plugin == nullptr)
         return;
-    std::shared_ptr<PluginInstance> instance;
-    mutex.lock();
-    auto iterator = loadedPlugins.find(plugin->getHandle());
-    if(iterator != loadedPlugins.end()) {
-        instance = iterator->second.lock();
-        auto func = [instance] (const std::shared_ptr<detail::PluginInstance>& sharedPtr) -> bool {
-            return sharedPtr == instance;
-        };
-        pluginInstances.erase( std::remove_if(pluginInstances.begin(), pluginInstances.end(), func), pluginInstances.end());
+    std::string absolutePath = detail::getAbsolutePath(plugin->getPath().append(".").append(LibraryLoader::libExtension()));
+    staticMutex.lock();
+    auto iterator = allPlugins.find(absolutePath);
+    if(iterator != allPlugins.end() && (iterator->second.first -= 1) == 0) {
+        delete iterator->second.second;
+        allPlugins.erase(iterator);
     }
-    mutex.unlock();
+    staticMutex.unlock();
 }
 
 std::string apl::detail::filterPluginInfo(const PluginInfo *info, PluginInfoFilter filter)
@@ -104,4 +98,13 @@ const char* apl::detail::filterClassInfo(const PluginClassInfo* info, PluginClas
     } else {
         throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
     }
+}
+
+std::string apl::detail::getAbsolutePath(const std::string& path)
+{
+    char buf[PATH_MAX];
+    char *res = realpath(path.c_str(), buf);
+    if(res)
+        return buf;
+    return path;
 }

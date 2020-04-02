@@ -9,6 +9,7 @@
 #include <memory>
 #include <mutex>
 
+#include "APluginLibrary/pluginmanager.h"
 #include "APluginLibrary/plugin.h"
 #include "APluginLibrary/libraryloader.h"
 #include "APluginSDK/plugininfos.h"
@@ -22,24 +23,18 @@ namespace apl
 {
     namespace detail
     {
-        class APLUGINLIBRARY_NO_EXPORT PluginInstance
-        {
-        public:
-            explicit PluginInstance(Plugin* plugin);
-            ~PluginInstance();
-
-            Plugin* plugin;
-        };
-
         class APLUGINLIBRARY_NO_EXPORT PluginManagerPrivate
         {
         public:
-            std::vector<std::shared_ptr<PluginInstance>> pluginInstances; // loaded plugins of this PluginManager instance
-            static std::unordered_map<const_library_handle, std::weak_ptr<PluginInstance>> loadedPlugins; // loaded plugins of ALL PluginManager instances
-            static std::mutex mutex;
+            std::vector<Plugin*> plugins;
+            std::vector<PluginManagerObserver*> observers;
+            std::recursive_mutex localMutex;
 
-            apl::Plugin* loadPlugin(std::string path); // loads a plugin into this PluginManager (tries to prevent duplicates)
-            void unloadPlugin(Plugin* plugin); // unload a plugin from this PluginManager instance
+            static std::unordered_map<std::string, std::pair<size_t, Plugin*>> allPlugins;
+            static std::mutex staticMutex;
+            static Plugin* loadPlugin(std::string absolutePath);
+            static void loadPlugin(Plugin *plugin);
+            static void unloadPlugin(Plugin *plugin);
         };
     }
 
@@ -52,6 +47,8 @@ namespace apl
         std::string filterPluginInfo(const PluginInfo* info, PluginInfoFilter filter);
         const char* filterFeatureInfo(const PluginFeatureInfo* info, PluginFeatureFilter filter);
         const char* filterClassInfo(const PluginClassInfo* info, PluginClassFilter filter);
+
+        std::string getAbsolutePath(const std::string& path);
     }
 }
 

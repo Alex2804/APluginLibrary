@@ -21,14 +21,14 @@ std::string apl::LibraryLoader::errorString = std::string();
  */
 const char* apl::LibraryLoader::libExtension()
 {
-#ifdef __unix__
-    return "so";
-#elif __APPLE__
+#ifdef __APPLE__
     return "dylib";
+#elif __unix__
+    return "so";
 #elif _WIN32
     return "dll";
 #else
-# error "Unknown shared library extension on this platform!"
+# error "Unknown shared library extension for this platform!"
 #endif
 }
 
@@ -43,7 +43,7 @@ const char* apl::LibraryLoader::libExtension()
  */
 apl::library_handle apl::LibraryLoader::load(std::string path)
 {
-    return load(std::move(path).append("."), libExtension());
+    return load(std::move(path), libExtension());
 }
 /**
  * Appends suffix to @p path and loads the library.
@@ -51,7 +51,7 @@ apl::library_handle apl::LibraryLoader::load(std::string path)
  * @param path The path to the library without @p suffix.
  * @param suffix The suffix which should be appended to @p path.
  *
- * @return The handle to the library and an invalid one if the library doesn't exist.
+ * @return The handle to the library and a NULL handle if the library doesn't exist.
  */
 apl::library_handle apl::LibraryLoader::load(std::string path, const std::string& suffix)
 {
@@ -59,7 +59,9 @@ apl::library_handle apl::LibraryLoader::load(std::string path, const std::string
     if(!path.empty() && path.at(0) != '/')
         path.insert(0, "./");
 #endif
-    library_handle handle = dlopen((std::move(path) += suffix).c_str(), RTLD_LAZY);
+    if(path.back() != '.')
+        path += '.';
+    library_handle handle = dlopen((path += suffix).c_str(), RTLD_LAZY);
     char* error = dlerror();
     if(error != nullptr)
         errorString.append(error).append("\n");

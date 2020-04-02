@@ -46,7 +46,7 @@ namespace apl
         const PluginClassInfo* const* getClassInfos() const;
 
     private:
-        explicit Plugin(std::string path, library_handle handle);
+        Plugin(std::string path, library_handle handle);
 
         detail::PluginPrivate* d_ptr;
     };

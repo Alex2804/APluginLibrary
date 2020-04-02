@@ -21,10 +21,11 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 set(SOURCES
-        src/libraryloader_test.cpp
-        src/pluginapi_test.cpp
-        src/plugin_test.cpp
-        src/pluginmanager_test.cpp)
+        src/test_libraryloader.cpp
+        src/test_pluginapi.cpp
+        src/test_plugin.cpp
+        src/test_pluginmanager.cpp
+        src/test_pluginmanagerobserver.cpp)
 
 add_executable(APluginLibraryTest ${SOURCES})
 target_link_libraries(APluginLibraryTest APluginLibrary gtest_main)

@@ -7,7 +7,7 @@
 
 #include "../plugins/interface.h"
 
-GTEST_TEST(PluginAPI_Test, memory_allocate_free)
+GTEST_TEST(Test_PluginAPI, memory_allocate_free)
 {
     void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
     ASSERT_NE(handle, nullptr);
@@ -36,7 +36,7 @@ GTEST_TEST(PluginAPI_Test, memory_allocate_free)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(PluginAPI_Test, getPluginInfo)
+GTEST_TEST(Test_PluginAPI, getPluginInfo)
 {
     void* handle1 = apl::LibraryLoader::load("plugins/first/first_plugin");
     ASSERT_NE(handle1, nullptr);
@@ -90,7 +90,7 @@ GTEST_TEST(PluginAPI_Test, getPluginInfo)
     apl::LibraryLoader::unload(handle2);
 }
 
-GTEST_TEST(PluginAPI_Test, feature_loading_single)
+GTEST_TEST(Test_PluginAPI, feature_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
     ASSERT_NE(handle, nullptr);
@@ -121,7 +121,7 @@ GTEST_TEST(PluginAPI_Test, feature_loading_single)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(PluginAPI_Test, feature_loading_multiple)
+GTEST_TEST(Test_PluginAPI, feature_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/second/second_plugin");
     ASSERT_NE(handle, nullptr);
@@ -163,7 +163,7 @@ GTEST_TEST(PluginAPI_Test, feature_loading_multiple)
 
 
 
-GTEST_TEST(PluginAPI_Test, class_loading_single)
+GTEST_TEST(Test_PluginAPI, class_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/third/third_plugin");
     ASSERT_NE(handle, nullptr);
@@ -204,7 +204,7 @@ GTEST_TEST(PluginAPI_Test, class_loading_single)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(PluginAPI_Test, class_loading_multiple)
+GTEST_TEST(Test_PluginAPI, class_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/fourth/fourth_plugin");
     ASSERT_NE(handle, nullptr);
@@ -253,7 +253,7 @@ GTEST_TEST(PluginAPI_Test, class_loading_multiple)
 
 
 
-GTEST_TEST(PluginAPI_Test, feature_and_class_loading_single)
+GTEST_TEST(Test_PluginAPI, feature_and_class_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/fifth/fifth_plugin");
     ASSERT_NE(handle, nullptr);
@@ -320,7 +320,7 @@ GTEST_TEST(PluginAPI_Test, feature_and_class_loading_single)
     apl::LibraryLoader::unload(handle);
 }
 
-GTEST_TEST(PluginAPI_Test, feature_and_class_loading_multiple)
+GTEST_TEST(Test_PluginAPI, feature_and_class_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/sixth/sixth_plugin");
     ASSERT_NE(handle, nullptr);
@@ -403,7 +403,7 @@ GTEST_TEST(PluginAPI_Test, feature_and_class_loading_multiple)
 }
 
 
-GTEST_TEST(PluginAPI_Test, feature_and_class_plugin_infos)
+GTEST_TEST(Test_PluginAPI, feature_and_class_plugin_infos)
 {
     void* handle = apl::LibraryLoader::load("plugins/sixth/sixth_plugin");
     ASSERT_NE(handle, nullptr);
