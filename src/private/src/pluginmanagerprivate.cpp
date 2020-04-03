@@ -2,12 +2,13 @@
 
 #include <algorithm>
 #include <climits>
-
-#if defined(__unix__) || defined(__APPLE__)
 # include <cstdlib>
-#elif defined(_WIN32)
-#include <windows.h>
-#define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
+
+#ifdef _WIN32
+# define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
+# ifndef PATH_MAX
+#  define PATH_MAX _MAX_PATH
+# endif
 #endif
 
 #include "APluginLibrary/pluginmanagerobserver.h"
