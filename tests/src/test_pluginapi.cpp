@@ -287,10 +287,10 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_single)
     ASSERT_STREQ(featureInfo->returnType, "int");
     ASSERT_STREQ(featureInfo->featureGroup, "fifth_group1");
     ASSERT_STREQ(featureInfo->featureName, "feature1");
-    ASSERT_STREQ(featureInfo->parameterList, "int x1, int x2");
-    ASSERT_STREQ(featureInfo->parameterTypes, "int, int");
-    ASSERT_STREQ(featureInfo->parameterNames, "x1, x2");
-    ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(featureInfo->functionPointer)(7, 3), 21);
+    ASSERT_STREQ(featureInfo->parameterList, "");
+    ASSERT_STREQ(featureInfo->parameterTypes, "");
+    ASSERT_STREQ(featureInfo->parameterNames, "");
+    ASSERT_EQ(reinterpret_cast<int(*)()>(featureInfo->functionPointer)(), 6);
 
     // class check
     const apl::PluginClassInfo* classInfo = pluginInfo->getClassInfo(0);

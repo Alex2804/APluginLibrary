@@ -1,9 +1,9 @@
 #include "APluginSDK/pluginapi.h"
 #include "../../interface.h"
 
-A_PLUGIN_REGISTER_FEATURE(int, fifth_group1, feature1, int x1, int x2)
+A_PLUGIN_REGISTER_FEATURE(int, fifth_group1, feature1)
 {
-    return x1 * x2;
+    return 4 + 2;
 }
 
 class APLUGINSDK_NO_EXPORT Implementation : public Interface

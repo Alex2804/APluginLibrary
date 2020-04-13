@@ -476,16 +476,16 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
     const char* parameterLists[] = {"int x1, int x2",
                                    "int x1, int x2", "int x1, int x2", "int x1, int x2", "int x1, int x2",
                                    "int x", "int x",
-                                   "int x1, int x2"};
+                                   ""};
     const char* parameterTypes[] = {"int, int",
                                     "int, int", "int, int", "int, int", "int, int",
                                     "int", "int",
-                                    "int, int"};
+                                    ""};
     const char* parameterNames[] = {"x1, x2",
                                     "x1, x2", "x1, x2", "x1, x2", "x1, x2",
                                     "x", "x",
-                                    "x1, x2"};
-    int results[] = {27, 12, 6, 27, 3, 49, 343, 27};
+                                    ""};
+    int results[] = {27, 12, 6, 27, 3, 49, 343, 6};
     const apl::PluginFeatureInfo* info;
     for(size_t i = 0; i < features.size(); i++) {
         info = features.at(i);
@@ -498,8 +498,10 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
         ASSERT_STREQ(info->parameterNames, parameterNames[i]);
         if(std::string(info->parameterList) == "int x")
             ASSERT_EQ(reinterpret_cast<int(*)(int)>(info->functionPointer)(7), results[i]);
-        else
+        else if(std::string(info->parameterList) == "int x1, int x2")
             ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
+        else
+            ASSERT_EQ(reinterpret_cast<int(*)()>(info->functionPointer)(), results[i]);
     }
 
     manager.unloadAll();
@@ -548,10 +550,10 @@ GTEST_TEST(Test_PluginManager, getFeatures_filtered)
     ASSERT_EQ(features.size(), 2);
     featureGroups = {"first_group1", "fifth_group1"};
     returnTypes = {"int", "int"};
-    parameterLists = {"int x1, int x2", "int x1, int x2"};
-    parameterTypes = {"int, int", "int, int"};
-    parameterNames = {"x1, x2", "x1, x2"};
-    results = {27, 27};
+    parameterLists = {"int x1, int x2", ""};
+    parameterTypes = {"int, int", ""};
+    parameterNames = {"x1, x2", ""};
+    results = {27, 6};
     for(size_t i = 0; i < features.size(); i++) {
         info = features.at(i);
         ASSERT_NE(info, nullptr);
@@ -561,7 +563,10 @@ GTEST_TEST(Test_PluginManager, getFeatures_filtered)
         ASSERT_STREQ(info->parameterList, parameterLists[i]);
         ASSERT_STREQ(info->parameterTypes, parameterTypes[i]);
         ASSERT_STREQ(info->parameterNames, parameterNames[i]);
-        ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
+        if(std::string(info->parameterTypes) == "int, int")
+            ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
+        else
+            ASSERT_EQ(reinterpret_cast<int(*)()>(info->functionPointer)(), results[i]);
     }
 
     // filter return types
@@ -684,21 +689,21 @@ GTEST_TEST(Test_PluginManager, getFeatureProperties)
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterList);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"int x1, int x2", "int x"};
+    result = {"int x1, int x2", "int x", ""};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterTypes);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"int, int", "int"};
+    result = {"int, int", "int", ""};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterNames);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"x1, x2", "x"};
+    result = {"x1, x2", "x", ""};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
