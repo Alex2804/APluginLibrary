@@ -443,7 +443,7 @@ GTEST_TEST(Test_PluginManager, getPluginProperties)
     ASSERT_EQ(properties, expectedProperties);
 
     properties = manager.getPluginProperties(apl::PluginInfoFilter::ApiVersion);
-    expectedProperties = {"1.0.0"};
+    expectedProperties = {"2.0.0"};
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
     std::sort(expectedProperties.begin(), expectedProperties.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), expectedProperties.size());
