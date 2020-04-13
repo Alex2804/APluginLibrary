@@ -138,13 +138,16 @@ size_t apl::Plugin::getFeatureCount() const
 }
 /**
  * @param index The index of the PluginFeatureInfo
- * @return The PluginFeatureInfo or nullptr if @p is no valid index
+ * @return The PluginFeatureInfo or nullptr if @p is no valid index.
  *
  * @see getFeatureCount()
  */
 const apl::PluginFeatureInfo *apl::Plugin::getFeatureInfo(size_t index) const
 {
-    return isLoaded() ? d_ptr->pluginInfo->getFeatureInfo(index) : nullptr;
+    size_t featureCount = getFeatureCount();
+    if(featureCount == 0 || index > featureCount - 1)
+        return nullptr;
+    return d_ptr->pluginInfo->getFeatureInfo(index);
 }
 /**
  * @return A PluginFeatureInfo array, with all PluginFeatureInfo's of the plugin.
@@ -165,13 +168,16 @@ size_t apl::Plugin::getClassCount() const
 }
 /**
  * @param index The index of the PluginClassInfo
- * @return The PluginClassInfo or nullptr if @p is no valid index
+ * @return The PluginClassInfo or nullptr if @p is no valid index.
  *
  * @see getClassCount()
  */
 const apl::PluginClassInfo *apl::Plugin::getClassInfo(size_t index) const
 {
-    return isLoaded() ? d_ptr->pluginInfo->getClassInfo(index) : nullptr;
+    size_t classCount = getClassCount();
+    if(classCount == 0 || index > classCount - 1)
+        return nullptr;
+    return d_ptr->pluginInfo->getClassInfo(index);
 }
 /**
  * @return A PluginClassInfo array, with all PluginClassInfo's of the plugin.
