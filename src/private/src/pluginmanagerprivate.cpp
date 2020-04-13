@@ -17,9 +17,23 @@
 std::unordered_map<std::string, std::pair<size_t, apl::Plugin*>> apl::detail::PluginManagerPrivate::allPlugins;
 std::mutex apl::detail::PluginManagerPrivate::staticMutex;
 
+namespace
+{
+    inline std::string getPluginAbsolutePath(std::string path)
+    {
+        if(path.empty())
+            return path;
+        char buf[PATH_MAX];
+        char *res = realpath(path.append(".").append(apl::LibraryLoader::libExtension()).c_str(), buf);
+        if(res != nullptr)
+            return buf;
+        return path;
+    }
+}
+
 apl::Plugin* apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
 {
-    std::string absolutePath = detail::getAbsolutePath((path + ".").append(LibraryLoader::libExtension()));
+    std::string absolutePath = getPluginAbsolutePath(path);
     std::lock_guard<std::mutex> lockGuard(staticMutex);
     auto iterator = allPlugins.find(absolutePath);
     if(iterator != allPlugins.end()) {
@@ -36,7 +50,7 @@ void apl::detail::PluginManagerPrivate::loadPlugin(apl::Plugin* plugin)
 {
     if(plugin == nullptr)
         return;
-    std::string absolutePath = detail::getAbsolutePath(plugin->getPath().append(".").append(LibraryLoader::libExtension()));
+    std::string absolutePath = getPluginAbsolutePath(plugin->getPath());
     staticMutex.lock();
     auto iterator = allPlugins.find(absolutePath);
     if(iterator != allPlugins.end())
@@ -50,7 +64,9 @@ void apl::detail::PluginManagerPrivate::unloadPlugin(apl::Plugin* plugin)
 {
     if(plugin == nullptr)
         return;
-    std::string absolutePath = detail::getAbsolutePath(plugin->getPath().append(".").append(LibraryLoader::libExtension()));
+    std::string absolutePath;
+    if(!plugin->getPath().empty())
+        absolutePath = getPluginAbsolutePath(plugin->getPath());
     staticMutex.lock();
     auto iterator = allPlugins.find(absolutePath);
     if(iterator != allPlugins.end() && (iterator->second.first -= 1) == 0) {
@@ -99,13 +115,4 @@ const char* apl::detail::filterClassInfo(const PluginClassInfo* info, PluginClas
     } else {
         throw std::runtime_error("Unimplemented apl::PluginFeatureFilter");
     }
-}
-
-std::string apl::detail::getAbsolutePath(const std::string& path)
-{
-    char buf[PATH_MAX];
-    char *res = realpath(path.c_str(), buf);
-    if(res)
-        return buf;
-    return path;
 }

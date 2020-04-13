@@ -13,10 +13,43 @@
 #include "../plugins/interface.h"
 #include "../plugins/otherinterface.h"
 
-GTEST_TEST(Test_PluginManager, load_unload_single)
+GTEST_TEST(Test_PluginManager, load_unload_single_extern)
 {
     apl::PluginManager manager = apl::PluginManager();
     std::string path = "plugins/first/first_plugin";
+
+    // test with specific unloading
+    ASSERT_NE(manager.load(path), nullptr);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 1);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 1);
+
+    apl::Plugin* plugin = manager.getLoadedPlugins().front();
+    ASSERT_NE(plugin, nullptr);
+    ASSERT_TRUE(plugin->isLoaded());
+    ASSERT_EQ(plugin->getPath(), path);
+
+    manager.unload(plugin);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
+
+    // test with unloadAll
+    ASSERT_NE(manager.load(path), nullptr);
+    ASSERT_EQ(manager.getLoadedPluginCount(), 1);
+
+    plugin = manager.getLoadedPlugins().front();
+    ASSERT_NE(plugin, nullptr);
+    ASSERT_TRUE(plugin->isLoaded());
+    ASSERT_EQ(plugin->getPath(), path);
+
+    manager.unloadAll();
+    ASSERT_EQ(manager.getLoadedPluginCount(), 0);
+    ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
+}
+
+GTEST_TEST(Test_PluginManager, load_unload_single_integrated)
+{
+    apl::PluginManager manager = apl::PluginManager();
+    std::string path = "";
 
     // test with specific unloading
     ASSERT_NE(manager.load(path), nullptr);
@@ -283,12 +316,12 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
     ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
     ASSERT_NE(info1->allocateMemory, nullptr);
     ASSERT_NE(info1->freeMemory, nullptr);
-    ASSERT_NE(info1->getPluginFeatureCount, nullptr);
-    ASSERT_NE(info1->getPluginFeatureInfo, nullptr);
-    ASSERT_NE(info1->getPluginFeatureInfos, nullptr);
-    ASSERT_NE(info1->getPluginClassCount, nullptr);
-    ASSERT_NE(info1->getPluginClassInfo, nullptr);
-    ASSERT_NE(info1->getPluginClassInfos, nullptr);
+    ASSERT_NE(info1->getFeatureCount, nullptr);
+    ASSERT_NE(info1->getFeatureInfo, nullptr);
+    ASSERT_NE(info1->getFeatureInfos, nullptr);
+    ASSERT_NE(info1->getClassCount, nullptr);
+    ASSERT_NE(info1->getClassInfo, nullptr);
+    ASSERT_NE(info1->getClassInfos, nullptr);
 
     const apl::PluginInfo* info2 = infos.back();
     ASSERT_NE(info2, nullptr);
@@ -302,12 +335,12 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
     ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
     ASSERT_NE(info2->allocateMemory, nullptr);
     ASSERT_NE(info2->freeMemory, nullptr);
-    ASSERT_NE(info2->getPluginFeatureCount, nullptr);
-    ASSERT_NE(info2->getPluginFeatureInfo, nullptr);
-    ASSERT_NE(info2->getPluginFeatureInfos, nullptr);
-    ASSERT_NE(info2->getPluginClassCount, nullptr);
-    ASSERT_NE(info2->getPluginClassInfo, nullptr);
-    ASSERT_NE(info2->getPluginClassInfos, nullptr);
+    ASSERT_NE(info2->getFeatureCount, nullptr);
+    ASSERT_NE(info2->getFeatureInfo, nullptr);
+    ASSERT_NE(info2->getFeatureInfos, nullptr);
+    ASSERT_NE(info2->getClassCount, nullptr);
+    ASSERT_NE(info2->getClassInfo, nullptr);
+    ASSERT_NE(info2->getClassInfos, nullptr);
 }
 
 GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
@@ -334,12 +367,12 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
     ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
     ASSERT_NE(info1->allocateMemory, nullptr);
     ASSERT_NE(info1->freeMemory, nullptr);
-    ASSERT_NE(info1->getPluginFeatureCount, nullptr);
-    ASSERT_NE(info1->getPluginFeatureInfo, nullptr);
-    ASSERT_NE(info1->getPluginFeatureInfos, nullptr);
-    ASSERT_NE(info1->getPluginClassCount, nullptr);
-    ASSERT_NE(info1->getPluginClassInfo, nullptr);
-    ASSERT_NE(info1->getPluginClassInfos, nullptr);
+    ASSERT_NE(info1->getFeatureCount, nullptr);
+    ASSERT_NE(info1->getFeatureInfo, nullptr);
+    ASSERT_NE(info1->getFeatureInfos, nullptr);
+    ASSERT_NE(info1->getClassCount, nullptr);
+    ASSERT_NE(info1->getClassInfo, nullptr);
+    ASSERT_NE(info1->getClassInfos, nullptr);
 
     infos = manager.getPluginInfos("3.5.12", apl::PluginInfoFilter::PluginVersion);
     ASSERT_EQ(infos.size(), 1);
@@ -355,12 +388,12 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
     ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
     ASSERT_NE(info2->allocateMemory, nullptr);
     ASSERT_NE(info2->freeMemory, nullptr);
-    ASSERT_NE(info2->getPluginFeatureCount, nullptr);
-    ASSERT_NE(info2->getPluginFeatureInfo, nullptr);
-    ASSERT_NE(info2->getPluginFeatureInfos, nullptr);
-    ASSERT_NE(info2->getPluginClassCount, nullptr);
-    ASSERT_NE(info2->getPluginClassInfo, nullptr);
-    ASSERT_NE(info2->getPluginClassInfos, nullptr);
+    ASSERT_NE(info2->getFeatureCount, nullptr);
+    ASSERT_NE(info2->getFeatureInfo, nullptr);
+    ASSERT_NE(info2->getFeatureInfos, nullptr);
+    ASSERT_NE(info2->getClassCount, nullptr);
+    ASSERT_NE(info2->getClassInfo, nullptr);
+    ASSERT_NE(info2->getClassInfos, nullptr);
 
     // test name filter
     infos = manager.getPluginInfos("first_plugin", apl::PluginInfoFilter::PluginName);
@@ -794,7 +827,6 @@ GTEST_TEST(Test_PluginManager, getClasses_filtered)
             OtherInterface* otherInterface = createInstance();
             ASSERT_NE(otherInterface, nullptr);
 
-            // issue under macOS with gcc for the 3 asserts below (see README.md)
             ASSERT_EQ(otherInterface->otherFunction1(3, 12, 7), 8);
             ASSERT_STREQ(otherInterface->otherFunction2(), "This is for testing!");
             ASSERT_EQ(otherInterface->otherFunction3(4.2), 4);

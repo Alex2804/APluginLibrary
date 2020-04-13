@@ -1,7 +1,7 @@
 #include "APluginSDK/pluginapi.h"
 #include "../../interface.h"
 
-class Implementation : public Interface
+class APLUGINSDK_NO_EXPORT Implementation : public Interface
 {
 public:
     int function1(int x1, int x2) override;

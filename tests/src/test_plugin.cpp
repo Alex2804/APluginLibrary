@@ -7,7 +7,7 @@
 
 #include "../plugins/interface.h"
 
-GTEST_TEST(Test_Plugin, load_unload)
+GTEST_TEST(Test_Plugin, load_unload_extern)
 {
     apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
     ASSERT_NE(plugin, nullptr);
@@ -22,8 +22,17 @@ GTEST_TEST(Test_Plugin, load_unload)
     plugin = apl::Plugin::load("libraries/first/first_lib");
     ASSERT_EQ(plugin, nullptr);
 }
+GTEST_TEST(Test_Plugin, load_unload_integrated)
+{
+    apl::Plugin* plugin = apl::Plugin::load("");
+    ASSERT_NE(plugin, nullptr);
+    ASSERT_TRUE(plugin->isLoaded());
+    plugin->unload();
+    ASSERT_FALSE(plugin->isLoaded());
+    delete plugin;
+}
 
-GTEST_TEST(Test_Plugin, getPath)
+GTEST_TEST(Test_Plugin, getPath_extern)
 {
     apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
     ASSERT_NE(plugin, nullptr);
@@ -34,8 +43,19 @@ GTEST_TEST(Test_Plugin, getPath)
     ASSERT_EQ(plugin->getPath(), "plugins/first/first_plugin");
     delete plugin;
 }
+GTEST_TEST(Test_Plugin, getPath_integrated)
+{
+    apl::Plugin* plugin = apl::Plugin::load("");
+    ASSERT_NE(plugin, nullptr);
+    ASSERT_TRUE(plugin->isLoaded());
+    ASSERT_EQ(plugin->getPath(), "");
+    plugin->unload();
+    ASSERT_FALSE(plugin->isLoaded());
+    ASSERT_EQ(plugin->getPath(), "");
+    delete plugin;
+}
 
-GTEST_TEST(Test_Plugin, getPluginInfo)
+GTEST_TEST(Test_Plugin, getPluginInfo_extern)
 {
     apl::Plugin* plugin1 = apl::Plugin::load("plugins/first/first_plugin");
     ASSERT_NE(plugin1, nullptr);
@@ -54,12 +74,12 @@ GTEST_TEST(Test_Plugin, getPluginInfo)
     ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
     ASSERT_NE(info1->allocateMemory, nullptr);
     ASSERT_NE(info1->freeMemory, nullptr);
-    ASSERT_NE(info1->getPluginFeatureCount, nullptr);
-    ASSERT_NE(info1->getPluginFeatureInfo, nullptr);
-    ASSERT_NE(info1->getPluginFeatureInfos, nullptr);
-    ASSERT_NE(info1->getPluginClassCount, nullptr);
-    ASSERT_NE(info1->getPluginClassInfo, nullptr);
-    ASSERT_NE(info1->getPluginClassInfos, nullptr);
+    ASSERT_NE(info1->getFeatureCount, nullptr);
+    ASSERT_NE(info1->getFeatureInfo, nullptr);
+    ASSERT_NE(info1->getFeatureInfos, nullptr);
+    ASSERT_NE(info1->getClassCount, nullptr);
+    ASSERT_NE(info1->getClassInfo, nullptr);
+    ASSERT_NE(info1->getClassInfos, nullptr);
 
     const apl::PluginInfo* info2 = plugin2->getPluginInfo();
     ASSERT_NE(info2, nullptr);
@@ -73,15 +93,44 @@ GTEST_TEST(Test_Plugin, getPluginInfo)
     ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
     ASSERT_NE(info2->allocateMemory, nullptr);
     ASSERT_NE(info2->freeMemory, nullptr);
-    ASSERT_NE(info2->getPluginFeatureCount, nullptr);
-    ASSERT_NE(info2->getPluginFeatureInfo, nullptr);
-    ASSERT_NE(info2->getPluginFeatureInfos, nullptr);
-    ASSERT_NE(info2->getPluginClassCount, nullptr);
-    ASSERT_NE(info2->getPluginClassInfo, nullptr);
-    ASSERT_NE(info2->getPluginClassInfos, nullptr);
+    ASSERT_NE(info2->getFeatureCount, nullptr);
+    ASSERT_NE(info2->getFeatureInfo, nullptr);
+    ASSERT_NE(info2->getFeatureInfos, nullptr);
+    ASSERT_NE(info2->getClassCount, nullptr);
+    ASSERT_NE(info2->getClassInfo, nullptr);
+    ASSERT_NE(info2->getClassInfos, nullptr);
 
     delete plugin1;
     delete plugin2;
+}
+GTEST_TEST(Test_Plugin, getPluginInfo_integrated)
+{
+    apl::Plugin* plugin = apl::Plugin::load("");
+    ASSERT_NE(plugin, nullptr);
+
+    const apl::PluginInfo* info = plugin->getPluginInfo();
+    ASSERT_NE(info, nullptr);
+
+    ASSERT_STREQ(info->pluginName, "integrated_plugin_name");
+    ASSERT_EQ(info->pluginVersionMajor, 28);
+    ASSERT_EQ(info->pluginVersionMinor, 4);
+    ASSERT_EQ(info->pluginVersionPatch, 2000);
+    ASSERT_EQ(info->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
+    ASSERT_EQ(info->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
+    ASSERT_EQ(info->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_NE(info->allocateMemory, nullptr);
+    ASSERT_NE(info->freeMemory, nullptr);
+    ASSERT_NE(info->getFeatureCount, nullptr);
+    ASSERT_NE(info->getFeatureInfo, nullptr);
+    ASSERT_NE(info->getFeatureInfos, nullptr);
+    ASSERT_NE(info->getClassCount, nullptr);
+    ASSERT_NE(info->getClassInfo, nullptr);
+    ASSERT_NE(info->getClassInfos, nullptr);
+
+    ASSERT_EQ(info->getFeatureCount(), 2);
+    ASSERT_EQ(info->getClassCount(), 1);
+
+    delete plugin;
 }
 
 GTEST_TEST(Test_Plugin, memory_allocate_free)

@@ -47,8 +47,6 @@ namespace apl
         std::string filterPluginInfo(const PluginInfo* info, PluginInfoFilter filter);
         const char* filterFeatureInfo(const PluginFeatureInfo* info, PluginFeatureFilter filter);
         const char* filterClassInfo(const PluginClassInfo* info, PluginClassFilter filter);
-
-        std::string getAbsolutePath(const std::string& path);
     }
 }
 

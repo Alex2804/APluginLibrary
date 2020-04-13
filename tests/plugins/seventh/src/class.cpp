@@ -1,7 +1,7 @@
 #include "APluginSDK/pluginapi.h"
 #include "../../otherinterface.h"
 
-class Implementation1 : public OtherInterface
+class APLUGINSDK_NO_EXPORT Implementation1 : public OtherInterface
 {
 public:
     int otherFunction1(int x1, int x2, int x3) override;

@@ -6,7 +6,7 @@ A_PLUGIN_REGISTER_FEATURE(int, fifth_group1, feature1, int x1, int x2)
     return x1 * x2;
 }
 
-class Implementation : public Interface
+class APLUGINSDK_NO_EXPORT Implementation : public Interface
 {
 public:
     int function1(int x1, int x2) override;

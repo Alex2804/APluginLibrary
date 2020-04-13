@@ -16,8 +16,6 @@
 namespace apl {
     namespace detail
     {
-        typedef const PluginInfo*(*getPluginInfoFunction)();
-
         struct APLUGINLIBRARY_NO_EXPORT PluginPrivate
         {
             std::string libraryPath;

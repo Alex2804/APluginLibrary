@@ -21,6 +21,7 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 set(SOURCES
+        src/integrated_plugin.cpp
         src/test_libraryloader.cpp
         src/test_pluginapi.cpp
         src/test_plugin.cpp

@@ -4,7 +4,9 @@ Simple C++ Plugin Library.
 All of the public API is in the **apl** namespace.
 
 ### <a name="Plugin">Plugin</a>
-Plugins are provided as shared libraries and can be loaded into the program at runtime.
+Plugins are provided as shared libraries and can be loaded into the program at runtime. The application itself can
+contain a plugin (for e.g. for platforms where dynamic shared library loading is not allowed or not supported) which
+can be loaded by passing an empty path to the load function.
 
 For more information about plugins and how to write them, please check out
 **[APluginSDK](https://github.com/Alex2804/APluginSDK)**.
@@ -26,10 +28,4 @@ There can be multiple instances of PluginManager with different plugins.
 
 - There is no API version check yet.
 
-- Interfaces only get compared by names not by types.
-
-- If you load 2 or more Plugins the same time, which contain one (or more) class(es) with the same name under macOS, when
-  APluginLibrary was compiled with GCC (tested 8.3 and 9.2), every call to "createInstance" and "deleteInstance"
-  of this class(es) will call the constructor of the class in the first loaded plugin. This is independent from the
-  PluginManager you are using.  
-  **This could only be reproduced under macOS with GCC!**
+- Class interfaces only gets compared by names not by types.

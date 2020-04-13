@@ -100,7 +100,7 @@ void* apl::LibraryLoader::getSymbol(library_handle handle, const std::string &na
  */
 bool apl::LibraryLoader::unload(library_handle handle)
 {
-    if(!handle)
+    if(handle == nullptr)
         return true;
     return !dlclose(handle);
 }
