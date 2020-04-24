@@ -12,6 +12,7 @@
 
 #include "../plugins/interface.h"
 #include "../plugins/otherinterface.h"
+#include "../plugins/include.h"
 
 GTEST_TEST(Test_PluginManager, load_unload_single_extern)
 {
@@ -463,29 +464,29 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
 
     std::vector<const apl::PluginFeatureInfo*> features = manager.getFeatures();
-    ASSERT_EQ(features.size(), 8);
-    const char* featureGroups[] = {"first_group1",
+    ASSERT_EQ(features.size(), 9);
+    const char* featureGroups[] = {"first_group1", "first_group1",
                                    "second_group_math", "second_group_math", "second_group_math", "second_group_math",
                                    "second_group_pow", "second_group_pow",
                                    "fifth_group1"};
-    const char* featureNames[] = {"feature1",
+    const char* featureNames[] = {"feature1", "feature2",
                                   "feature_add", "feature_sub", "feature_mul", "feature_div",
                                   "feature_pow2", "feature_pow3",
                                   "feature1"};
-    const char* returnTypes[] = {"int", "int", "int", "int", "int", "int", "int", "int"};
-    const char* parameterLists[] = {"int x1, int x2",
+    const char* returnTypes[] = {"int", "afl::TestPointStruct", "int", "int", "int", "int", "int", "int", "int"};
+    const char* parameterLists[] = {"int x1, int x2", "int y, int x",
                                    "int x1, int x2", "int x1, int x2", "int x1, int x2", "int x1, int x2",
                                    "int x", "int x",
                                    ""};
-    const char* parameterTypes[] = {"int, int",
+    const char* parameterTypes[] = {"int, int", "int, int",
                                     "int, int", "int, int", "int, int", "int, int",
                                     "int", "int",
                                     ""};
-    const char* parameterNames[] = {"x1, x2",
+    const char* parameterNames[] = {"x1, x2", "y, x",
                                     "x1, x2", "x1, x2", "x1, x2", "x1, x2",
                                     "x", "x",
                                     ""};
-    int results[] = {27, 12, 6, 27, 3, 49, 343, 6};
+    int results[] = {27, -1, 12, 6, 27, 3, 49, 343, 6};
     const apl::PluginFeatureInfo* info;
     for(size_t i = 0; i < features.size(); i++) {
         info = features.at(i);
@@ -496,12 +497,17 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
         ASSERT_STREQ(info->parameterList, parameterLists[i]);
         ASSERT_STREQ(info->parameterTypes, parameterTypes[i]);
         ASSERT_STREQ(info->parameterNames, parameterNames[i]);
-        if(std::string(info->parameterList) == "int x")
-            ASSERT_EQ(reinterpret_cast<int(*)(int)>(info->functionPointer)(7), results[i]);
-        else if(std::string(info->parameterList) == "int x1, int x2")
+        if(std::string(info->parameterList) == "int x") {
+            ASSERT_EQ(reinterpret_cast<int (*)(int)>(info->functionPointer)(7), results[i]);
+        } else if(std::string(info->parameterList) == "int x1, int x2") {
             ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
-        else
+        } else if(std::string(info->parameterList) == "") {
             ASSERT_EQ(reinterpret_cast<int(*)()>(info->functionPointer)(), results[i]);
+        } else {
+            afl::TestPointStruct testPointStruct = reinterpret_cast<afl::TestPointStruct(*)(int, int)>(info->functionPointer)(13, 42);
+            ASSERT_EQ(testPointStruct.x, 42);
+            ASSERT_EQ(testPointStruct.y, 13);
+        }
     }
 
     manager.unloadAll();
@@ -674,7 +680,7 @@ GTEST_TEST(Test_PluginManager, getFeatureProperties)
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::FeatureName);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"feature1", "feature_add", "feature_sub", "feature_mul", "feature_div", "feature_pow2", "feature_pow3",
+    result = {"feature1", "feature2", "feature_add", "feature_sub", "feature_mul", "feature_div", "feature_pow2", "feature_pow3",
               "convert_to_char"};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
@@ -682,14 +688,14 @@ GTEST_TEST(Test_PluginManager, getFeatureProperties)
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ReturnType);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"int", "char"};
+    result = {"int", "afl::TestPointStruct", "char"};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterList);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"int x1, int x2", "int x", ""};
+    result = {"int x1, int x2", "int y, int x", "int x", ""};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
@@ -703,7 +709,7 @@ GTEST_TEST(Test_PluginManager, getFeatureProperties)
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ParameterNames);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"x1, x2", "x", ""};
+    result = {"x1, x2", "y, x", "x", ""};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);

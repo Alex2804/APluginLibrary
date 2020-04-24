@@ -6,6 +6,7 @@
 #include "APluginSDK/pluginapi.h"
 
 #include "../plugins/interface.h"
+#include "../plugins/include.h"
 
 GTEST_TEST(Test_Plugin, load_unload_extern)
 {
@@ -167,7 +168,7 @@ GTEST_TEST(Test_Plugin, feature_loading_single)
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
-    ASSERT_EQ(plugin->getFeatureCount(), 1);
+    ASSERT_EQ(plugin->getFeatureCount(), 2);
 
     const apl::PluginFeatureInfo* info = plugin->getFeatureInfo(0);
     ASSERT_NE(info, nullptr);
@@ -182,6 +183,20 @@ GTEST_TEST(Test_Plugin, feature_loading_single)
     ASSERT_STREQ(info->parameterTypes, "int, int");
     ASSERT_STREQ(info->parameterNames, "x1, x2");
     ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(7, 3), 21);
+
+    info = plugin->getFeatureInfo(1);
+    ASSERT_NE(info, nullptr);
+    ASSERT_EQ(info, infos[1]);
+
+    ASSERT_STREQ(info->returnType, "afl::TestPointStruct");
+    ASSERT_STREQ(info->featureGroup, "first_group1");
+    ASSERT_STREQ(info->featureName, "feature2");
+    ASSERT_STREQ(info->parameterList, "int y, int x");
+    ASSERT_STREQ(info->parameterTypes, "int, int");
+    ASSERT_STREQ(info->parameterNames, "y, x");
+    afl::TestPointStruct testPointStruct = reinterpret_cast<afl::TestPointStruct(*)(int, int)>(info->functionPointer)(7, 3);
+    ASSERT_EQ(testPointStruct.x, 3);
+    ASSERT_EQ(testPointStruct.y, 7);
 
     delete plugin;
 }
