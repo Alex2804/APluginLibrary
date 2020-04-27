@@ -20,6 +20,7 @@ const char *Implementation1::otherFunction2()
     return "This is for testing!";
 }
 
-int Implementation1::otherFunction3(double x) {
+int Implementation1::otherFunction3(double x)
+{
     return static_cast<int>(x);
 }

@@ -26,7 +26,8 @@ set(SOURCES
         src/test_pluginapi.cpp
         src/test_plugin.cpp
         src/test_pluginmanager.cpp
-        src/test_pluginmanagerobserver.cpp)
+        src/test_pluginmanagerobserver.cpp
+        )
 
 add_executable(APluginLibraryTest ${SOURCES})
 target_link_libraries(APluginLibraryTest APluginLibrary gtest_main)

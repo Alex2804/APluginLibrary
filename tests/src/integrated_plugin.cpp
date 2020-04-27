@@ -4,6 +4,8 @@
 
 #include "../plugins/interface.h"
 
+const char* integratedPluginInitStatusString = "";
+
 A_PLUGIN_SET_NAME(integrated_plugin_name)
 A_PLUGIN_SET_VERSION(28, 4, 2000)
 
@@ -33,3 +35,13 @@ int Implementation::function2(int x)
 }
 
 A_PLUGIN_REGISTER_CLASS(Interface, Implementation);
+
+A_PLUGIN_INIT
+{
+    integratedPluginInitStatusString = "integrated plugin -> initialized";
+}
+
+A_PLUGIN_FINI
+{
+    integratedPluginInitStatusString = "integrated plugin -> finalized";
+}

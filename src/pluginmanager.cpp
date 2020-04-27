@@ -1,12 +1,8 @@
 #include "APluginLibrary/pluginmanager.h"
 #include "private/pluginmanagerprivate.h"
 
-#include "APluginLibrary/pluginmanagerobserver.h"
-
 #include <unordered_set>
 #include <algorithm>
-#include <exception>
-#include <cstring>
 
 #include "tinydir/tinydir.h"
 
@@ -252,7 +248,7 @@ void apl::PluginManager::unloadAll()
  */
 std::vector<const apl::PluginInfo*> apl::PluginManager::getPluginInfos() const
 {
-    std::vector<const apl::PluginInfo*> infos;
+    std::vector<const PluginInfo*> infos;
     d_ptr->localMutex.lock();
     infos.reserve(d_ptr->plugins.size());
     for(const auto plugin : d_ptr->plugins)
@@ -268,7 +264,7 @@ std::vector<const apl::PluginInfo*> apl::PluginManager::getPluginInfos() const
  */
 std::vector<const apl::PluginInfo*> apl::PluginManager::getPluginInfos(const std::string& string, PluginInfoFilter filter) const
 {
-    std::vector<const apl::PluginInfo*> infos;
+    std::vector<const PluginInfo*> infos;
     const PluginInfo* info;
     d_ptr->localMutex.lock();
     infos.reserve(d_ptr->plugins.size());

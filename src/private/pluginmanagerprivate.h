@@ -1,18 +1,13 @@
 #ifndef APLUGINLIBRARY_PLUGINMANAGERPRIVATE_H
 #define APLUGINLIBRARY_PLUGINMANAGERPRIVATE_H
 
-#include "APluginLibrary/apluginlibrary_export.h"
-
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <memory>
 #include <mutex>
 
 #include "APluginLibrary/pluginmanager.h"
-#include "APluginLibrary/plugin.h"
-#include "APluginLibrary/libraryloader.h"
-#include "APluginSDK/plugininfos.h"
+#include "APluginLibrary/pluginmanagerobserver.h"
 
 #ifdef APLUGINLIBRARY_TEST
 # undef APLUGINLIBRARY_NO_EXPORT

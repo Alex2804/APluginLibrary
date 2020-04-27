@@ -6,10 +6,14 @@
 #include <string>
 
 #include "APluginLibrary/libraryloader.h"
-#include "APluginSDK/plugininfos.h"
+#include "APluginSDK/private/plugininfos.h"
 
 namespace apl
 {
+    typedef APluginInfo PluginInfo;
+    typedef APluginFeatureInfo PluginFeatureInfo;
+    typedef APluginClassInfo PluginClassInfo;
+
     namespace detail
     {
         struct PluginPrivate;
