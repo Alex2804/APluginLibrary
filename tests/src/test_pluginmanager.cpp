@@ -5,7 +5,7 @@
 
 #include "APluginLibrary/pluginmanager.h"
 
-#include "APluginSDK/plugininfos.h"
+#include "APluginSDK/private/plugininfos.h"
 #include "APluginSDK/pluginapi.h"
 
 #include "../../src/private/pluginmanagerprivate.h"
@@ -303,9 +303,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
     ASSERT_EQ(manager.getLoadedPluginCount(), 2);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 2);
 
-    std::vector<const apl::PluginInfo*> infos = manager.getPluginInfos();
+    std::vector<const apl::APluginInfo*> infos = manager.getPluginInfos();
     ASSERT_EQ(infos.size(), 2);
-    const apl::PluginInfo* info1 = infos.front();
+    const apl::APluginInfo* info1 = infos.front();
     ASSERT_NE(info1, nullptr);
 
     ASSERT_STREQ(info1->pluginName, "first_plugin");
@@ -324,7 +324,7 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
     ASSERT_NE(info1->getClassInfo, nullptr);
     ASSERT_NE(info1->getClassInfos, nullptr);
 
-    const apl::PluginInfo* info2 = infos.back();
+    const apl::APluginInfo* info2 = infos.back();
     ASSERT_NE(info2, nullptr);
 
     ASSERT_STREQ(info2->pluginName, "second_plugin");
@@ -354,9 +354,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
     ASSERT_EQ(manager.getLoadedPluginCount(), 2);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 2);
 
-    std::vector<const apl::PluginInfo*> infos = manager.getPluginInfos("first_plugin", apl::PluginInfoFilter::PluginName);
+    std::vector<const apl::APluginInfo*> infos = manager.getPluginInfos("first_plugin", apl::PluginInfoFilter::PluginName);
     ASSERT_EQ(infos.size(), 1);
-    const apl::PluginInfo* info1 = infos.front();
+    const apl::APluginInfo* info1 = infos.front();
     ASSERT_NE(info1, nullptr);
 
     ASSERT_STREQ(info1->pluginName, "first_plugin");
@@ -377,7 +377,7 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
 
     infos = manager.getPluginInfos("3.5.12", apl::PluginInfoFilter::PluginVersion);
     ASSERT_EQ(infos.size(), 1);
-    const apl::PluginInfo* info2 = infos.front();
+    const apl::APluginInfo* info2 = infos.front();
     ASSERT_NE(info2, nullptr);
 
     ASSERT_STREQ(info2->pluginName, "second_plugin");
@@ -444,7 +444,7 @@ GTEST_TEST(Test_PluginManager, getPluginProperties)
     ASSERT_EQ(properties, expectedProperties);
 
     properties = manager.getPluginProperties(apl::PluginInfoFilter::ApiVersion);
-    expectedProperties = {"2.0.0"};
+    expectedProperties = {std::to_string(apl::A_PLUGIN_API_VERSION_MAJOR).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_MINOR)).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_PATCH))};
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
     std::sort(expectedProperties.begin(), expectedProperties.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), expectedProperties.size());
@@ -463,7 +463,7 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
     ASSERT_EQ(manager.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
 
-    std::vector<const apl::PluginFeatureInfo*> features = manager.getFeatures();
+    std::vector<const apl::APluginFeatureInfo*> features = manager.getFeatures();
     ASSERT_EQ(features.size(), 9);
     const char* featureGroups[] = {"first_group1", "first_group1",
                                    "second_group_math", "second_group_math", "second_group_math", "second_group_math",
@@ -473,7 +473,7 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
                                   "feature_add", "feature_sub", "feature_mul", "feature_div",
                                   "feature_pow2", "feature_pow3",
                                   "feature1"};
-    const char* returnTypes[] = {"int", "afl::TestPointStruct", "int", "int", "int", "int", "int", "int", "int"};
+    const char* returnTypes[] = {"int", "struct APluginLibrary_Test_PointStruct", "int", "int", "int", "int", "int", "int", "int"};
     const char* parameterLists[] = {"int x1, int x2", "int y, int x",
                                    "int x1, int x2", "int x1, int x2", "int x1, int x2", "int x1, int x2",
                                    "int x", "int x",
@@ -487,7 +487,7 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
                                     "x", "x",
                                     ""};
     int results[] = {27, -1, 12, 6, 27, 3, 49, 343, 6};
-    const apl::PluginFeatureInfo* info;
+    const apl::APluginFeatureInfo* info;
     for(size_t i = 0; i < features.size(); i++) {
         info = features.at(i);
         ASSERT_NE(info, nullptr);
@@ -504,9 +504,9 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
         } else if(std::string(info->parameterList) == "") {
             ASSERT_EQ(reinterpret_cast<int(*)()>(info->functionPointer)(), results[i]);
         } else {
-            afl::TestPointStruct testPointStruct = reinterpret_cast<afl::TestPointStruct(*)(int, int)>(info->functionPointer)(13, 42);
-            ASSERT_EQ(testPointStruct.x, 42);
-            ASSERT_EQ(testPointStruct.y, 13);
+            afl::APluginLibrary_Test_PointStruct APluginLibrary_Test_PointStruct = reinterpret_cast<afl::APluginLibrary_Test_PointStruct(*)(int, int)>(info->functionPointer)(13, 42);
+            ASSERT_EQ(APluginLibrary_Test_PointStruct.x, 42);
+            ASSERT_EQ(APluginLibrary_Test_PointStruct.y, 13);
         }
     }
 
@@ -529,7 +529,7 @@ GTEST_TEST(Test_PluginManager, getFeatures_filtered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 4);
 
     // filter feature groups
-    std::vector<const apl::PluginFeatureInfo*> features = manager.getFeatures("second_group_math", apl::PluginFeatureFilter::FeatureGroup);
+    std::vector<const apl::APluginFeatureInfo*> features = manager.getFeatures("second_group_math", apl::PluginFeatureFilter::FeatureGroup);
     ASSERT_EQ(features.size(), 4);
     std::vector<const char*> featureGroups;
     std::vector<const char*> featureNames = {"feature_add", "feature_sub", "feature_mul", "feature_div"};
@@ -538,7 +538,7 @@ GTEST_TEST(Test_PluginManager, getFeatures_filtered)
     std::vector<const char*> parameterTypes = {"int, int", "int, int", "int, int", "int, int"};
     std::vector<const char*> parameterNames = {"x1, x2", "x1, x2", "x1, x2", "x1, x2"};
     std::vector<int> results = {12, 6, 27, 3};
-    const apl::PluginFeatureInfo* info;
+    const apl::APluginFeatureInfo* info;
     for(size_t i = 0; i < features.size(); i++) {
         info = features.at(i);
         ASSERT_NE(info, nullptr);
@@ -688,7 +688,7 @@ GTEST_TEST(Test_PluginManager, getFeatureProperties)
 
     properties = manager.getFeatureProperties(apl::PluginFeatureFilter::ReturnType);
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
-    result = {"int", "afl::TestPointStruct", "char"};
+    result = {"int", "struct APluginLibrary_Test_PointStruct", "char"};
     std::sort(result.begin(), result.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), result.size());
     ASSERT_EQ(properties, result);
@@ -731,7 +731,7 @@ GTEST_TEST(Test_PluginManager, getClasses_unfiltered)
     ASSERT_EQ(manager.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
 
-    std::vector<const apl::PluginClassInfo*> classes = manager.getClasses();
+    std::vector<const apl::APluginClassInfo*> classes = manager.getClasses();
     ASSERT_EQ(classes.size(), 5);
     const char* interfaceClassNames[] = {"Interface", "Interface", "Interface", "Interface", "Interface"};
     const char* classNames[] = {"Implementation",
@@ -739,7 +739,7 @@ GTEST_TEST(Test_PluginManager, getClasses_unfiltered)
                                 "Implementation"};
     int result1[] = {35, 35, 12, -2, 35};
     int result2[] = {25, 25, 125, 625, 25};
-    const apl::PluginClassInfo* info;
+    const apl::APluginClassInfo* info;
     Interface* interface;
     for(size_t i = 0; i < classes.size(); i++) {
         info = classes.at(i);
@@ -779,12 +779,12 @@ GTEST_TEST(Test_PluginManager, getClasses_filtered)
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
 
     // filter interface names
-    std::vector<const apl::PluginClassInfo*> classes = manager.getClasses("Interface", apl::PluginClassFilter::InterfaceName);
+    std::vector<const apl::APluginClassInfo*> classes = manager.getClasses("Interface", apl::PluginClassFilter::InterfaceName);
     ASSERT_EQ(classes.size(), 4);
     const char* classNames[] = {"Implementation0", "Implementation1", "Implementation2", "Implementation"};
     int result1[] = {36, 15, -9, 36};
     int result2[] = {9, 27, 81, 9};
-    const apl::PluginClassInfo* info;
+    const apl::APluginClassInfo* info;
     Interface* interface;
     for(size_t i = 0; i < classes.size(); i++) {
         info = classes.at(i);

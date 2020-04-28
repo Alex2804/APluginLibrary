@@ -1,8 +1,6 @@
 #include "../pluginmanagerprivate.h"
 
-#include <algorithm>
 #include <climits>
-# include <cstdlib>
 
 #ifdef _WIN32
 # define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
@@ -10,9 +8,6 @@
 #  define PATH_MAX _MAX_PATH
 # endif
 #endif
-
-#include "APluginLibrary/pluginmanagerobserver.h"
-
 
 std::unordered_map<std::string, std::pair<size_t, apl::Plugin*>> apl::detail::PluginManagerPrivate::allPlugins;
 std::mutex apl::detail::PluginManagerPrivate::staticMutex;

@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "APluginLibrary/plugin.h"
-#include "APluginSDK/plugininfos.h"
 
 namespace apl
 {

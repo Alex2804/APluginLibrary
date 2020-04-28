@@ -1,12 +1,7 @@
 #ifndef APLUGINLIBRARY_PLUGINPRIVATE_H
 #define APLUGINLIBRARY_PLUGINPRIVATE_H
 
-#include "APluginLibrary/apluginlibrary_export.h"
-
-#include <string>
-
-#include "APluginLibrary/libraryloader.h"
-#include "APluginSDK/plugininfos.h"
+#include "APluginLibrary/plugin.h"
 
 #ifdef APLUGINLIBRARY_TEST
 # undef APLUGINLIBRARY_NO_EXPORT
@@ -16,12 +11,17 @@
 namespace apl {
     namespace detail
     {
-        struct APLUGINLIBRARY_NO_EXPORT PluginPrivate
+        class APLUGINLIBRARY_NO_EXPORT PluginPrivate
         {
+        public:
             std::string libraryPath;
-            library_handle libraryHandle;
+            library_handle libraryHandle = nullptr;
 
-            const PluginInfo* pluginInfo;
+            const PluginInfo* pluginInfo = nullptr;
+            void(*initPlugin)() = nullptr;
+            void(*finiPlugin)() = nullptr;
+
+            void reset();
         };
     }
 }
