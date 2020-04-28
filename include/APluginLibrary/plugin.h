@@ -16,7 +16,7 @@ namespace apl
 
     namespace detail
     {
-        struct PluginPrivate;
+        class PluginPrivate;
     }
 
     class APLUGINLIBRARY_EXPORT Plugin

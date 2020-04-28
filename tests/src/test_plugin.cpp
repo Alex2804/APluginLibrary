@@ -17,6 +17,7 @@ GTEST_TEST(Test_Plugin, load_unload_extern)
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     const char** initStatus = static_cast<const char**>(apl::LibraryLoader::getSymbol(const_cast<apl::library_handle>(plugin->getHandle()), "firstPluginInitStatusString"));
+    ASSERT_NE(initStatus, nullptr);
     ASSERT_STREQ(*initStatus, "first plugin -> initialized");
     plugin->unload();
     ASSERT_FALSE(plugin->isLoaded());
@@ -42,6 +43,7 @@ GTEST_TEST(Test_Plugin, load_unload_integrated)
     ASSERT_STREQ(integratedPluginInitStatusString, "integrated plugin -> finalized");
     integratedPluginInitStatusString = "";
     delete plugin;
+    integratedPluginInitStatusString = "";
 }
 
 GTEST_TEST(Test_Plugin, getPath_extern)
@@ -65,6 +67,7 @@ GTEST_TEST(Test_Plugin, getPath_integrated)
     ASSERT_FALSE(plugin->isLoaded());
     ASSERT_EQ(plugin->getPath(), "");
     delete plugin;
+    integratedPluginInitStatusString = "";
 }
 
 GTEST_TEST(Test_Plugin, getPluginInfo_extern)
@@ -143,6 +146,7 @@ GTEST_TEST(Test_Plugin, getPluginInfo_integrated)
     ASSERT_EQ(info->getClassCount(), 1);
 
     delete plugin;
+    integratedPluginInitStatusString = "";
 }
 
 GTEST_TEST(Test_Plugin, memory_allocate_free)

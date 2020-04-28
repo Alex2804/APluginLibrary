@@ -1,7 +1,7 @@
 #include "APluginSDK/pluginapi.h"
 #include "../../include.h"
 
-const char* firstPluginInitStatusString = "";
+APLUGINSDK_EXPORT const char* firstPluginInitStatusString = "";
 
 A_PLUGIN_REGISTER_FEATURE(int, first_group1, feature1, int x1, int x2)
 {

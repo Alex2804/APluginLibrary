@@ -4,15 +4,14 @@
 #include <algorithm>
 
 #include "APluginLibrary/pluginmanager.h"
-
-#include "APluginSDK/private/plugininfos.h"
-#include "APluginSDK/pluginapi.h"
-
 #include "../../src/private/pluginmanagerprivate.h"
+#include "APluginSDK/pluginapi.h"
 
 #include "../plugins/interface.h"
 #include "../plugins/otherinterface.h"
 #include "../plugins/include.h"
+
+extern const char* integratedPluginInitStatusString;
 
 GTEST_TEST(Test_PluginManager, load_unload_single_extern)
 {
@@ -50,7 +49,7 @@ GTEST_TEST(Test_PluginManager, load_unload_single_extern)
 GTEST_TEST(Test_PluginManager, load_unload_single_integrated)
 {
     apl::PluginManager manager = apl::PluginManager();
-    std::string path = "";
+    std::string path;
 
     // test with specific unloading
     ASSERT_NE(manager.load(path), nullptr);
@@ -78,6 +77,8 @@ GTEST_TEST(Test_PluginManager, load_unload_single_integrated)
     manager.unloadAll();
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
     ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
+
+    integratedPluginInitStatusString = "";
 }
 
 GTEST_TEST(Test_PluginManager, load_unload_multiple)
@@ -501,7 +502,7 @@ GTEST_TEST(Test_PluginManager, getFeatures_unfiltered)
             ASSERT_EQ(reinterpret_cast<int (*)(int)>(info->functionPointer)(7), results[i]);
         } else if(std::string(info->parameterList) == "int x1, int x2") {
             ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
-        } else if(std::string(info->parameterList) == "") {
+        } else if(std::string(info->parameterList).empty()) {
             ASSERT_EQ(reinterpret_cast<int(*)()>(info->functionPointer)(), results[i]);
         } else {
             afl::APluginLibrary_Test_PointStruct APluginLibrary_Test_PointStruct = reinterpret_cast<afl::APluginLibrary_Test_PointStruct(*)(int, int)>(info->functionPointer)(13, 42);
