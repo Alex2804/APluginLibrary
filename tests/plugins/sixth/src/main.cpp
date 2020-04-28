@@ -79,10 +79,13 @@ int Implementation2::function2(int x) {
     return x * x * x * x;
 }
 
+A_PLUGIN_SET_NAME(sixth_plugin);
+A_PLUGIN_SET_VERSION(1, 2, 3);
+
 A_PLUGIN_INIT
 {
-    A_PLUGIN_SET_NAME(sixth_plugin)
-    A_PLUGIN_SET_VERSION(1, 2, 3)
+    A_PLUGIN_SET_NAME(sixth_plugin);
+    A_PLUGIN_SET_VERSION(1, 2, 3);
     A_PLUGIN_RECORD_FEATURE(sixth_group_math, feature_add);
     A_PLUGIN_RECORD_FEATURE(sixth_group_pow, feature_pow2);
 }

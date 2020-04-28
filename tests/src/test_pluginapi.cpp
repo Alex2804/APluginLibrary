@@ -199,6 +199,7 @@ GTEST_TEST(Test_PluginAPI, feature_loading_multiple)
             ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
     }
 
+    pluginInfo->releasePlugin();
     apl::LibraryLoader::unload(handle);
 }
 
@@ -243,6 +244,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_single)
 
     deleteInstance(interface);
 
+    pluginInfo->releasePlugin();
     apl::LibraryLoader::unload(handle);
 }
 
@@ -291,6 +293,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_multiple)
         deleteInstance(interface);
     }
 
+    pluginInfo->releasePlugin();
     apl::LibraryLoader::unload(handle);
 }
 
@@ -356,6 +359,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_single)
 
     deleteInstance(interface);
 
+    pluginInfo->releasePlugin();
     apl::LibraryLoader::unload(handle);
 }
 
@@ -434,6 +438,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_multiple)
         deleteInstance(interface);
     }
 
+    pluginInfo->releasePlugin();
     apl::LibraryLoader::unload(handle);
 }
 
@@ -491,5 +496,6 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_plugin_infos)
         ASSERT_EQ(classInfo->pluginInfo->pluginVersionPatch, 3);
     }
 
+    pluginInfo->releasePlugin();
     apl::LibraryLoader::unload(handle);
 }

@@ -6,8 +6,8 @@
 
 const char* integratedPluginInitStatusString = "";
 
-A_PLUGIN_SET_NAME(integrated_plugin_name)
-A_PLUGIN_SET_VERSION(28, 4, 2000)
+A_PLUGIN_SET_NAME(integrated_plugin_name);
+A_PLUGIN_SET_VERSION(28, 4, 2000);
 
 A_PLUGIN_REGISTER_FEATURE(double, integrated_feature_group, integrated_feature_1, double x1, double x2)
 {

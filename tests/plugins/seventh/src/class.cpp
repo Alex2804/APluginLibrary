@@ -9,7 +9,7 @@ public:
     int otherFunction3(double x) override;
 };
 
-A_PLUGIN_REGISTER_CLASS(OtherInterface, Implementation1)
+A_PLUGIN_REGISTER_CLASS(OtherInterface, Implementation1);
 
 int Implementation1::otherFunction1(int x1, int x2, int x3)
 {
