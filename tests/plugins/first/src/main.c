@@ -16,7 +16,7 @@ A_PLUGIN_REGISTER_FEATURE(struct APluginLibrary_Test_PointStruct, first_group1, 
 
 A_PLUGIN_INIT
 {
-    A_PLUGIN_SET_NAME(first_plugin);
+    A_PLUGIN_SET_NAME("first_plugin");
     A_PLUGIN_SET_VERSION(9, 87, 789);
     A_PLUGIN_RECORD_FEATURE(first_group1, feature1);
     A_PLUGIN_RECORD_FEATURE(first_group1, feature2);
