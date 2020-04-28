@@ -446,6 +446,11 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_plugin_infos)
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
+    auto initAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "initAPlugin");
+    ASSERT_NE(initAPluginInfo, nullptr);
+    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle, "finiAPlugin"), nullptr);
+
+    initAPluginInfo();
 
     ASSERT_NE(pluginInfo->getFeatureCount, nullptr);
     ASSERT_NE(pluginInfo->getFeatureInfo, nullptr);
