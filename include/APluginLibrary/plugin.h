@@ -6,7 +6,7 @@
 #include <string>
 
 #include "APluginLibrary/libraryloader.h"
-#include "APluginSDK/private/plugininfos.h"
+#include "APluginSDK/plugininfos.h"
 
 namespace apl
 {

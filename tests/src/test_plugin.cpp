@@ -2,7 +2,6 @@
 
 #include "APluginLibrary/plugin.h"
 
-#include "APluginSDK/private/plugininfos.h"
 #include "APluginSDK/pluginapi.h"
 
 #include "../plugins/interface.h"
