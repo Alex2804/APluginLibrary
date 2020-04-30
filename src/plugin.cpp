@@ -39,13 +39,13 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
     d_ptr->libraryHandle = handle;
 
     if(handle != nullptr) {
-        auto getAPluginInfo = LibraryLoader::getSymbol<const PluginInfo*(*)()>(d_ptr->libraryHandle, "getAPluginInfo");
+        auto getAPluginInfo = LibraryLoader::getSymbol<const PluginInfo*(*)()>(d_ptr->libraryHandle, "APluginSDK_getPluginInfo");
         if(getAPluginInfo != nullptr && (d_ptr->pluginInfo = getAPluginInfo()) != nullptr) {
-            d_ptr->initPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "initAPlugin");
-            d_ptr->finiPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "finiAPlugin");
+            d_ptr->initPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "APluginSDK_initPlugin");
+            d_ptr->finiPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "APluginSDK_finiPlugin");
         }
     } else {
-        d_ptr->pluginInfo = PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE api::getAPluginInfo();
+        d_ptr->pluginInfo = PRIVATE_APLUGINSDK_API_NAMESPACE APluginSDK_getPluginInfo();
         if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_initAPluginFunctionPtr != nullptr)
             d_ptr->initPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_initAPluginFunctionPtr);
         if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr != nullptr)

@@ -7,35 +7,6 @@
 #include "../plugins/interface.h"
 #include "../plugins/include.h"
 
-GTEST_TEST(Test_PluginAPI, memory_allocate_free)
-{
-    void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
-    ASSERT_NE(handle, nullptr);
-
-    auto allocateMemory = apl::LibraryLoader::getSymbol<void*(*)(size_t)>(handle, "allocateMemory");
-    ASSERT_NE(allocateMemory, nullptr);
-    auto freeMemory = apl::LibraryLoader::getSymbol<void(*)(void*)>(handle, "freeMemory");
-    ASSERT_NE(freeMemory, nullptr);
-
-    void* ptr = allocateMemory(sizeof(apl::APluginClassInfo));
-    ASSERT_NE(ptr, nullptr);
-    auto classPtr = static_cast<apl::APluginClassInfo*>(ptr);
-
-    classPtr->className = "TestClassName";
-    classPtr->interfaceName = "TestInterfaceName";
-    classPtr->createInstance = nullptr;
-    classPtr->deleteInstance = nullptr;
-
-    ASSERT_STREQ(classPtr->className, "TestClassName");
-    ASSERT_STREQ(classPtr->interfaceName, "TestInterfaceName");
-    ASSERT_EQ(classPtr->createInstance, nullptr);
-    ASSERT_EQ(classPtr->deleteInstance, nullptr);
-
-    freeMemory(classPtr);
-
-    apl::LibraryLoader::unload(handle);
-}
-
 GTEST_TEST(Test_PluginAPI, initAPlugin)
 {
     void* handle1 = apl::LibraryLoader::load("plugins/first/first_plugin");
@@ -43,17 +14,17 @@ GTEST_TEST(Test_PluginAPI, initAPlugin)
     void* handle2 = apl::LibraryLoader::load("plugins/second/second_plugin");
     ASSERT_NE(handle2, nullptr);
 
-    auto getAPluginInfo1 = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle1, "getAPluginInfo");
+    auto getAPluginInfo1 = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle1, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo1, nullptr);
-    auto initAPluginInfo1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "initAPlugin");
+    auto initAPluginInfo1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "APluginSDK_initPlugin");
     ASSERT_NE(initAPluginInfo1, nullptr);
-    auto finiAPluginInfo1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "finiAPlugin");
+    auto finiAPluginInfo1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "APluginSDK_finiPlugin");
     ASSERT_NE(finiAPluginInfo1, nullptr);
 
-    auto getAPluginInfo2 = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle2, "getAPluginInfo");
+    auto getAPluginInfo2 = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle2, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo2, nullptr);
-    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle2, "initAPlugin"), nullptr);
-    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle2, "finiAPlugin"), nullptr);
+    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle2, "APluginSDK_initPlugin"), nullptr);
+    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle2, "APluginSDK_finiPlugin"), nullptr);
 
     const apl::APluginInfo* info1 = getAPluginInfo1();
     ASSERT_NE(info1, nullptr);
@@ -109,11 +80,11 @@ GTEST_TEST(Test_PluginAPI, feature_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/first/first_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
-    auto initAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "initAPlugin");
+    auto initAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "APluginSDK_initPlugin");
     ASSERT_NE(initAPluginInfo, nullptr);
-    auto finiAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "finiAPlugin");
+    auto finiAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "APluginSDK_finiPlugin");
     ASSERT_NE(finiAPluginInfo, nullptr);
 
     auto pluginInfo = getAPluginInfo();
@@ -164,7 +135,7 @@ GTEST_TEST(Test_PluginAPI, feature_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/second/second_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
@@ -208,7 +179,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/third/third_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
@@ -251,7 +222,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/fourth/fourth_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
@@ -302,7 +273,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_single)
 {
     void* handle = apl::LibraryLoader::load("plugins/fifth/fifth_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
@@ -366,7 +337,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_multiple)
 {
     void* handle = apl::LibraryLoader::load("plugins/sixth/sixth_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
@@ -446,13 +417,13 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_plugin_infos)
 {
     void* handle = apl::LibraryLoader::load("plugins/sixth/sixth_plugin");
     ASSERT_NE(handle, nullptr);
-    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "getAPluginInfo");
+    auto getAPluginInfo = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
-    auto initAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "initAPlugin");
+    auto initAPluginInfo = apl::LibraryLoader::getSymbol<void(*)()>(handle, "APluginSDK_initPlugin");
     ASSERT_NE(initAPluginInfo, nullptr);
-    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle, "finiAPlugin"), nullptr);
+    ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle, "APluginSDK_finiPlugin"), nullptr);
 
     initAPluginInfo();
 
