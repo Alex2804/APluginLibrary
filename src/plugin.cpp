@@ -2,9 +2,15 @@
 #include "private/pluginprivate.h"
 
 #include "APluginSDK/pluginapi.h"
+#include "APluginSDK/private/privateplugininfos.h"
 
 namespace
 {
+    bool isValid(const apl::PluginInfo *info)
+    {
+        return info != nullptr && info->privateInfo != nullptr && info->privateInfo->constructPluginInternals != nullptr
+            && info->privateInfo->destructPluginInternals != nullptr;
+    }
     bool requiresInitAPluginFunction(const apl::PluginInfo *info)
     {
         return info == nullptr;
@@ -51,9 +57,7 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
         if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr != nullptr)
             d_ptr->finiPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr);
     }
-    if(d_ptr->pluginInfo != nullptr && d_ptr->pluginInfo->releasePlugin == nullptr)
-        d_ptr->pluginInfo = nullptr;
-    if((requiresInitAPluginFunction(d_ptr->pluginInfo) && d_ptr->initPlugin == nullptr)
+    if(!isValid(d_ptr->pluginInfo) || (requiresInitAPluginFunction(d_ptr->pluginInfo) && d_ptr->initPlugin == nullptr)
        || (requiresFiniAPluginFunction(d_ptr->pluginInfo) && d_ptr->finiPlugin == nullptr))
     {
         d_ptr->pluginInfo = nullptr;
@@ -90,8 +94,7 @@ apl::Plugin* apl::Plugin::load(std::string path)
         delete plugin;
         return nullptr;
     }
-    if(plugin->d_ptr->initPlugin != nullptr)
-        plugin->d_ptr->initPlugin();
+    plugin->d_ptr->pluginInfo->privateInfo->constructPluginInternals(plugin->d_ptr->initPlugin);
     return plugin;
 }
 /**
@@ -99,12 +102,8 @@ apl::Plugin* apl::Plugin::load(std::string path)
  */
 void apl::Plugin::unload()
 {
-    if(d_ptr->pluginInfo != nullptr) {
-        if(d_ptr->finiPlugin != nullptr)
-            d_ptr->finiPlugin();
-        if(d_ptr->libraryHandle != nullptr)
-            d_ptr->pluginInfo->releasePlugin();
-    }
+    if(d_ptr->pluginInfo != nullptr)
+        d_ptr->pluginInfo->privateInfo->destructPluginInternals(d_ptr->finiPlugin);
     LibraryLoader::unload(d_ptr->libraryHandle);
     d_ptr->reset();
 }

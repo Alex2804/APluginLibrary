@@ -3,6 +3,7 @@
 #include "APluginLibrary/libraryloader.h"
 
 #include "APluginSDK/pluginapi.h"
+#include "APluginSDK/private/privateplugininfos.h"
 
 #include "../plugins/interface.h"
 #include "../plugins/include.h"
@@ -16,10 +17,10 @@ GTEST_TEST(Test_PluginAPI, initAPlugin)
 
     auto getAPluginInfo1 = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle1, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo1, nullptr);
-    auto initAPluginInfo1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "APluginSDK_initPlugin");
-    ASSERT_NE(initAPluginInfo1, nullptr);
-    auto finiAPluginInfo1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "APluginSDK_finiPlugin");
-    ASSERT_NE(finiAPluginInfo1, nullptr);
+    auto initAPlugin1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "APluginSDK_initPlugin");
+    ASSERT_NE(initAPlugin1, nullptr);
+    auto finiAPlugin1 = apl::LibraryLoader::getSymbol<void(*)()>(handle1, "APluginSDK_finiPlugin");
+    ASSERT_NE(finiAPlugin1, nullptr);
 
     auto getAPluginInfo2 = apl::LibraryLoader::getSymbol<const apl::APluginInfo*(*)()>(handle2, "APluginSDK_getPluginInfo");
     ASSERT_NE(getAPluginInfo2, nullptr);
@@ -28,17 +29,15 @@ GTEST_TEST(Test_PluginAPI, initAPlugin)
 
     const apl::APluginInfo* info1 = getAPluginInfo1();
     ASSERT_NE(info1, nullptr);
-
-    initAPluginInfo1();
+    info1->privateInfo->constructPluginInternals(initAPlugin1);
 
     ASSERT_STREQ(info1->pluginName, "first_plugin");
     ASSERT_EQ(info1->pluginVersionMajor, 9);
     ASSERT_EQ(info1->pluginVersionMinor, 87);
     ASSERT_EQ(info1->pluginVersionPatch, 789);
-    ASSERT_EQ(info1->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
-    ASSERT_EQ(info1->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
-    ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
-    ASSERT_NE(info1->releasePlugin, nullptr);
+    ASSERT_EQ(info1->apiVersionMajor, APLUGINSDK_API_VERSION_MAJOR);
+    ASSERT_EQ(info1->apiVersionMinor, APLUGINSDK_API_VERSION_MINOR);
+    ASSERT_EQ(info1->apiVersionPatch, APLUGINSDK_API_VERSION_PATCH);
     ASSERT_NE(info1->allocateMemory, nullptr);
     ASSERT_NE(info1->freeMemory, nullptr);
     ASSERT_NE(info1->getFeatureCount, nullptr);
@@ -48,19 +47,17 @@ GTEST_TEST(Test_PluginAPI, initAPlugin)
     ASSERT_NE(info1->getClassInfo, nullptr);
     ASSERT_NE(info1->getClassInfos, nullptr);
 
-    finiAPluginInfo1();
-
     const apl::APluginInfo* info2 = getAPluginInfo2();
     ASSERT_NE(info2, nullptr);
+    info2->privateInfo->constructPluginInternals(nullptr);
 
     ASSERT_STREQ(info2->pluginName, "second_plugin");
     ASSERT_EQ(info2->pluginVersionMajor, 3);
     ASSERT_EQ(info2->pluginVersionMinor, 5);
     ASSERT_EQ(info2->pluginVersionPatch, 12);
-    ASSERT_EQ(info2->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
-    ASSERT_EQ(info2->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
-    ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
-    ASSERT_NE(info2->releasePlugin, nullptr);
+    ASSERT_EQ(info2->apiVersionMajor, APLUGINSDK_API_VERSION_MAJOR);
+    ASSERT_EQ(info2->apiVersionMinor, APLUGINSDK_API_VERSION_MINOR);
+    ASSERT_EQ(info2->apiVersionPatch, APLUGINSDK_API_VERSION_PATCH);
     ASSERT_NE(info2->allocateMemory, nullptr);
     ASSERT_NE(info2->freeMemory, nullptr);
     ASSERT_NE(info2->getFeatureCount, nullptr);
@@ -70,9 +67,9 @@ GTEST_TEST(Test_PluginAPI, initAPlugin)
     ASSERT_NE(info2->getClassInfo, nullptr);
     ASSERT_NE(info2->getClassInfos, nullptr);
 
-    info1->releasePlugin();
-    info2->releasePlugin();
+    info1->privateInfo->destructPluginInternals(finiAPlugin1);
     apl::LibraryLoader::unload(handle1);
+    info2->privateInfo->destructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle2);
 }
 
@@ -89,8 +86,7 @@ GTEST_TEST(Test_PluginAPI, feature_loading_single)
 
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
-
-    initAPluginInfo();
+    pluginInfo->privateInfo->constructPluginInternals(initAPluginInfo);
 
     ASSERT_NE(pluginInfo->getFeatureCount, nullptr);
     ASSERT_NE(pluginInfo->getFeatureInfo, nullptr);
@@ -126,8 +122,7 @@ GTEST_TEST(Test_PluginAPI, feature_loading_single)
     ASSERT_EQ(APluginLibrary_Test_PointStruct.x, 3);
     ASSERT_EQ(APluginLibrary_Test_PointStruct.y, 7);
 
-    finiAPluginInfo();
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->destructPluginInternals(finiAPluginInfo);
     apl::LibraryLoader::unload(handle);
 }
 
@@ -139,6 +134,7 @@ GTEST_TEST(Test_PluginAPI, feature_loading_multiple)
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
+    pluginInfo->privateInfo->constructPluginInternals(nullptr);
 
     ASSERT_NE(pluginInfo->getFeatureCount, nullptr);
     ASSERT_NE(pluginInfo->getFeatureInfo, nullptr);
@@ -169,7 +165,7 @@ GTEST_TEST(Test_PluginAPI, feature_loading_multiple)
             ASSERT_EQ(reinterpret_cast<int(*)(int, int)>(info->functionPointer)(9, 3), results[i]);
     }
 
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->destructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle);
 }
 
@@ -183,6 +179,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_single)
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
+    pluginInfo->privateInfo->constructPluginInternals(nullptr);
 
     ASSERT_NE(pluginInfo->getClassCount, nullptr);
     ASSERT_NE(pluginInfo->getClassInfo, nullptr);
@@ -214,7 +211,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_single)
 
     deleteInstance(interface);
 
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->destructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle);
 }
 
@@ -226,6 +223,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_multiple)
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
+    pluginInfo->privateInfo->constructPluginInternals(nullptr);
 
     ASSERT_NE(pluginInfo->getClassCount, nullptr);
     ASSERT_NE(pluginInfo->getClassInfo, nullptr);
@@ -263,7 +261,7 @@ GTEST_TEST(Test_PluginAPI, class_loading_multiple)
         deleteInstance(interface);
     }
 
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->destructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle);
 }
 
@@ -277,6 +275,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_single)
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
+    pluginInfo->privateInfo->constructPluginInternals(nullptr);
 
     ASSERT_NE(pluginInfo->getFeatureCount, nullptr);
     ASSERT_NE(pluginInfo->getFeatureInfo, nullptr);
@@ -329,7 +328,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_single)
 
     deleteInstance(interface);
 
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->destructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle);
 }
 
@@ -341,6 +340,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_multiple)
     ASSERT_NE(getAPluginInfo, nullptr);
     auto pluginInfo = getAPluginInfo();
     ASSERT_NE(pluginInfo, nullptr);
+    pluginInfo->privateInfo->constructPluginInternals(nullptr);
 
     ASSERT_NE(pluginInfo->getFeatureCount, nullptr);
     ASSERT_NE(pluginInfo->getFeatureInfo, nullptr);
@@ -408,7 +408,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_loading_multiple)
         deleteInstance(interface);
     }
 
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->destructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle);
 }
 
@@ -425,7 +425,7 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_plugin_infos)
     ASSERT_NE(initAPluginInfo, nullptr);
     ASSERT_EQ(apl::LibraryLoader::getSymbol<void(*)()>(handle, "APluginSDK_finiPlugin"), nullptr);
 
-    initAPluginInfo();
+    pluginInfo->privateInfo->constructPluginInternals(initAPluginInfo);
 
     ASSERT_NE(pluginInfo->getFeatureCount, nullptr);
     ASSERT_NE(pluginInfo->getFeatureInfo, nullptr);
@@ -466,6 +466,6 @@ GTEST_TEST(Test_PluginAPI, feature_and_class_plugin_infos)
         ASSERT_EQ(classInfo->pluginInfo->pluginVersionPatch, 3);
     }
 
-    pluginInfo->releasePlugin();
+    pluginInfo->privateInfo->constructPluginInternals(nullptr);
     apl::LibraryLoader::unload(handle);
 }

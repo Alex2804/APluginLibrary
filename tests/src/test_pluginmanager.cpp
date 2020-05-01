@@ -313,9 +313,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
     ASSERT_EQ(info1->pluginVersionMajor, 9);
     ASSERT_EQ(info1->pluginVersionMinor, 87);
     ASSERT_EQ(info1->pluginVersionPatch, 789);
-    ASSERT_EQ(info1->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
-    ASSERT_EQ(info1->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
-    ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_EQ(info1->apiVersionMajor, APLUGINSDK_API_VERSION_MAJOR);
+    ASSERT_EQ(info1->apiVersionMinor, APLUGINSDK_API_VERSION_MINOR);
+    ASSERT_EQ(info1->apiVersionPatch, APLUGINSDK_API_VERSION_PATCH);
     ASSERT_NE(info1->allocateMemory, nullptr);
     ASSERT_NE(info1->freeMemory, nullptr);
     ASSERT_NE(info1->getFeatureCount, nullptr);
@@ -332,9 +332,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_unfiltered)
     ASSERT_EQ(info2->pluginVersionMajor, 3);
     ASSERT_EQ(info2->pluginVersionMinor, 5);
     ASSERT_EQ(info2->pluginVersionPatch, 12);
-    ASSERT_EQ(info2->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
-    ASSERT_EQ(info2->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
-    ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_EQ(info2->apiVersionMajor, APLUGINSDK_API_VERSION_MAJOR);
+    ASSERT_EQ(info2->apiVersionMinor, APLUGINSDK_API_VERSION_MINOR);
+    ASSERT_EQ(info2->apiVersionPatch, APLUGINSDK_API_VERSION_PATCH);
     ASSERT_NE(info2->allocateMemory, nullptr);
     ASSERT_NE(info2->freeMemory, nullptr);
     ASSERT_NE(info2->getFeatureCount, nullptr);
@@ -364,9 +364,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
     ASSERT_EQ(info1->pluginVersionMajor, 9);
     ASSERT_EQ(info1->pluginVersionMinor, 87);
     ASSERT_EQ(info1->pluginVersionPatch, 789);
-    ASSERT_EQ(info1->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
-    ASSERT_EQ(info1->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
-    ASSERT_EQ(info1->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_EQ(info1->apiVersionMajor, APLUGINSDK_API_VERSION_MAJOR);
+    ASSERT_EQ(info1->apiVersionMinor, APLUGINSDK_API_VERSION_MINOR);
+    ASSERT_EQ(info1->apiVersionPatch, APLUGINSDK_API_VERSION_PATCH);
     ASSERT_NE(info1->allocateMemory, nullptr);
     ASSERT_NE(info1->freeMemory, nullptr);
     ASSERT_NE(info1->getFeatureCount, nullptr);
@@ -385,9 +385,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
     ASSERT_EQ(info2->pluginVersionMajor, 3);
     ASSERT_EQ(info2->pluginVersionMinor, 5);
     ASSERT_EQ(info2->pluginVersionPatch, 12);
-    ASSERT_EQ(info2->apiVersionMajor, apl::A_PLUGIN_API_VERSION_MAJOR);
-    ASSERT_EQ(info2->apiVersionMinor, apl::A_PLUGIN_API_VERSION_MINOR);
-    ASSERT_EQ(info2->apiVersionPatch, apl::A_PLUGIN_API_VERSION_PATCH);
+    ASSERT_EQ(info2->apiVersionMajor, APLUGINSDK_API_VERSION_MAJOR);
+    ASSERT_EQ(info2->apiVersionMinor, APLUGINSDK_API_VERSION_MINOR);
+    ASSERT_EQ(info2->apiVersionPatch, APLUGINSDK_API_VERSION_PATCH);
     ASSERT_NE(info2->allocateMemory, nullptr);
     ASSERT_NE(info2->freeMemory, nullptr);
     ASSERT_NE(info2->getFeatureCount, nullptr);
@@ -414,9 +414,9 @@ GTEST_TEST(Test_PluginManager, getPluginInfo_filtered)
     ASSERT_EQ(infos.size(), 0);
 
     // test api version filter
-    infos = manager.getPluginInfos(std::to_string(apl::A_PLUGIN_API_VERSION_MAJOR).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_MINOR)).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_PATCH)), apl::PluginInfoFilter::ApiVersion);
+    infos = manager.getPluginInfos(std::to_string(APLUGINSDK_API_VERSION_MAJOR).append(".").append(std::to_string(APLUGINSDK_API_VERSION_MINOR)).append(".").append(std::to_string(APLUGINSDK_API_VERSION_PATCH)), apl::PluginInfoFilter::ApiVersion);
     ASSERT_EQ(infos.size(), 2);
-    infos = manager.getPluginInfos(std::to_string(apl::A_PLUGIN_API_VERSION_MAJOR).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_MINOR)).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_PATCH + 1)), apl::PluginInfoFilter::ApiVersion);
+    infos = manager.getPluginInfos(std::to_string(APLUGINSDK_API_VERSION_MAJOR).append(".").append(std::to_string(APLUGINSDK_API_VERSION_MINOR)).append(".").append(std::to_string(APLUGINSDK_API_VERSION_PATCH + 1)), apl::PluginInfoFilter::ApiVersion);
     ASSERT_EQ(infos.size(), 0);
 }
 
@@ -445,7 +445,7 @@ GTEST_TEST(Test_PluginManager, getPluginProperties)
     ASSERT_EQ(properties, expectedProperties);
 
     properties = manager.getPluginProperties(apl::PluginInfoFilter::ApiVersion);
-    expectedProperties = {std::to_string(apl::A_PLUGIN_API_VERSION_MAJOR).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_MINOR)).append(".").append(std::to_string(apl::A_PLUGIN_API_VERSION_PATCH))};
+    expectedProperties = {std::to_string(APLUGINSDK_API_VERSION_MAJOR).append(".").append(std::to_string(APLUGINSDK_API_VERSION_MINOR)).append(".").append(std::to_string(APLUGINSDK_API_VERSION_PATCH))};
     std::sort(properties.begin(), properties.end(), std::greater<std::string>());
     std::sort(expectedProperties.begin(), expectedProperties.end(), std::greater<std::string>());
     ASSERT_EQ(properties.size(), expectedProperties.size());
