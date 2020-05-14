@@ -22,8 +22,8 @@ namespace
 }
 
 PRIVATE_APLUGINSDK_OPEN_PRIVATE_NAMESPACE
-    extern void* _private_APluginSDK_initAPluginFunctionPtr;
-    extern void* _private_APluginSDK_finiAPluginFunctionPtr;
+    extern void* private_APluginSDK_initAPluginFunctionPtr;
+    extern void* private_APluginSDK_finiAPluginFunctionPtr;
 PRIVATE_APLUGINSDK_CLOSE_PRIVATE_NAMESPACE
 
 /**
@@ -52,10 +52,10 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
         }
     } else {
         d_ptr->pluginInfo = PRIVATE_APLUGINSDK_API_NAMESPACE APluginSDK_getPluginInfo();
-        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_initAPluginFunctionPtr != nullptr)
-            d_ptr->initPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_initAPluginFunctionPtr);
-        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr != nullptr)
-            d_ptr->finiPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr);
+        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_initAPluginFunctionPtr != nullptr)
+            d_ptr->initPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_initAPluginFunctionPtr);
+        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_finiAPluginFunctionPtr != nullptr)
+            d_ptr->finiPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_finiAPluginFunctionPtr);
     }
     if(!isValid(d_ptr->pluginInfo) || (requiresInitAPluginFunction(d_ptr->pluginInfo) && d_ptr->initPlugin == nullptr)
        || (requiresFiniAPluginFunction(d_ptr->pluginInfo) && d_ptr->finiPlugin == nullptr))
