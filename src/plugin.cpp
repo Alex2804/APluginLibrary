@@ -2,9 +2,15 @@
 #include "private/pluginprivate.h"
 
 #include "APluginSDK/pluginapi.h"
+#include "APluginSDK/private/privateplugininfos.h"
 
 namespace
 {
+    bool isValid(const apl::PluginInfo *info)
+    {
+        return info != nullptr && info->privateInfo != nullptr && info->privateInfo->constructPluginInternals != nullptr
+            && info->privateInfo->destructPluginInternals != nullptr;
+    }
     bool requiresInitAPluginFunction(const apl::PluginInfo *info)
     {
         return info == nullptr;
@@ -16,8 +22,8 @@ namespace
 }
 
 PRIVATE_APLUGINSDK_OPEN_PRIVATE_NAMESPACE
-    extern void* _private_APluginSDK_initAPluginFunctionPtr;
-    extern void* _private_APluginSDK_finiAPluginFunctionPtr;
+    extern void* private_APluginSDK_initAPluginFunctionPtr;
+    extern void* private_APluginSDK_finiAPluginFunctionPtr;
 PRIVATE_APLUGINSDK_CLOSE_PRIVATE_NAMESPACE
 
 /**
@@ -39,21 +45,19 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
     d_ptr->libraryHandle = handle;
 
     if(handle != nullptr) {
-        auto getAPluginInfo = LibraryLoader::getSymbol<const PluginInfo*(*)()>(d_ptr->libraryHandle, "getAPluginInfo");
+        auto getAPluginInfo = LibraryLoader::getSymbol<const PluginInfo*(*)()>(d_ptr->libraryHandle, "APluginSDK_getPluginInfo");
         if(getAPluginInfo != nullptr && (d_ptr->pluginInfo = getAPluginInfo()) != nullptr) {
-            d_ptr->initPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "initAPlugin");
-            d_ptr->finiPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "finiAPlugin");
+            d_ptr->initPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "APluginSDK_initPlugin");
+            d_ptr->finiPlugin = LibraryLoader::getSymbol<void(*)()>(d_ptr->libraryHandle, "APluginSDK_finiPlugin");
         }
     } else {
-        d_ptr->pluginInfo = PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE api::getAPluginInfo();
-        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_initAPluginFunctionPtr != nullptr)
-            d_ptr->initPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_initAPluginFunctionPtr);
-        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr != nullptr)
-            d_ptr->finiPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_finiAPluginFunctionPtr);
+        d_ptr->pluginInfo = PRIVATE_APLUGINSDK_API_NAMESPACE APluginSDK_getPluginInfo();
+        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_initAPluginFunctionPtr != nullptr)
+            d_ptr->initPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_initAPluginFunctionPtr);
+        if(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_finiAPluginFunctionPtr != nullptr)
+            d_ptr->finiPlugin = reinterpret_cast<void(*)()>(PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_finiAPluginFunctionPtr);
     }
-    if(d_ptr->pluginInfo != nullptr && d_ptr->pluginInfo->releasePlugin == nullptr)
-        d_ptr->pluginInfo = nullptr;
-    if((requiresInitAPluginFunction(d_ptr->pluginInfo) && d_ptr->initPlugin == nullptr)
+    if(!isValid(d_ptr->pluginInfo) || (requiresInitAPluginFunction(d_ptr->pluginInfo) && d_ptr->initPlugin == nullptr)
        || (requiresFiniAPluginFunction(d_ptr->pluginInfo) && d_ptr->finiPlugin == nullptr))
     {
         d_ptr->pluginInfo = nullptr;
@@ -90,8 +94,7 @@ apl::Plugin* apl::Plugin::load(std::string path)
         delete plugin;
         return nullptr;
     }
-    if(plugin->d_ptr->initPlugin != nullptr)
-        plugin->d_ptr->initPlugin();
+    plugin->d_ptr->pluginInfo->privateInfo->constructPluginInternals(plugin->d_ptr->initPlugin);
     return plugin;
 }
 /**
@@ -99,12 +102,8 @@ apl::Plugin* apl::Plugin::load(std::string path)
  */
 void apl::Plugin::unload()
 {
-    if(d_ptr->pluginInfo != nullptr) {
-        if(d_ptr->finiPlugin != nullptr)
-            d_ptr->finiPlugin();
-        if(d_ptr->libraryHandle != nullptr)
-            d_ptr->pluginInfo->releasePlugin();
-    }
+    if(d_ptr->pluginInfo != nullptr)
+        d_ptr->pluginInfo->privateInfo->destructPluginInternals(d_ptr->finiPlugin);
     LibraryLoader::unload(d_ptr->libraryHandle);
     d_ptr->reset();
 }

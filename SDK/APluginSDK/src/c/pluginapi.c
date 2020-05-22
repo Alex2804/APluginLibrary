@@ -2,20 +2,21 @@
 # include "../../pluginapi.h"
 #endif
 
+#include <stdlib.h>
+
 /* when pluginapi.cpp is compiled, all other source files should be compiled too */
 #include "../../private/src/infomanager.c"
 
-void* APLUGINLIBRARY_NAMESPACE allocateMemory(size_t size)
+APLUGINSDK_NO_EXPORT void* APLUGINLIBRARY_NAMESPACE APluginSDK_malloc(size_t size)
 {
-    return PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_allocateMemory(size);
+    return malloc(size);
+}
+APLUGINSDK_NO_EXPORT void APLUGINLIBRARY_NAMESPACE APluginSDK_free(void* ptr)
+{
+    free(ptr);
 }
 
-void APLUGINLIBRARY_NAMESPACE freeMemory(void *ptr)
+const struct APLUGINLIBRARY_NAMESPACE APluginInfo* PRIVATE_APLUGINSDK_API_NAMESPACE APluginSDK_getPluginInfo(void)
 {
-    PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_freeMemory(ptr);
-}
-
-const struct APLUGINLIBRARY_NAMESPACE APluginInfo* PRIVATE_APLUGINSDK_API_NAMESPACE getAPluginInfo()
-{
-    return PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE _private_APluginSDK_getPluginInfo();
+    return PRIVATE_APLUGINSDK_PRIVATE_NAMESPACE private_APluginSDK_getPluginInfo();
 }

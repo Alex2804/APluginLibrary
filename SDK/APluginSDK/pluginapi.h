@@ -3,22 +3,22 @@
 
 #include "private/infomanager.h"
 
-PRIVATE_APLUGINLIBRARY_OPEN_NAMESPACE
-    const size_t A_PLUGIN_API_VERSION_MAJOR = 3;
-    const size_t A_PLUGIN_API_VERSION_MINOR = 0;
-    const size_t A_PLUGIN_API_VERSION_PATCH = 0;
+#define APLUGINSDK_API_VERSION_MAJOR 4
+#define APLUGINSDK_API_VERSION_MINOR 0
+#define APLUGINSDK_API_VERSION_PATCH 0
 
+PRIVATE_APLUGINLIBRARY_OPEN_NAMESPACE
     PRIVATE_APLUGINSDK_OPEN_EXTERN_C
-        APLUGINSDK_API void* allocateMemory(size_t size);
-        APLUGINSDK_API void freeMemory(void* ptr);
+        APLUGINSDK_NO_EXPORT void* APluginSDK_malloc(size_t size);
+        APLUGINSDK_NO_EXPORT void APluginSDK_free(void* ptr);
     PRIVATE_APLUGINSDK_CLOSE_EXTERN_C
 PRIVATE_APLUGINLIBRARY_CLOSE_NAMESPACE
 
 PRIVATE_APLUGINSDK_OPEN_API_NAMESPACE
     PRIVATE_APLUGINSDK_OPEN_EXTERN_C
-        APLUGINSDK_API void initAPlugin(); /* existence must be checked */
-        APLUGINSDK_API void finiAPlugin(); /* existence must be checked */
-        APLUGINSDK_API const struct APluginInfo* getAPluginInfo();
+    APLUGINSDK_API void APluginSDK_initPlugin(void); /* existence must be checked */
+    APLUGINSDK_API void APluginSDK_finiPlugin(void); /* existence must be checked */
+    APLUGINSDK_API const struct APluginInfo* APluginSDK_getPluginInfo(void);
     PRIVATE_APLUGINSDK_CLOSE_EXTERN_C
 PRIVATE_APLUGINSDK_CLOSE_API_NAMESPACE
 
@@ -36,16 +36,16 @@ PRIVATE_APLUGINSDK_CLOSE_API_NAMESPACE
     PRIVATE_APLUGINSDK_RECORD_FEATURE(featureGroup, featureName)
 
 #ifdef __cplusplus
-    #define A_PLUGIN_REGISTER_CLASS(interfaceName, className) \
+#define A_PLUGIN_REGISTER_CLASS(interfaceName, className) \
         PRIVATE_APLUGINSDK_REGISTER_CLASS(interfaceName, className)
 #endif
 
 #if !APLUGINSDK_EXCLUDE_IMPLEMENTATION
-    #ifdef __cplusplus
-        #include "src/cpp/pluginapi.cpp"
-    #else
-        #include "src/c/pluginapi.c"
-    #endif
+#   ifdef __cplusplus
+#       include "src/cpp/pluginapi.cpp"
+#   else
+#       include "src/c/pluginapi.c"
+#   endif
 #endif
 
 #endif /* APLUGINSDK_PLUGINAPI_H */

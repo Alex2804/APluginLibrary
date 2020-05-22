@@ -93,10 +93,6 @@ const char* apl::detail::filterFeatureInfo(const PluginFeatureInfo *info, const 
         return info->returnType;
     } else if(filter == PluginFeatureFilter::ParameterList) {
         return info->parameterList;
-    } else if (filter == PluginFeatureFilter::ParameterTypes) {
-        return info->parameterTypes;
-    } else if (filter == PluginFeatureFilter::ParameterNames) {
-        return info->parameterNames;
     } else {
         throw std::runtime_error("Unsupported apl::PluginFeatureFilter");
     }
