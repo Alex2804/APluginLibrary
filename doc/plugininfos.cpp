@@ -16,10 +16,6 @@
  *
  * @var apl::PluginFeatureInfo::parameterList
  * The parameter list of this feature.
- * @var apl::PluginFeatureInfo::parameterTypes
- * The types of the parameters in the parameter list of this feature.
- * @var apl::PluginFeatureInfo::parameterNames
- * The names of the parameters in the parameter list of this feature.
  *
  * @var apl::PluginFeatureInfo::functionPointer
  * The pointer to the feature function.
