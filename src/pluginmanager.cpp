@@ -26,7 +26,7 @@ apl::PluginManager::PluginManager()
  *
  * @see operator=(const PluginManager& other)
  */
-apl::PluginManager::PluginManager(const PluginManager& other)
+apl::PluginManager::PluginManager(const PluginManager &other)
     : PluginManager()
 {
     other.d_ptr->localMutex.lock();
@@ -40,7 +40,7 @@ apl::PluginManager::PluginManager(const PluginManager& other)
  *
  * @see operator=(PluginManager&& other)
  */
-apl::PluginManager::PluginManager(PluginManager&& other) noexcept
+apl::PluginManager::PluginManager(PluginManager &&other) noexcept
     : d_ptr(other.d_ptr)
 {
     other.d_ptr = nullptr;
@@ -63,7 +63,7 @@ apl::PluginManager::~PluginManager()
  *
  * @see PluginManager(const PluginManager& other)
  */
-apl::PluginManager &apl::PluginManager::operator=(const PluginManager& other)
+apl::PluginManager &apl::PluginManager::operator=(const PluginManager &other)
 {
     if(this != &other) {
         d_ptr->localMutex.lock();
@@ -85,7 +85,7 @@ apl::PluginManager &apl::PluginManager::operator=(const PluginManager& other)
  *
  * @see PluginManager(PluginManager&& other)
  */
-apl::PluginManager &apl::PluginManager::operator=(PluginManager&& other) noexcept
+apl::PluginManager &apl::PluginManager::operator=(PluginManager &&other) noexcept
 {
     using std::swap;
     d_ptr->localMutex.lock();
@@ -103,7 +103,7 @@ apl::PluginManager &apl::PluginManager::operator=(PluginManager&& other) noexcep
  *
  * @return The plugin if it was loaded successfully and nullptr if not.
  */
-apl::Plugin* apl::PluginManager::load(std::string path)
+const apl::Plugin* apl::PluginManager::load(std::string path)
 {
     d_ptr->localMutex.lock();
     Plugin* plugin = detail::PluginManagerPrivate::loadPlugin(std::move(path));
@@ -125,12 +125,12 @@ apl::Plugin* apl::PluginManager::load(std::string path)
  *
  * @return The loaded plugins.
  */
-std::vector<apl::Plugin*> apl::PluginManager::loadDirectory(const std::string& path, bool recursive)
+std::vector<const apl::Plugin*> apl::PluginManager::loadDirectory(const std::string &path, bool recursive)
 {
     tinydir_dir dir;
     tinydir_file file;
-    std::vector<apl::Plugin*> plugins, tmpPlugins;
-    apl::Plugin* tmpPlugin;
+    std::vector<const apl::Plugin*> plugins, tmpPlugins;
+    const apl::Plugin* tmpPlugin;
     std::string filePath;
 
     tinydir_open(&dir, path.c_str());
@@ -166,20 +166,7 @@ size_t apl::PluginManager::getLoadedPluginCount() const
  * @return The loaded Plugin with the given @p path as constant pointers in this PluginManager or nullptr if no plugin
  * with the given path exists in this PluginManager.
  */
-const apl::Plugin* apl::PluginManager::getLoadedPlugin(const std::string& path) const
-{
-    std::lock_guard<std::recursive_mutex> lockGuard(d_ptr->localMutex);
-    for(auto plugin : d_ptr->plugins) {
-        if(plugin->getPath() == path)
-            return plugin;
-    }
-    return nullptr;
-}
-/**
- * @return The loaded Plugin iwth the given @p path in this PluginManager or nullptr if no plugin with the given path
- * exists in this PluginManager.
- */
-apl::Plugin* apl::PluginManager::getLoadedPlugin(const std::string& path)
+const apl::Plugin* apl::PluginManager::getLoadedPlugin(const std::string &path) const
 {
     std::lock_guard<std::recursive_mutex> lockGuard(d_ptr->localMutex);
     for(auto plugin : d_ptr->plugins) {
@@ -201,29 +188,21 @@ std::vector<const apl::Plugin*> apl::PluginManager::getLoadedPlugins() const
     d_ptr->localMutex.unlock();
     return plugins;
 }
-/**
- * @return The loaded Plugins in this PluginManager.
- */
-std::vector<apl::Plugin*> apl::PluginManager::getLoadedPlugins()
-{
-    std::lock_guard<std::recursive_mutex> lockGuard(d_ptr->localMutex);
-    return d_ptr->plugins;
-}
 
 /**
  * Unloads a specific plugin from this PluginManager and notifies the observer about the removed plugin.
  *
  * @param plugin The plugin to unload.
  */
-void apl::PluginManager::unload(apl::Plugin* plugin)
+void apl::PluginManager::unload(const Plugin *plugin)
 {
     d_ptr->localMutex.lock();
     auto iterator = std::remove(d_ptr->plugins.begin(), d_ptr->plugins.end(), plugin);
     if(iterator != d_ptr->plugins.end()) {
         d_ptr->plugins.erase(iterator);
         for(auto observer : d_ptr->observers)
-            observer->pluginUnloaded(this, plugin);
-        detail::PluginManagerPrivate::unloadPlugin(plugin);
+            observer->pluginUnloaded(this, const_cast<Plugin*>(plugin));
+        detail::PluginManagerPrivate::unloadPlugin(const_cast<Plugin*>(plugin));
     }
     d_ptr->localMutex.unlock();
 }
@@ -313,7 +292,7 @@ std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures() con
  *
  * @return The filtered PluginFeatureInfo's of all loaded plugins in this PluginManager.
  */
-std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const std::string& string, PluginFeatureFilter filter) const
+std::vector<const apl::PluginFeatureInfo*> apl::PluginManager::getFeatures(const std::string &string, PluginFeatureFilter filter) const
 {
     std::vector<const PluginFeatureInfo*> features;
     const PluginFeatureInfo* const* featureInfos;
@@ -371,7 +350,7 @@ std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses() const
  *
  * @return The filtered PluginClassInfo's of all loaded plugins in this PluginManager.
  */
-std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const std::string& string, PluginClassFilter filter) const
+std::vector<const apl::PluginClassInfo*> apl::PluginManager::getClasses(const std::string &string, PluginClassFilter filter) const
 {
     std::vector<const PluginClassInfo*> classes;
     const PluginClassInfo* const* classInfos;
@@ -411,7 +390,7 @@ std::vector<std::string> apl::PluginManager::getClassProperties(PluginClassFilte
  * Adds an observer to this PluginManager instance which gets notified about changes.
  * @param observer The observer to be added (only added if not already an observer of this PluginManager instance).
  */
-void apl::PluginManager::addObserver(PluginManagerObserver* observer)
+void apl::PluginManager::addObserver(PluginManagerObserver *observer)
 {
     d_ptr->localMutex.lock();
     if(observer != nullptr && std::find(d_ptr->observers.begin(), d_ptr->observers.end(), observer) == d_ptr->observers.end())
@@ -422,7 +401,7 @@ void apl::PluginManager::addObserver(PluginManagerObserver* observer)
  * Removes an observer from this PluginManager instance.
  * @param observer The observer to be removed.
  */
-void apl::PluginManager::removeObserver(PluginManagerObserver* observer)
+void apl::PluginManager::removeObserver(PluginManagerObserver *observer)
 {
     d_ptr->localMutex.lock();
     auto iterator = std::find(d_ptr->observers.begin(), d_ptr->observers.end(), observer);

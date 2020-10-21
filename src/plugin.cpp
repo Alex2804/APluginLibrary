@@ -71,7 +71,6 @@ apl::Plugin::Plugin(std::string path, library_handle handle)
 apl::Plugin::~Plugin()
 {
     unload();
-    delete d_ptr;
 }
 
 /**
@@ -81,7 +80,7 @@ apl::Plugin::~Plugin()
  * @param path The path to the shared library.
  * @return The pointer to the created Plugin or nullptr if loading failed.
  */
-apl::Plugin* apl::Plugin::load(std::string path)
+std::unique_ptr<apl::Plugin> apl::Plugin::load(std::string path)
 {
     library_handle handle = nullptr;
     if(!path.empty()) {
@@ -89,11 +88,9 @@ apl::Plugin* apl::Plugin::load(std::string path)
         if (handle == nullptr)
             return nullptr;
     }
-    auto plugin = new Plugin(std::move(path), handle);
-    if(plugin->d_ptr->pluginInfo == nullptr) {
-        delete plugin;
+    auto plugin = std::unique_ptr<Plugin>(new Plugin(std::move(path), handle));
+    if(plugin->d_ptr->pluginInfo == nullptr)
         return nullptr;
-    }
     plugin->d_ptr->pluginInfo->privateInfo->constructPluginInternals(plugin->d_ptr->initPlugin);
     return plugin;
 }

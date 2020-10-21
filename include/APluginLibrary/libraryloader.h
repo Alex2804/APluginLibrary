@@ -15,12 +15,12 @@ namespace apl
     public:
         static const char* libExtension();
         static library_handle load(std::string path);
-        static library_handle load(std::string path, const std::string& suffix);
+        static library_handle load(std::string path, const std::string &suffix);
         static bool unload(library_handle handle);
 
-        static void* getSymbol(library_handle handle, const std::string& name);
+        static void* getSymbol(library_handle handle, const std::string &name);
         template<typename T>
-        static inline T getSymbol(library_handle handle, const std::string& name);
+        static inline T getSymbol(library_handle handle, const std::string &name);
 
         static const char* getError();
         static void clearError();

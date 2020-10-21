@@ -10,7 +10,7 @@ namespace
     class Observer : public apl::PluginManagerObserver
     {
     public:
-        void pluginLoaded(apl::PluginManager* pluginManager, apl::Plugin* plugin) override
+        void pluginLoaded(apl::PluginManager *pluginManager, const apl::Plugin *plugin) override
         {
             auto iterator = loaded.find(pluginManager);
             if(iterator != loaded.end())
@@ -21,7 +21,7 @@ namespace
             std::sort(loaded[pluginManager].begin(), loaded[pluginManager].end());
         }
 
-        void pluginUnloaded(apl::PluginManager* pluginManager, apl::Plugin* plugin) override
+        void pluginUnloaded(apl::PluginManager *pluginManager, const apl::Plugin *plugin) override
         {
             auto iterator = unloaded.find(pluginManager);
             if(iterator != unloaded.end())
@@ -33,7 +33,7 @@ namespace
         }
 
         int loadCounter = 0, unloadCounter = 0;
-        std::unordered_map<apl::PluginManager*, std::vector<apl::Plugin*>> loaded, unloaded;
+        std::unordered_map<apl::PluginManager*, std::vector<const apl::Plugin*>> loaded, unloaded;
     };
 }
 
@@ -42,14 +42,14 @@ GTEST_TEST(Test_PluginManagerObserver, load_notification)
 {
     auto manager1 = new apl::PluginManager(), manager2 = new apl::PluginManager();
     auto observer = new Observer();
-    std::unordered_map<apl::PluginManager*, std::vector<apl::Plugin*>> expectedLoaded;
+    std::unordered_map<apl::PluginManager*, std::vector<const apl::Plugin*>> expectedLoaded;
     manager1->addObserver(observer);
     manager2->addObserver(observer);
-    apl::Plugin* firstPlugin = manager1->load("plugins/first/first_plugin");
+    const apl::Plugin* firstPlugin = manager1->load("plugins/first/first_plugin");
     ASSERT_EQ(observer->loadCounter, 1);
     expectedLoaded.insert({manager1, {firstPlugin}});
     ASSERT_EQ(observer->loaded, expectedLoaded);
-    apl::Plugin* secondPlugin = manager1->load("plugins/second/second_plugin");
+    const apl::Plugin* secondPlugin = manager1->load("plugins/second/second_plugin");
     ASSERT_EQ(observer->loadCounter, 2);
     expectedLoaded[manager1].push_back(secondPlugin);
     std::sort(expectedLoaded[manager1].begin(), expectedLoaded[manager1].end());
@@ -80,15 +80,15 @@ GTEST_TEST(Test_PluginManagerObserver, unload_notification)
     manager1->loadDirectory("plugins", true);
     manager2->loadDirectory("plugins", true);
     auto observer = new Observer();
-    std::unordered_map<apl::PluginManager*, std::vector<apl::Plugin*>> expectedUnloaded;
+    std::unordered_map<apl::PluginManager*, std::vector<const apl::Plugin*>> expectedUnloaded;
     manager1->addObserver(observer);
     manager2->addObserver(observer);
-    apl::Plugin* firstPlugin = manager1->getLoadedPlugin("plugins/first/first_plugin");
+    const apl::Plugin* firstPlugin = manager1->getLoadedPlugin("plugins/first/first_plugin");
     manager1->unload(firstPlugin);
     ASSERT_EQ(observer->unloadCounter, 1);
     expectedUnloaded.insert({manager1, {firstPlugin}});
     ASSERT_EQ(observer->unloaded, expectedUnloaded);
-    apl::Plugin* secondPlugin = manager2->getLoadedPlugin("plugins/second/second_plugin");
+    const apl::Plugin* secondPlugin = manager2->getLoadedPlugin("plugins/second/second_plugin");
     manager2->unload(secondPlugin);
     ASSERT_EQ(observer->unloadCounter, 2);
     expectedUnloaded.insert({manager2, {secondPlugin}});

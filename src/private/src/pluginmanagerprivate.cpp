@@ -35,7 +35,7 @@ apl::Plugin* apl::detail::PluginManagerPrivate::loadPlugin(std::string path)
         iterator->second.first += 1;
         return iterator->second.second;
     }
-    Plugin* plugin = Plugin::load(std::move(path));
+    Plugin *plugin = Plugin::load(std::move(path)).release();
     if(plugin != nullptr)
         allPlugins.emplace(std::move(absolutePath), std::make_pair(1, plugin));
     return plugin;

@@ -12,7 +12,7 @@ extern const char* integratedPluginInitStatusString;
 GTEST_TEST(Test_Plugin, load_unload_extern)
 {
     apl::library_handle handle = apl::LibraryLoader::load("plugins/first/first_plugin"); // load second ref to dll to hold it in memory while testing fini function
-    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin").release();
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     const char** initStatus = static_cast<const char**>(apl::LibraryLoader::getSymbol(const_cast<apl::library_handle>(plugin->getHandle()), "firstPluginInitStatusString"));
@@ -24,16 +24,16 @@ GTEST_TEST(Test_Plugin, load_unload_extern)
     delete plugin;
     apl::LibraryLoader::unload(handle);
 
-    plugin = apl::Plugin::load("plugins/imaginary/imaginary_plugin");
+    plugin = apl::Plugin::load("plugins/imaginary/imaginary_plugin").release();
     ASSERT_EQ(plugin, nullptr);
 
-    plugin = apl::Plugin::load("libraries/first/first_lib");
+    plugin = apl::Plugin::load("libraries/first/first_lib").release();
     ASSERT_EQ(plugin, nullptr);
 }
 GTEST_TEST(Test_Plugin, load_unload_integrated)
 {
     ASSERT_STREQ(integratedPluginInitStatusString, "");
-    apl::Plugin* plugin = apl::Plugin::load("");
+    apl::Plugin* plugin = apl::Plugin::load("").release();
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     ASSERT_STREQ(integratedPluginInitStatusString, "integrated plugin -> initialized");
@@ -47,8 +47,8 @@ GTEST_TEST(Test_Plugin, load_unload_integrated)
 
 GTEST_TEST(Test_Plugin, getPath_extern)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
-    delete apl::Plugin::load("plugins/first/first_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin").release();
+    apl::Plugin::load("plugins/first/first_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     ASSERT_EQ(plugin->getPath(), "plugins/first/first_plugin");
@@ -59,8 +59,8 @@ GTEST_TEST(Test_Plugin, getPath_extern)
 }
 GTEST_TEST(Test_Plugin, getPath_integrated)
 {
-    apl::Plugin* plugin = apl::Plugin::load("");
-    delete apl::Plugin::load("");
+    apl::Plugin* plugin = apl::Plugin::load("").release();
+    apl::Plugin::load("") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     ASSERT_EQ(plugin->getPath(), "");
@@ -73,11 +73,11 @@ GTEST_TEST(Test_Plugin, getPath_integrated)
 
 GTEST_TEST(Test_Plugin, getPluginInfo_extern)
 {
-    apl::Plugin* plugin1 = apl::Plugin::load("plugins/first/first_plugin");
-    delete apl::Plugin::load("plugins/first/first_plugin");
+    apl::Plugin* plugin1 = apl::Plugin::load("plugins/first/first_plugin").release();
+    apl::Plugin::load("plugins/first/first_plugin") = nullptr;
     ASSERT_NE(plugin1, nullptr);
-    apl::Plugin* plugin2 = apl::Plugin::load("plugins/second/second_plugin");
-    delete apl::Plugin::load("plugins/second/second_plugin");
+    apl::Plugin* plugin2 = apl::Plugin::load("plugins/second/second_plugin").release();
+    apl::Plugin::load("plugins/second/second_plugin") = nullptr;
     ASSERT_NE(plugin2, nullptr);
 
     const apl::APluginInfo* info1 = plugin1->getPluginInfo();
@@ -123,8 +123,8 @@ GTEST_TEST(Test_Plugin, getPluginInfo_extern)
 }
 GTEST_TEST(Test_Plugin, getPluginInfo_integrated)
 {
-    apl::Plugin* plugin = apl::Plugin::load("");
-    delete apl::Plugin::load("");
+    apl::Plugin* plugin = apl::Plugin::load("").release();
+    apl::Plugin::load("") = nullptr;
     ASSERT_NE(plugin, nullptr);
 
     const apl::APluginInfo* info = plugin->getPluginInfo();
@@ -155,8 +155,8 @@ GTEST_TEST(Test_Plugin, getPluginInfo_integrated)
 
 GTEST_TEST(Test_Plugin, memory_allocate_free)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
-    delete apl::Plugin::load("plugins/first/first_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin").release();
+    apl::Plugin::load("plugins/first/first_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
@@ -184,8 +184,8 @@ GTEST_TEST(Test_Plugin, memory_allocate_free)
 
 GTEST_TEST(Test_Plugin, feature_loading_single)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin");
-    delete apl::Plugin::load("plugins/first/first_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/first/first_plugin").release();
+    apl::Plugin::load("plugins/first/first_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
@@ -220,8 +220,8 @@ GTEST_TEST(Test_Plugin, feature_loading_single)
 
 GTEST_TEST(Test_Plugin, feature_loading_multiple)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/second/second_plugin");
-    delete apl::Plugin::load("plugins/second/second_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/second/second_plugin").release();
+    apl::Plugin::load("plugins/second/second_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
@@ -255,8 +255,8 @@ GTEST_TEST(Test_Plugin, feature_loading_multiple)
 
 GTEST_TEST(Test_Plugin, class_loading_single)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/third/third_plugin");
-    delete apl::Plugin::load("plugins/third/third_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/third/third_plugin").release();
+    apl::Plugin::load("plugins/third/third_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
@@ -291,8 +291,8 @@ GTEST_TEST(Test_Plugin, class_loading_single)
 
 GTEST_TEST(Test_Plugin, class_loading_multiple)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/fourth/fourth_plugin");
-    delete apl::Plugin::load("plugins/fourth/fourth_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/fourth/fourth_plugin").release();
+    apl::Plugin::load("plugins/fourth/fourth_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
@@ -335,8 +335,8 @@ GTEST_TEST(Test_Plugin, class_loading_multiple)
 
 GTEST_TEST(Test_Plugin, feature_and_class_loading_single)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/fifth/fifth_plugin");
-    delete apl::Plugin::load("plugins/fifth/fifth_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/fifth/fifth_plugin").release();
+    apl::Plugin::load("plugins/fifth/fifth_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
 
@@ -386,8 +386,8 @@ GTEST_TEST(Test_Plugin, feature_and_class_loading_single)
 
 GTEST_TEST(Test_Plugin, feature_and_class_loading_multiple)
 {
-    apl::Plugin* plugin = apl::Plugin::load("plugins/sixth/sixth_plugin");
-    delete apl::Plugin::load("plugins/sixth/sixth_plugin");
+    apl::Plugin* plugin = apl::Plugin::load("plugins/sixth/sixth_plugin").release();
+    apl::Plugin::load("plugins/sixth/sixth_plugin") = nullptr;
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin);
 

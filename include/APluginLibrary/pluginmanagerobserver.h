@@ -17,13 +17,13 @@ namespace apl
          * @param pluginManager The PluginManager where the plugin is loaded.
          * @param plugin  The Plugin which was loaded.
          */
-        virtual void pluginLoaded(PluginManager* pluginManager, Plugin* plugin) = 0;
+        virtual void pluginLoaded(PluginManager* pluginManager, const Plugin* plugin) = 0;
         /**
          * This function gets invoked if a plugin is loaded from a PluginManager where this observer is registered.
          * @param pluginManager The PluginManager where the plugin is loaded.
          * @param plugin  The Plugin which was loaded.
          */
-        virtual void pluginUnloaded(PluginManager* pluginManager, Plugin* plugin) = 0;
+        virtual void pluginUnloaded(PluginManager* pluginManager, const Plugin* plugin) = 0;
     };
 }
 

@@ -23,7 +23,7 @@ GTEST_TEST(Test_PluginManager, load_unload_single_extern)
     ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 1);
     ASSERT_EQ(manager.getLoadedPluginCount(), 1);
 
-    apl::Plugin* plugin = manager.getLoadedPlugins().front();
+    const apl::Plugin* plugin = manager.getLoadedPlugins().front();
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     ASSERT_EQ(plugin->getPath(), path);
@@ -56,7 +56,7 @@ GTEST_TEST(Test_PluginManager, load_unload_single_integrated)
     ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 1);
     ASSERT_EQ(manager.getLoadedPluginCount(), 1);
 
-    apl::Plugin* plugin = manager.getLoadedPlugins().front();
+    const apl::Plugin* plugin = manager.getLoadedPlugins().front();
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     ASSERT_EQ(plugin->getPath(), path);
@@ -101,7 +101,7 @@ GTEST_TEST(Test_PluginManager, load_unload_multiple)
     ASSERT_EQ(manager.getLoadedPluginCount(), 3);
     ASSERT_EQ(manager.getLoadedPlugins().size(), 3);
 
-    std::vector<apl::Plugin*> plugins = manager.getLoadedPlugins();
+    std::vector<const apl::Plugin*> plugins = manager.getLoadedPlugins();
     ASSERT_EQ(plugins.size(), 3);
     for(size_t i = 0; i < plugins.size(); i++) {
         ASSERT_NE(plugins.at(i), nullptr);
@@ -154,15 +154,15 @@ GTEST_TEST(Test_PluginManager, loadDirectory_getPluginByPath)
     apl::PluginManager manager = apl::PluginManager();
 
     // test with specific unloading
-    ASSERT_EQ(manager.loadDirectory("plugins", false), std::vector<apl::Plugin*>());
+    ASSERT_EQ(manager.loadDirectory("plugins", false), std::vector<const apl::Plugin*>());
     ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 0);
     ASSERT_EQ(manager.getLoadedPluginCount(), 0);
     auto loadedVector = manager.loadDirectory("plugins/first", false);
     ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 1);
     ASSERT_EQ(manager.getLoadedPluginCount(), 1);
-    ASSERT_EQ(loadedVector, std::vector<apl::Plugin*>({apl::detail::PluginManagerPrivate::allPlugins.begin()->second.second}));
+    ASSERT_EQ(loadedVector, std::vector<const apl::Plugin*>({apl::detail::PluginManagerPrivate::allPlugins.begin()->second.second}));
 
-    apl::Plugin* plugin = manager.getLoadedPlugins().front();
+    const apl::Plugin* plugin = manager.getLoadedPlugins().front();
     ASSERT_NE(plugin, nullptr);
     ASSERT_TRUE(plugin->isLoaded());
     ASSERT_EQ(plugin->getPath(), "plugins/first/first_plugin");
@@ -253,7 +253,7 @@ GTEST_TEST(Test_PluginManager, copy_assign_construct)
     ASSERT_EQ(manager1.getLoadedPlugins().size(), 3);
     ASSERT_EQ(apl::detail::PluginManagerPrivate::allPlugins.size(), 3);
 
-    std::vector<apl::Plugin*> plugins = manager1.getLoadedPlugins();
+    std::vector<const apl::Plugin*> plugins = manager1.getLoadedPlugins();
     ASSERT_EQ(plugins.size(), 3);
     for(size_t i = 0; i < plugins.size(); i++) {
         ASSERT_NE(plugins.at(i), nullptr);
