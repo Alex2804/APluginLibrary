@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD 11)
@@ -31,7 +31,8 @@ set(SOURCES
 
 add_executable(APluginLibraryTest ${SOURCES})
 target_link_libraries(APluginLibraryTest APluginLibrary gtest_main)
-add_test(NAME APluginLibraryTest COMMAND APluginLibraryTest)
+include(GoogleTest)
+gtest_discover_tests(APluginLibraryTest)
 
 add_subdirectory(libraries/first)
 add_subdirectory(libraries/second)

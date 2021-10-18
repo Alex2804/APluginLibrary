@@ -43,6 +43,7 @@ target_compile_definitions(APluginLibrary PUBLIC PRIVATE_APLUGINSDK_INTEGRATED_P
 target_link_libraries(APluginLibrary "${CMAKE_DL_LIBS}")
 
 if(${APluginLibraryTest})
+    enable_testing()
     add_subdirectory(tests)
     target_compile_definitions(APluginLibrary PUBLIC APLUGINLIBRARY_TEST)
 endif()
